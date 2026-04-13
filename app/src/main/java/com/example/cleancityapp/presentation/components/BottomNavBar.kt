@@ -8,23 +8,22 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cleancityapp.presentation.main.Screen
+import com.example.cleancityapp.presentation.main.UserRole
 
 @Composable
 fun BottomNavBar(
     currentScreen: Screen,
+    userRole: UserRole,
     onNavigate: (Screen) -> Unit
 ) {
     Row(
@@ -35,36 +34,63 @@ fun BottomNavBar(
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        NavItem(
-            icon = "🏠",
-            label = "Home",
-            isSelected = currentScreen == Screen.Home,
-            onClick = { onNavigate(Screen.Home) }
-        )
-        NavItem(
-            icon = "📷",
-            label = "Report",
-            isSelected = currentScreen == Screen.Report,
-            onClick = { onNavigate(Screen.Report) }
-        )
-        NavItem(
-            icon = "🗺️",
-            label = "Map",
-            isSelected = currentScreen == Screen.Map,
-            onClick = { onNavigate(Screen.Map) }
-        )
-        NavItem(
-            icon = "🏆",
-            label = "Rewards",
-            isSelected = currentScreen == Screen.Rewards,
-            onClick = { onNavigate(Screen.Rewards) }
-        )
-        NavItem(
-            icon = "👤",
-            label = "Profile",
-            isSelected = currentScreen == Screen.Profile,
-            onClick = { onNavigate(Screen.Profile) }
-        )
+        if (userRole == UserRole.USER) {
+            NavItem(
+                icon = "🏠",
+                label = "Home",
+                isSelected = currentScreen == Screen.Home,
+                onClick = { onNavigate(Screen.Home) }
+            )
+            NavItem(
+                icon = "📷",
+                label = "Report",
+                isSelected = currentScreen == Screen.Report,
+                onClick = { onNavigate(Screen.Report) }
+            )
+            NavItem(
+                icon = "🗺️",
+                label = "Map",
+                isSelected = currentScreen == Screen.Map,
+                onClick = { onNavigate(Screen.Map) }
+            )
+            NavItem(
+                icon = "🏆",
+                label = "Rewards",
+                isSelected = currentScreen == Screen.Rewards,
+                onClick = { onNavigate(Screen.Rewards) }
+            )
+            NavItem(
+                icon = "👤",
+                label = "Profile",
+                isSelected = currentScreen == Screen.Profile,
+                onClick = { onNavigate(Screen.Profile) }
+            )
+        } else {
+            NavItem(
+                icon = "🏠",
+                label = "Home",
+                isSelected = currentScreen == Screen.DriverDashboard,
+                onClick = { onNavigate(Screen.DriverDashboard) }
+            )
+            NavItem(
+                icon = "📋",
+                label = "Tasks",
+                isSelected = currentScreen == Screen.DriverTasks,
+                onClick = { onNavigate(Screen.DriverTasks) }
+            )
+            NavItem(
+                icon = "🗺️",
+                label = "Route",
+                isSelected = currentScreen == Screen.DriverRoute,
+                onClick = { onNavigate(Screen.DriverRoute) }
+            )
+            NavItem(
+                icon = "👤",
+                label = "Profile",
+                isSelected = currentScreen == Screen.DriverProfile,
+                onClick = { onNavigate(Screen.DriverProfile) }
+            )
+        }
     }
 }
 
@@ -87,8 +113,7 @@ fun NavItem(
     ) {
         Text(
             text = icon,
-            fontSize = 18.sp,
-            color = contentColor
+            fontSize = 18.sp
         )
         Text(
             text = label,

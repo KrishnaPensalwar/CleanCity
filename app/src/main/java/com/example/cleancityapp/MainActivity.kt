@@ -22,6 +22,10 @@ import com.example.cleancityapp.presentation.map.MapScreen
 import com.example.cleancityapp.presentation.profile.ProfileScreen
 import com.example.cleancityapp.presentation.report.ReportScreen
 import com.example.cleancityapp.presentation.rewards.RewardsScreen
+import com.example.cleancityapp.presentation.driver.dashboard.DriverDashboardScreen
+import com.example.cleancityapp.presentation.driver.tasks.DriverTasksScreen
+import com.example.cleancityapp.presentation.driver.route.DriverRouteScreen
+import com.example.cleancityapp.presentation.driver.profile.DriverProfileScreen
 import com.example.cleancityapp.ui.theme.CleanCityAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -47,6 +51,7 @@ fun MainApp(
         bottomBar = {
             BottomNavBar(
                 currentScreen = uiState.currentScreen,
+                userRole = uiState.userRole,
                 onNavigate = { screen ->
                     viewModel.processIntent(MainContract.Intent.NavigateTo(screen))
                 }
@@ -55,6 +60,7 @@ fun MainApp(
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             when (uiState.currentScreen) {
+                // User Screens
                 is Screen.Home -> HomeScreen(
                     onNavigateToReport = { viewModel.processIntent(MainContract.Intent.NavigateTo(Screen.Report)) }
                 )
@@ -62,6 +68,17 @@ fun MainApp(
                 is Screen.Map -> MapScreen()
                 is Screen.Rewards -> RewardsScreen()
                 is Screen.Profile -> ProfileScreen()
+                
+                // Driver Screens
+                is Screen.DriverDashboard -> DriverDashboardScreen(
+                    onNavigateToTasks = { viewModel.processIntent(MainContract.Intent.NavigateTo(Screen.DriverTasks)) },
+                    onNavigateToRoute = { viewModel.processIntent(MainContract.Intent.NavigateTo(Screen.DriverRoute)) }
+                )
+                is Screen.DriverTasks -> DriverTasksScreen(
+                    onNavigateToRoute = { viewModel.processIntent(MainContract.Intent.NavigateTo(Screen.DriverRoute)) }
+                )
+                is Screen.DriverRoute -> DriverRouteScreen()
+                is Screen.DriverProfile -> DriverProfileScreen()
             }
         }
     }
