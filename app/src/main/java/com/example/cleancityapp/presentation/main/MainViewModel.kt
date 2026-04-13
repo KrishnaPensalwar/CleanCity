@@ -16,11 +16,14 @@ class MainViewModel : ViewModel() {
                 _uiState.update { it.copy(currentScreen = intent.screen) }
             }
             is MainContract.Intent.SetRole -> {
-                val initialScreen = when (intent.role) {
+                _uiState.update { it.copy(userRole = intent.role) }
+            }
+            is MainContract.Intent.LoginSuccess -> {
+                val initialScreen = when (_uiState.value.userRole) {
                     UserRole.USER -> Screen.Home
                     UserRole.DRIVER -> Screen.DriverDashboard
                 }
-                _uiState.update { it.copy(userRole = intent.role, currentScreen = initialScreen) }
+                _uiState.update { it.copy(currentScreen = initialScreen) }
             }
         }
     }

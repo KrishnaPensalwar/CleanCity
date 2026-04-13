@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -12,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import com.example.cleancityapp.presentation.components.BottomNavBar
 import com.example.cleancityapp.presentation.home.HomeScreen
@@ -26,6 +28,7 @@ import com.example.cleancityapp.presentation.driver.dashboard.DriverDashboardScr
 import com.example.cleancityapp.presentation.driver.tasks.DriverTasksScreen
 import com.example.cleancityapp.presentation.driver.route.DriverRouteScreen
 import com.example.cleancityapp.presentation.driver.profile.DriverProfileScreen
+import com.example.cleancityapp.presentation.auth.LoginScreen
 import com.example.cleancityapp.ui.theme.CleanCityAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -49,17 +52,23 @@ fun MainApp(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            BottomNavBar(
-                currentScreen = uiState.currentScreen,
-                userRole = uiState.userRole,
-                onNavigate = { screen ->
-                    viewModel.processIntent(MainContract.Intent.NavigateTo(screen))
-                }
-            )
+            if (uiState.currentScreen != Screen.Login) {
+                BottomNavBar(
+                    currentScreen = uiState.currentScreen,
+                    userRole = uiState.userRole,
+                    onNavigate = { screen ->
+                        viewModel.processIntent(MainContract.Intent.NavigateTo(screen))
+                    }
+                )
+            }
         }
     ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
+        Box(modifier = Modifier.padding(if (uiState.currentScreen == Screen.Login) PaddingValues(0.dp) else innerPadding)) {
             when (uiState.currentScreen) {
+                is Screen.Login -> LoginScreen(
+                    onLoginSuccess = { viewModel.processIntent(MainContract.Intent.LoginSuccess) }
+                )
+                
                 // User Screens
                 is Screen.Home -> HomeScreen(
                     onNavigateToReport = { viewModel.processIntent(MainContract.Intent.NavigateTo(Screen.Report)) }
