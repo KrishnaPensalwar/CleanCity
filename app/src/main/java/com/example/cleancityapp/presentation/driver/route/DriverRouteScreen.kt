@@ -1,12 +1,13 @@
 package com.example.cleancityapp.presentation.driver.route
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -14,9 +15,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.cleancityapp.presentation.components.CameraCapture
 
 @Composable
 fun DriverRouteScreen() {
+    var capturedImageUri by remember { mutableStateOf<Uri?>(null) }
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -58,7 +62,6 @@ fun DriverRouteScreen() {
                     .background(Color(0xFFDCE8F5)),
                 contentAlignment = Alignment.Center
             ) {
-                // Simplified Map UI representation
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("🗺️", fontSize = 40.sp)
                     Text("Interactive Map View", fontSize = 12.sp, color = Color(0xFF0C447C), fontWeight = FontWeight.Bold)
@@ -123,25 +126,25 @@ fun DriverRouteScreen() {
             Text(text = "After clean-up", fontSize = 12.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
             
-            Button(
-                onClick = { },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A6B3A)),
-                shape = RoundedCornerShape(9.dp)
-            ) {
-                Text("📸 Upload completion photo")
-            }
+            // Replaced static button with CameraCapture component
+            CameraCapture(
+                onImageCaptured = { uri -> capturedImageUri = uri },
+                buttonText = "📸 Capture Completion Photo"
+            )
             
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             Button(
                 onClick = { },
+                enabled = capturedImageUri != null,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA32D2D)),
                 shape = RoundedCornerShape(9.dp)
             ) {
                 Text("Mark as completed")
             }
+            
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }

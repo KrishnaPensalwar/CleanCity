@@ -3,7 +3,7 @@ package com.example.cleancityapp.presentation.main
 class MainContract {
     data class State(
         val currentScreen: Screen = Screen.Login,
-        val userRole: UserRole = UserRole.DRIVER
+        val userRole: UserRole = UserRole.USER
     )
     
     sealed class Intent {

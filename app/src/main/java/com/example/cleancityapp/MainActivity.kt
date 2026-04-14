@@ -29,6 +29,7 @@ import com.example.cleancityapp.presentation.driver.tasks.DriverTasksScreen
 import com.example.cleancityapp.presentation.driver.route.DriverRouteScreen
 import com.example.cleancityapp.presentation.driver.profile.DriverProfileScreen
 import com.example.cleancityapp.presentation.auth.LoginScreen
+import com.example.cleancityapp.presentation.auth.SignUpScreen
 import com.example.cleancityapp.ui.theme.CleanCityAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -48,11 +49,12 @@ fun MainApp(
     viewModel: MainViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val isAuthScreen = uiState.currentScreen == Screen.Login || uiState.currentScreen == Screen.SignUp
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            if (uiState.currentScreen != Screen.Login) {
+            if (!isAuthScreen) {
                 BottomNavBar(
                     currentScreen = uiState.currentScreen,
                     userRole = uiState.userRole,
@@ -63,10 +65,16 @@ fun MainApp(
             }
         }
     ) { innerPadding ->
-        Box(modifier = Modifier.padding(if (uiState.currentScreen == Screen.Login) PaddingValues(0.dp) else innerPadding)) {
+        Box(modifier = Modifier.padding(if (isAuthScreen) PaddingValues(0.dp) else innerPadding)) {
             when (uiState.currentScreen) {
                 is Screen.Login -> LoginScreen(
-                    onLoginSuccess = { viewModel.processIntent(MainContract.Intent.LoginSuccess) }
+                    onLoginSuccess = { viewModel.processIntent(MainContract.Intent.LoginSuccess) },
+                    onNavigateToSignUp = { viewModel.processIntent(MainContract.Intent.NavigateTo(Screen.SignUp)) }
+                )
+                
+                is Screen.SignUp -> SignUpScreen(
+                    onSignUpSuccess = { viewModel.processIntent(MainContract.Intent.LoginSuccess) },
+                    onNavigateToLogin = { viewModel.processIntent(MainContract.Intent.NavigateTo(Screen.Login)) }
                 )
                 
                 // User Screens

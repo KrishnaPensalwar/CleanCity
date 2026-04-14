@@ -1,18 +1,17 @@
 package com.example.cleancityapp.presentation.report
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,9 +20,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cleancityapp.presentation.components.TopNavBar
+import com.example.cleancityapp.presentation.components.CameraCapture
 
 @Composable
 fun ReportScreen() {
+    var capturedImageUri by remember { mutableStateOf<Uri?>(null) }
+    var category by remember { mutableStateOf("Garbage / Litter") }
+    var description by remember { mutableStateOf("") }
+    var location by remember { mutableStateOf("Jubilee Hills, Hyderabad") }
+
+    val categories = listOf("Garbage / Litter", "Open Drain", "Dead Animal", "Illegal Dumping", "Overflowing Bin")
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -31,7 +38,7 @@ fun ReportScreen() {
     ) {
         TopNavBar(
             title = "File a report",
-            subtitle = "Upload image & details"
+            subtitle = "Capture image & details"
         )
         
         Column(
@@ -40,31 +47,13 @@ fun ReportScreen() {
                 .padding(12.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Upload Area
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFFF0FAF4))
-                    // Using basic dotted border simulation with simple border
-                    .border(1.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp))
-                    .padding(vertical = 24.dp, horizontal = 16.dp)
-            ) {
-                Text(text = "📸", fontSize = 32.sp, modifier = Modifier.padding(bottom = 6.dp))
-                Row {
-                    Text(text = "Tap to capture ", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary, fontSize = 13.sp)
-                    Text(text = "or upload from gallery", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
-                }
-                Text(
-                    text = "JPG, PNG up to 10MB",
-                    fontSize = 11.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant, // Fallback for tertiary
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-            }
+            // Camera Capture Section
+            CameraCapture(
+                onImageCaptured = { uri -> capturedImageUri = uri },
+                buttonText = "📸 Capture Waste Photo"
+            )
             
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             
             // Issue Details Card
             Column(
@@ -83,10 +72,31 @@ fun ReportScreen() {
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 
-                FormField(label = "Category", value = "Garbage / Litter ▾")
-                FormField(label = "Description", value = "Describe the issue briefly…")
+                CategoryDropdown(
+                    label = "Category",
+                    selectedCategory = category,
+                    categories = categories,
+                    onCategorySelected = { category = it }
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(text = "Description", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = 4.dp))
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    placeholder = { Text("Describe the issue briefly…", fontSize = 13.sp) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                    )
+                )
                 
-                Text(text = "Location", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = 4.dp, top = 8.dp))
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(text = "Location", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = 4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     Box(
                         modifier = Modifier
@@ -95,12 +105,13 @@ fun ReportScreen() {
                             .border(0.5.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
                             .padding(horizontal = 12.dp, vertical = 9.dp)
                     ) {
-                        Text(text = "Jubilee Hills, Hyderabad", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface)
+                        Text(text = location, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface)
                     }
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
                             .background(Color(0xFFEAF3DE))
+                            .clickable { /* Update location logic */ }
                             .padding(horizontal = 10.dp, vertical = 8.dp)
                     ) {
                         Text(text = "📍 GPS", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = Color(0xFF3B6D11))
@@ -108,7 +119,7 @@ fun ReportScreen() {
                 }
             }
             
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Earn Points Card
             Row(
@@ -127,10 +138,11 @@ fun ReportScreen() {
                 }
             }
             
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             
             Button(
-                onClick = {},
+                onClick = { /* Submit logic */ },
+                enabled = capturedImageUri != null && description.isNotBlank(),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier.fillMaxWidth()
@@ -152,21 +164,51 @@ fun ReportScreen() {
 }
 
 @Composable
-fun FormField(label: String, value: String) {
-    Column(modifier = Modifier.padding(bottom = 10.dp)) {
+fun CategoryDropdown(
+    label: String,
+    selectedCategory: String,
+    categories: List<String>,
+    onCategorySelected: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Column {
         Text(text = label, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = 4.dp))
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(8.dp))
                 .border(0.5.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
-                .padding(horizontal = 12.dp, vertical = 9.dp)
+                .clickable { expanded = true }
+                .padding(horizontal = 12.dp, vertical = 12.dp)
         ) {
-            Text(text = value, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-
-        DropdownMenu(false, onDismissRequest = {}){
-
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = selectedCategory, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface)
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.fillMaxWidth(0.9f)
+            ) {
+                categories.forEach { category ->
+                    DropdownMenuItem(
+                        text = { Text(category) },
+                        onClick = {
+                            onCategorySelected(category)
+                            expanded = false
+                        }
+                    )
+                }
+            }
         }
     }
 }
