@@ -29,7 +29,10 @@ class MainViewModel(private val authApi: AuthApi) : ViewModel() {
                 login(intent.email, intent.password)
             }
             is MainContract.Intent.SignUp -> {
-                signUp(intent.name, intent.mobile, intent.email, intent.password)
+                signUp(intent.name, intent.mobile, intent.email, intent.password, intent.city)
+            }
+            is MainContract.Intent.FetchCities -> {
+                fetchCities()
             }
             is MainContract.Intent.GetMe -> {
                 getMe()
@@ -101,7 +104,23 @@ class MainViewModel(private val authApi: AuthApi) : ViewModel() {
         }
     }
 
-    private fun signUp(name: String, mobile: String, email: String, pass: String) {
+    private fun fetchCities() {
+        // Only fetch if list is empty
+        if (_uiState.value.cities.isNotEmpty()) return
+
+        viewModelScope.launch {
+            val result = retryApiCall(3) {
+                authApi.getCities()
+            }
+            result?.let { response ->
+                if (response.isSuccessful && response.body() != null) {
+                    _uiState.update { it.copy(cities = response.body()!!) }
+                }
+            }
+        }
+    }
+
+    private fun signUp(name: String, mobile: String, email: String, pass: String, city: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             
@@ -111,7 +130,8 @@ class MainViewModel(private val authApi: AuthApi) : ViewModel() {
                         "name" to name,
                         "mobile" to mobile,
                         "email" to email,
-                        "password" to pass
+                        "password" to pass,
+                        "city" to city
                     )
                 )
             }

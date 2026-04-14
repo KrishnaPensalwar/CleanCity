@@ -23,3 +23,8 @@ data class UserDto(
     val createdAt: String,
     val updatedAt: String
 )
+
+data class CityDto(
+    val id: String,
+    val name: String
+)

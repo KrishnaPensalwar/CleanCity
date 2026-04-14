@@ -75,16 +75,18 @@ fun MainApp(
                     isLoading = uiState.isLoading,
                     error = uiState.error
                 )
-                
+
                 is Screen.SignUp -> SignUpScreen(
-                    onSignUp = { name, mobile, email, password ->
-                        viewModel.processIntent(MainContract.Intent.SignUp(name, mobile, email, password))
+                    onSignUp = { name, mobile, email, password, city ->
+                        viewModel.processIntent(MainContract.Intent.SignUp(name, mobile, email, password, city))
                     },
                     onNavigateToLogin = { viewModel.processIntent(MainContract.Intent.NavigateTo(Screen.Login)) },
+                    onFetchCities = { viewModel.processIntent(MainContract.Intent.FetchCities) },
+                    cities = uiState.cities,
                     isLoading = uiState.isLoading,
                     error = uiState.error
                 )
-                
+
                 // User Screens
                 is Screen.Home -> HomeScreen(
                     onNavigateToReport = { viewModel.processIntent(MainContract.Intent.NavigateTo(Screen.Report)) }

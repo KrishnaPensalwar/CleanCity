@@ -1,5 +1,6 @@
 package com.example.cleancityapp.presentation.main
 
+import com.example.cleancityapp.data.remote.CityDto
 import com.example.cleancityapp.data.remote.UserDto
 
 class MainContract {
@@ -8,7 +9,8 @@ class MainContract {
         val userRole: UserRole = UserRole.DRIVER,
         val isLoading: Boolean = false,
         val error: String? = null,
-        val currentUser: UserDto? = null
+        val currentUser: UserDto? = null,
+        val cities: List<CityDto> = emptyList()
     )
     
     sealed class Intent {
@@ -20,9 +22,11 @@ class MainContract {
             val name: String,
             val mobile: String,
             val email: String,
-            val password: String
+            val password: String,
+            val city: String
         ) : Intent()
         
+        object FetchCities : Intent()
         object GetMe : Intent()
         object ClearError : Intent()
         object LoginSuccess : Intent()

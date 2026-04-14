@@ -12,6 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.cleancityapp.presentation.components.InputField
 
 @Composable
 fun LoginScreen(
@@ -49,24 +50,20 @@ fun LoginScreen(
             Text(text = error, color = Color.Red, fontSize = 12.sp, modifier = Modifier.padding(bottom = 8.dp))
         }
 
-        OutlinedTextField(
+        InputField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email/Driver ID") },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
+            label = "Email/Driver ID",
             enabled = !isLoading
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
+        InputField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
+            label = "Password",
             visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
             enabled = !isLoading
         )
 

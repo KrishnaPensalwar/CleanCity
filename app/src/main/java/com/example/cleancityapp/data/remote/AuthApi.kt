@@ -15,4 +15,7 @@ interface AuthApi {
 
     @GET("auth/me")
     suspend fun getMe(@Header("Authorization") token: String): Response<UserDto>
+
+    @GET("api/cities")
+    suspend fun getCities(): Response<List<CityDto>>
 }
