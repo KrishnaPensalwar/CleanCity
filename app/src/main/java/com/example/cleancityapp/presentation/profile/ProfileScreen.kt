@@ -17,11 +17,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.cleancityapp.data.remote.UserDto
 import com.example.cleancityapp.presentation.components.TopNavBar
 import com.example.cleancityapp.presentation.home.StatCard
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(user: UserDto?) {
+    val name = user?.name ?: "Priya Kumar"
+    val email = user?.email ?: "priya.kumar@gmail.com"
+    val initials = if (name.isNotBlank()) {
+        name.split(" ").mapNotNull { it.firstOrNull()?.toString() }.joinToString("").uppercase()
+    } else "PK"
+    
+    val rewardPoints = user?.rewardPoints ?: 0
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -55,12 +64,12 @@ fun ProfileScreen() {
                         .background(Color(0xFF9FE1CB)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = "PK", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = Color(0xFF085041))
+                    Text(text = initials, fontSize = 16.sp, fontWeight = FontWeight.Medium, color = Color(0xFF085041))
                 }
                 Column(modifier = Modifier.padding(start = 12.dp)) {
-                    Text(text = "Priya Kumar", fontSize = 15.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface)
-                    Text(text = "priya.kumar@gmail.com", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text(text = "Hyderabad · Member since Jan 2025", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 2.dp))
+                    Text(text = name, fontSize = 15.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface)
+                    Text(text = email, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(text = "Hyderabad · Member since 2025", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 2.dp))
                 }
             }
             
@@ -72,9 +81,8 @@ fun ProfileScreen() {
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 StatCard(num = "14", lbl = "Total reports", modifier = Modifier.weight(1f))
-                StatCard(num = "9", lbl = "Resolved", modifier = Modifier.weight(1f))
+                StatCard(num = rewardPoints.toString(), lbl = "Reward Pts", modifier = Modifier.weight(1f))
                 StatCard(num = "3", lbl = "Pending", modifier = Modifier.weight(1f))
-                StatCard(num = "2", lbl = "Declined", modifier = Modifier.weight(1f))
             }
             
             Spacer(modifier = Modifier.height(10.dp))
@@ -125,7 +133,7 @@ fun HistoryItem(title: String, time: String, status: String, dotColor: Color, ha
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp) // Adjusted to fit the line
+            .padding(vertical = 4.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

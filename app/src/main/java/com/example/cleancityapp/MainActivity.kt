@@ -68,13 +68,21 @@ fun MainApp(
         Box(modifier = Modifier.padding(if (isAuthScreen) PaddingValues(0.dp) else innerPadding)) {
             when (uiState.currentScreen) {
                 is Screen.Login -> LoginScreen(
-                    onLoginSuccess = { viewModel.processIntent(MainContract.Intent.LoginSuccess) },
-                    onNavigateToSignUp = { viewModel.processIntent(MainContract.Intent.NavigateTo(Screen.SignUp)) }
+                    onLogin = { email, password ->
+                        viewModel.processIntent(MainContract.Intent.Login(email, password))
+                    },
+                    onNavigateToSignUp = { viewModel.processIntent(MainContract.Intent.NavigateTo(Screen.SignUp)) },
+                    isLoading = uiState.isLoading,
+                    error = uiState.error
                 )
                 
                 is Screen.SignUp -> SignUpScreen(
-                    onSignUpSuccess = { viewModel.processIntent(MainContract.Intent.LoginSuccess) },
-                    onNavigateToLogin = { viewModel.processIntent(MainContract.Intent.NavigateTo(Screen.Login)) }
+                    onSignUp = { name, mobile, email, password ->
+                        viewModel.processIntent(MainContract.Intent.SignUp(name, mobile, email, password))
+                    },
+                    onNavigateToLogin = { viewModel.processIntent(MainContract.Intent.NavigateTo(Screen.Login)) },
+                    isLoading = uiState.isLoading,
+                    error = uiState.error
                 )
                 
                 // User Screens
@@ -84,7 +92,7 @@ fun MainApp(
                 is Screen.Report -> ReportScreen()
                 is Screen.Map -> MapScreen()
                 is Screen.Rewards -> RewardsScreen()
-                is Screen.Profile -> ProfileScreen()
+                is Screen.Profile -> ProfileScreen(user = uiState.currentUser)
                 
                 // Driver Screens
                 is Screen.DriverDashboard -> DriverDashboardScreen(
@@ -95,7 +103,7 @@ fun MainApp(
                     onNavigateToRoute = { viewModel.processIntent(MainContract.Intent.NavigateTo(Screen.DriverRoute)) }
                 )
                 is Screen.DriverRoute -> DriverRouteScreen()
-                is Screen.DriverProfile -> DriverProfileScreen()
+                is Screen.DriverProfile -> DriverProfileScreen(user = uiState.currentUser)
             }
         }
     }

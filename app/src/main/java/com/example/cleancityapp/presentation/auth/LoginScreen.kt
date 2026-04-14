@@ -15,8 +15,10 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess: () -> Unit,
-    onNavigateToSignUp: () -> Unit
+    onLogin: (String, String) -> Unit,
+    onNavigateToSignUp: () -> Unit,
+    isLoading: Boolean = false,
+    error: String? = null
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -43,12 +45,17 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(48.dp))
 
+        if (error != null) {
+            Text(text = error, color = Color.Red, fontSize = 12.sp, modifier = Modifier.padding(bottom = 8.dp))
+        }
+
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
             label = { Text("Email/Driver ID") },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
+            enabled = !isLoading
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -59,33 +66,35 @@ fun LoginScreen(
             label = { Text("Password") },
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
+            enabled = !isLoading
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = onLoginSuccess,
+            onClick = { onLogin(email, password) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
             shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1565C0))
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1565C0)),
+            enabled = !isLoading && email.isNotBlank() && password.isNotBlank()
         ) {
-            Text("Login", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            if (isLoading) {
+                CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+            } else {
+                Text("Login", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("Don't have an account? ", color = Color.Gray, fontSize = 14.sp)
-            TextButton(onClick = onNavigateToSignUp) {
+            TextButton(onClick = onNavigateToSignUp, enabled = !isLoading) {
                 Text("Sign Up", color = Color(0xFF1565C0), fontWeight = FontWeight.Bold)
             }
-        }
-
-        TextButton(onClick = { /* Handle Forgot Password */ }) {
-            Text("Forgot Password?", color = Color.Gray, fontSize = 12.sp)
         }
     }
 }

@@ -15,11 +15,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.cleancityapp.data.remote.UserDto
 import com.example.cleancityapp.presentation.driver.route.DetailRow
 import com.example.cleancityapp.presentation.driver.dashboard.StatCard
 
 @Composable
-fun DriverProfileScreen() {
+fun DriverProfileScreen(user: UserDto?) {
+    val name = user?.name ?: "Arjun Kumar"
+    val email = user?.email ?: "driver@example.com"
+    val initials = if (name.isNotBlank()) {
+        name.split(" ").mapNotNull { it.firstOrNull()?.toString() }.joinToString("").uppercase()
+    } else "AK"
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -70,12 +77,12 @@ fun DriverProfileScreen() {
                             .background(Color(0xFFB5D4F4)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(text = "AK", color = Color(0xFF0C447C), fontWeight = FontWeight.Bold)
+                        Text(text = initials, color = Color(0xFF0C447C), fontWeight = FontWeight.Bold)
                     }
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
-                        Text(text = "Arjun Kumar", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                        Text(text = "Driver ID: DRV-2041", fontSize = 12.sp, color = Color.Gray)
+                        Text(text = name, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Text(text = "Email: $email", fontSize = 12.sp, color = Color.Gray)
                         Text(text = "Hyderabad Zone B · Active", fontSize = 12.sp, color = Color.Gray)
                     }
                 }

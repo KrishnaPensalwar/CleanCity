@@ -17,8 +17,10 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun SignUpScreen(
-    onSignUpSuccess: () -> Unit,
-    onNavigateToLogin: () -> Unit
+    onSignUp: (String, String, String, String) -> Unit,
+    onNavigateToLogin: () -> Unit,
+    isLoading: Boolean = false,
+    error: String? = null
 ) {
     var fullName by remember { mutableStateOf("") }
     var mobile by remember { mutableStateOf("") }
@@ -49,12 +51,17 @@ fun SignUpScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        if (error != null) {
+            Text(text = error, color = Color.Red, fontSize = 12.sp, modifier = Modifier.padding(bottom = 8.dp))
+        }
+
         OutlinedTextField(
             value = fullName,
             onValueChange = { fullName = it },
             label = { Text("Full Name") },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
+            enabled = !isLoading
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -64,7 +71,8 @@ fun SignUpScreen(
             onValueChange = { mobile = it },
             label = { Text("Mobile Number") },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
+            enabled = !isLoading
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -74,7 +82,8 @@ fun SignUpScreen(
             onValueChange = { email = it },
             label = { Text("Email") },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
+            enabled = !isLoading
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -85,7 +94,8 @@ fun SignUpScreen(
             label = { Text("Password") },
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
+            enabled = !isLoading
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -96,27 +106,39 @@ fun SignUpScreen(
             label = { Text("Confirm Password") },
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
+            enabled = !isLoading
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        val isFormValid = fullName.isNotBlank() && 
+                         mobile.isNotBlank() && 
+                         email.isNotBlank() && 
+                         password.isNotBlank() && 
+                         password == confirmPassword
+
         Button(
-            onClick = onSignUpSuccess,
+            onClick = { onSignUp(fullName, mobile, email, password) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
             shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1565C0))
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1565C0)),
+            enabled = !isLoading && isFormValid
         ) {
-            Text("Sign Up", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            if (isLoading) {
+                CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+            } else {
+                Text("Sign Up", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("Already have an account? ", color = Color.Gray, fontSize = 14.sp)
-            TextButton(onClick = onNavigateToLogin) {
+            TextButton(onClick = onNavigateToLogin, enabled = !isLoading) {
                 Text("Login", color = Color(0xFF1565C0), fontWeight = FontWeight.Bold)
             }
         }
