@@ -28,3 +28,15 @@ data class CityDto(
     val id: String,
     val name: String
 )
+
+data class ReportResponse(
+    val id: String,
+    val userId: String,
+    val description: String,
+    val imageUrl: String,
+    val latitude: Double,
+    val longitude: Double,
+    val status: String,
+    val timestamp: Long,
+    val createdAt: String
+)

@@ -9,6 +9,7 @@ sealed class Screen(val route: String) {
     object Report : Screen("report")
     object Map : Screen("map")
     object Rewards : Screen("rewards")
+    object History : Screen("history")
     object Profile : Screen("profile")
 
     // Driver Screens

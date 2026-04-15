@@ -26,7 +26,8 @@ import com.example.cleancityapp.ui.theme.*
 
 @Composable
 fun HomeScreen(
-    onNavigateToReport: () -> Unit
+    onNavigateToReport: () -> Unit,
+    onNavigateToProfile: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -35,7 +36,8 @@ fun HomeScreen(
     ) {
         TopNavBar(
             title = "Good morning, Priya!",
-            subtitle = "Hyderabad · 42 pts this week"
+            subtitle = "Hyderabad · 42 pts this week",
+            onProfileClick = onNavigateToProfile
         )
         
         Column(

@@ -85,29 +85,7 @@ fun ProfileScreen(user: UserDto?) {
                 StatCard(num = "3", lbl = "Pending", modifier = Modifier.weight(1f))
             }
             
-            Spacer(modifier = Modifier.height(10.dp))
-            
-            // Submission History
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .border(0.5.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
-                    .padding(12.dp)
-            ) {
-                Text(
-                    text = "Submission history",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                
-                HistoryItem(title = "Jubilee Hills — Garbage pile", time = "Today, 9:14 AM · ", status = "Pending", dotColor = MaterialTheme.colorScheme.primary, hasLine = true)
-                HistoryItem(title = "Banjara Hills — Open drain", time = "Yesterday · ", status = "Approved +25 pts", dotColor = Color(0xFF3B6D11), hasLine = true)
-                HistoryItem(title = "Madhapur — Illegal dumping", time = "3 days ago · ", status = "Approved +25 pts", dotColor = Color(0xFF3B6D11), hasLine = false)
-            }
+
             
             Spacer(modifier = Modifier.height(10.dp))
             

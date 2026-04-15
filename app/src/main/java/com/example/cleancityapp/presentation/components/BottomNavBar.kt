@@ -60,10 +60,10 @@ fun BottomNavBar(
                 onClick = { onNavigate(Screen.Rewards) }
             )
             NavItem(
-                icon = "👤",
-                label = "Profile",
-                isSelected = currentScreen == Screen.Profile,
-                onClick = { onNavigate(Screen.Profile) }
+                icon = "📜",
+                label = "History",
+                isSelected = currentScreen == Screen.History,
+                onClick = { onNavigate(Screen.History) }
             )
         } else {
             NavItem(

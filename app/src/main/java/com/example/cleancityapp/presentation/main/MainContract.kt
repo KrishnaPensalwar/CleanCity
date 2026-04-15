@@ -1,6 +1,8 @@
 package com.example.cleancityapp.presentation.main
 
+import android.net.Uri
 import com.example.cleancityapp.data.remote.CityDto
+import com.example.cleancityapp.data.remote.ReportResponse
 import com.example.cleancityapp.data.remote.UserDto
 
 class MainContract {
@@ -10,7 +12,9 @@ class MainContract {
         val isLoading: Boolean = false,
         val error: String? = null,
         val currentUser: UserDto? = null,
-        val cities: List<CityDto> = emptyList()
+        val cities: List<CityDto> = emptyList(),
+        val isReportSuccess: Boolean = false,
+        val userReports: List<ReportResponse> = emptyList()
     )
     
     sealed class Intent {
@@ -26,7 +30,16 @@ class MainContract {
             val city: String
         ) : Intent()
         
+        data class SubmitReport(
+            val imageUri: Uri,
+            val description: String,
+            val latitude: Double,
+            val longitude: Double
+        ) : Intent()
+        
+        object ResetReportStatus : Intent()
         object FetchCities : Intent()
+        object FetchUserReports : Intent()
         object GetMe : Intent()
         object ClearError : Intent()
         object LoginSuccess : Intent()

@@ -30,7 +30,8 @@ import java.util.*
 @Composable
 fun CameraCapture(
     modifier: Modifier = Modifier,
-    onImageCaptured: (Uri) -> Unit,
+    capturedImageUri: Uri? = null,
+    onImageCaptured: (Uri?) -> Unit,
     buttonText: String = "📸 Take Photo"
 ) {
     val context = LocalContext.current
@@ -43,7 +44,6 @@ fun CameraCapture(
         )
     }
 
-    var capturedImageUri by remember { mutableStateOf<Uri?>(null) }
     var tempImageUri by remember { mutableStateOf<Uri?>(null) }
 
     val cameraLauncher = rememberLauncherForActivityResult(
@@ -51,7 +51,6 @@ fun CameraCapture(
         onResult = { success ->
             if (success) {
                 tempImageUri?.let { uri ->
-                    capturedImageUri = uri
                     onImageCaptured(uri)
                 }
             }

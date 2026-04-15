@@ -1,6 +1,7 @@
 package com.example.cleancityapp.presentation.report
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,20 +17,45 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cleancityapp.presentation.components.TopNavBar
 import com.example.cleancityapp.presentation.components.CameraCapture
+import com.example.cleancityapp.presentation.main.MainContract
+import com.example.cleancityapp.presentation.main.MainViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun ReportScreen() {
+fun ReportScreen(
+    viewModel: MainViewModel = koinViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
     var capturedImageUri by remember { mutableStateOf<Uri?>(null) }
     var category by remember { mutableStateOf("Garbage / Litter") }
     var description by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("Jubilee Hills, Hyderabad") }
 
     val categories = listOf("Garbage / Litter", "Open Drain", "Dead Animal", "Illegal Dumping", "Overflowing Bin")
+
+    LaunchedEffect(uiState.isReportSuccess) {
+        if (uiState.isReportSuccess) {
+            Toast.makeText(context, "Report submitted successfully!", Toast.LENGTH_LONG).show()
+            capturedImageUri = null
+            description = ""
+            viewModel.processIntent(MainContract.Intent.ResetReportStatus)
+        }
+    }
+
+    LaunchedEffect(uiState.error) {
+        if (uiState.error != null) {
+            Toast.makeText(context, uiState.error, Toast.LENGTH_LONG).show()
+            viewModel.processIntent(MainContract.Intent.ClearError)
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -88,6 +114,7 @@ fun ReportScreen() {
                     placeholder = { Text("Describe the issue briefly…", fontSize = 13.sp) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
+                    enabled = !uiState.isLoading,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
                         unfocusedBorderColor = MaterialTheme.colorScheme.outline
@@ -141,21 +168,40 @@ fun ReportScreen() {
             Spacer(modifier = Modifier.height(16.dp))
             
             Button(
-                onClick = { /* Submit logic */ },
-                enabled = capturedImageUri != null && description.isNotBlank(),
+                onClick = {
+                    capturedImageUri?.let { uri ->
+                        viewModel.processIntent(
+                            MainContract.Intent.SubmitReport(
+                                imageUri = uri,
+                                description = "$category: $description",
+                                latitude = 37.7749, // Hardcoded for sample
+                                longitude = -122.4194 // Hardcoded for sample
+                            )
+                        )
+                    }
+                },
+                enabled = capturedImageUri != null && description.isNotBlank() && !uiState.isLoading,
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = "Submit report", fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                } else {
+                    Text(text = "Submit report", fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                }
             }
             
             Spacer(modifier = Modifier.height(8.dp))
             
             OutlinedButton(
-                onClick = {},
+                onClick = {
+                    capturedImageUri = null
+                    description = ""
+                },
                 shape = RoundedCornerShape(10.dp),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !uiState.isLoading
             ) {
                 Text(text = "Cancel", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.primary)
             }

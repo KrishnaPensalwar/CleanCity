@@ -24,12 +24,14 @@ import com.example.cleancityapp.presentation.map.MapScreen
 import com.example.cleancityapp.presentation.profile.ProfileScreen
 import com.example.cleancityapp.presentation.report.ReportScreen
 import com.example.cleancityapp.presentation.rewards.RewardsScreen
+import com.example.cleancityapp.presentation.history.HistoryScreen
 import com.example.cleancityapp.presentation.driver.dashboard.DriverDashboardScreen
 import com.example.cleancityapp.presentation.driver.tasks.DriverTasksScreen
 import com.example.cleancityapp.presentation.driver.route.DriverRouteScreen
 import com.example.cleancityapp.presentation.driver.profile.DriverProfileScreen
 import com.example.cleancityapp.presentation.auth.LoginScreen
 import com.example.cleancityapp.presentation.auth.SignUpScreen
+import com.example.cleancityapp.presentation.main.MainContract.Intent.*
 import com.example.cleancityapp.ui.theme.CleanCityAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -69,18 +71,18 @@ fun MainApp(
             when (uiState.currentScreen) {
                 is Screen.Login -> LoginScreen(
                     onLogin = { email, password ->
-                        viewModel.processIntent(MainContract.Intent.Login(email, password))
+                        viewModel.processIntent(Login(email, password))
                     },
-                    onNavigateToSignUp = { viewModel.processIntent(MainContract.Intent.NavigateTo(Screen.SignUp)) },
+                    onNavigateToSignUp = { viewModel.processIntent(NavigateTo(Screen.SignUp)) },
                     isLoading = uiState.isLoading,
                     error = uiState.error
                 )
 
                 is Screen.SignUp -> SignUpScreen(
                     onSignUp = { name, mobile, email, password, city ->
-                        viewModel.processIntent(MainContract.Intent.SignUp(name, mobile, email, password, city))
+                        viewModel.processIntent(SignUp(name, mobile, email, password, city))
                     },
-                    onNavigateToLogin = { viewModel.processIntent(MainContract.Intent.NavigateTo(Screen.Login)) },
+                    onNavigateToLogin = { viewModel.processIntent(NavigateTo(Screen.Login)) },
                     onFetchCities = { viewModel.processIntent(MainContract.Intent.FetchCities) },
                     cities = uiState.cities,
                     isLoading = uiState.isLoading,
@@ -89,7 +91,8 @@ fun MainApp(
 
                 // User Screens
                 is Screen.Home -> HomeScreen(
-                    onNavigateToReport = { viewModel.processIntent(MainContract.Intent.NavigateTo(Screen.Report)) }
+                    onNavigateToReport = { viewModel.processIntent(NavigateTo(Screen.Report)) },
+                    onNavigateToProfile = { viewModel.processIntent(NavigateTo(Screen.Profile)) }
                 )
                 is Screen.Report -> ReportScreen()
                 is Screen.Map -> MapScreen()
@@ -98,14 +101,15 @@ fun MainApp(
                 
                 // Driver Screens
                 is Screen.DriverDashboard -> DriverDashboardScreen(
-                    onNavigateToTasks = { viewModel.processIntent(MainContract.Intent.NavigateTo(Screen.DriverTasks)) },
-                    onNavigateToRoute = { viewModel.processIntent(MainContract.Intent.NavigateTo(Screen.DriverRoute)) }
+                    onNavigateToTasks = { viewModel.processIntent(NavigateTo(Screen.DriverTasks)) },
+                    onNavigateToRoute = { viewModel.processIntent(NavigateTo(Screen.DriverRoute)) }
                 )
                 is Screen.DriverTasks -> DriverTasksScreen(
-                    onNavigateToRoute = { viewModel.processIntent(MainContract.Intent.NavigateTo(Screen.DriverRoute)) }
+                    onNavigateToRoute = { viewModel.processIntent(NavigateTo(Screen.DriverRoute)) }
                 )
                 is Screen.DriverRoute -> DriverRouteScreen()
                 is Screen.DriverProfile -> DriverProfileScreen(user = uiState.currentUser)
+                is Screen.History -> HistoryScreen()
             }
         }
     }
