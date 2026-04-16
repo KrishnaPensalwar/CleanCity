@@ -1,11 +1,14 @@
 package com.example.cleancityapp.presentation.driver.profile
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,11 +19,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cleancityapp.data.remote.UserDto
+import com.example.cleancityapp.presentation.components.TopNavBar
 import com.example.cleancityapp.presentation.driver.route.DetailRow
 import com.example.cleancityapp.presentation.driver.dashboard.StatCard
 
 @Composable
-fun DriverProfileScreen(user: UserDto?) {
+fun DriverProfileScreen(
+    user: UserDto?,
+    onLogout: () -> Unit,
+    onBack: () -> Unit
+) {
     val name = user?.name ?: "Arjun Kumar"
     val email = user?.email ?: "driver@example.com"
     val initials = if (name.isNotBlank()) {
@@ -33,29 +41,20 @@ fun DriverProfileScreen(user: UserDto?) {
             .background(Color(0xFFF5F5F5))
             .verticalScroll(rememberScrollState())
     ) {
-        // Header
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFF1565C0))
-                .padding(16.dp)
-        ) {
-            Text(
-                text = "Clean City · Driver App",
-                color = Color.White.copy(alpha = 0.75f),
-                fontSize = 12.sp
+        // Header with Back Button
+        Box(modifier = Modifier.fillMaxWidth()) {
+            TopNavBar(
+                title = "My profile",
+                subtitle = "Driver account details"
             )
-            Text(
-                text = "My profile",
-                color = Color.White,
-                fontSize = 19.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = "Driver account",
-                color = Color.White.copy(alpha = 0.7f),
-                fontSize = 11.sp
-            )
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(top = 10.dp, start = 8.dp)
+            ) {
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+            }
         }
 
         Column(modifier = Modifier.padding(16.dp)) {
@@ -135,6 +134,7 @@ fun DriverProfileScreen(user: UserDto?) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .clickable { onLogout() }
                             .padding(vertical = 10.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {

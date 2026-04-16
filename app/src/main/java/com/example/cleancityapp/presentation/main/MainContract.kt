@@ -14,7 +14,8 @@ class MainContract {
         val currentUser: UserDto? = null,
         val cities: List<CityDto> = emptyList(),
         val isReportSuccess: Boolean = false,
-        val userReports: List<ReportResponse> = emptyList()
+        val userReports: List<ReportResponse> = emptyList(),
+        val selectedReport: ReportResponse? = null
     )
     
     sealed class Intent {
@@ -37,11 +38,14 @@ class MainContract {
             val longitude: Double
         ) : Intent()
         
+        data class ViewReportDetails(val report: ReportResponse) : Intent()
+        
         object ResetReportStatus : Intent()
         object FetchCities : Intent()
         object FetchUserReports : Intent()
         object GetMe : Intent()
         object ClearError : Intent()
         object LoginSuccess : Intent()
+        object Logout : Intent()
     }
 }

@@ -2,6 +2,7 @@ package com.example.cleancityapp.data.remote
 
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -11,6 +12,9 @@ interface AuthApi {
 
     @POST("auth/login")
     suspend fun login(@Body request: Map<String, String>): Response<LoginResponse>
+
+    @POST("auth/refresh")
+    fun refresh(@Body request: Map<String, String>): Call<LoginResponse>
 
     @GET("auth/me")
     suspend fun getMe(@Header("Authorization") token: String): Response<UserDto>

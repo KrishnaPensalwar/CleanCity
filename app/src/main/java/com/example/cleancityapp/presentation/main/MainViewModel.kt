@@ -6,6 +6,7 @@ import android.webkit.MimeTypeMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cleancityapp.data.remote.AuthApi
+import com.example.cleancityapp.data.remote.ReportResponse
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -63,6 +64,9 @@ class MainViewModel(
             is MainContract.Intent.SubmitReport -> {
                 submitReport(intent.imageUri, intent.description, intent.latitude, intent.longitude)
             }
+            is MainContract.Intent.ViewReportDetails -> {
+                _uiState.update { it.copy(selectedReport = intent.report, currentScreen = Screen.ReportDetails) }
+            }
             is MainContract.Intent.ResetReportStatus -> {
                 _uiState.update { it.copy(isReportSuccess = false) }
             }
@@ -80,6 +84,9 @@ class MainViewModel(
             }
             is MainContract.Intent.LoginSuccess -> {
                 navigateToDashboard()
+            }
+            is MainContract.Intent.Logout -> {
+                logout()
             }
         }
     }
@@ -118,6 +125,14 @@ class MainViewModel(
             } ?: run {
                 _uiState.update { it.copy(isLoading = false, error = "Connection failed after retries") }
             }
+        }
+    }
+
+    private fun logout() {
+        sharedPreferences.edit().clear().apply()
+        accessToken = null
+        _uiState.update { 
+            MainContract.State(currentScreen = Screen.Login)
         }
     }
 
@@ -179,7 +194,7 @@ class MainViewModel(
 
                 if (result?.isSuccessful == true) {
                     _uiState.update { it.copy(isLoading = false, isReportSuccess = true) }
-                    fetchUserReports() // Refresh history after successful submission
+                    fetchUserReports() // Refresh history
                 } else {
                     _uiState.update { it.copy(isLoading = false, error = "Failed to submit report: ${result?.message()}") }
                 }

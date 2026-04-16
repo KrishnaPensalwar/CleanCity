@@ -31,6 +31,7 @@ import com.example.cleancityapp.presentation.driver.route.DriverRouteScreen
 import com.example.cleancityapp.presentation.driver.profile.DriverProfileScreen
 import com.example.cleancityapp.presentation.auth.LoginScreen
 import com.example.cleancityapp.presentation.auth.SignUpScreen
+import com.example.cleancityapp.presentation.history.ReportDetailsScreen
 import com.example.cleancityapp.presentation.main.MainContract.Intent.*
 import com.example.cleancityapp.ui.theme.CleanCityAppTheme
 
@@ -52,22 +53,23 @@ fun MainApp(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isAuthScreen = uiState.currentScreen == Screen.Login || uiState.currentScreen == Screen.SignUp
+    val isFullScreen = isAuthScreen || uiState.currentScreen == Screen.ReportDetails
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            if (!isAuthScreen) {
+            if (!isFullScreen) {
                 BottomNavBar(
                     currentScreen = uiState.currentScreen,
                     userRole = uiState.userRole,
                     onNavigate = { screen ->
-                        viewModel.processIntent(MainContract.Intent.NavigateTo(screen))
+                        viewModel.processIntent(NavigateTo(screen))
                     }
                 )
             }
         }
     ) { innerPadding ->
-        Box(modifier = Modifier.padding(if (isAuthScreen) PaddingValues(0.dp) else innerPadding)) {
+        Box(modifier = Modifier.padding(if (isFullScreen) PaddingValues(0.dp) else innerPadding)) {
             when (uiState.currentScreen) {
                 is Screen.Login -> LoginScreen(
                     onLogin = { email, password ->
@@ -83,7 +85,7 @@ fun MainApp(
                         viewModel.processIntent(SignUp(name, mobile, email, password, city))
                     },
                     onNavigateToLogin = { viewModel.processIntent(NavigateTo(Screen.Login)) },
-                    onFetchCities = { viewModel.processIntent(MainContract.Intent.FetchCities) },
+                    onFetchCities = { viewModel.processIntent(FetchCities) },
                     cities = uiState.cities,
                     isLoading = uiState.isLoading,
                     error = uiState.error
@@ -97,7 +99,16 @@ fun MainApp(
                 is Screen.Report -> ReportScreen()
                 is Screen.Map -> MapScreen()
                 is Screen.Rewards -> RewardsScreen()
-                is Screen.Profile -> ProfileScreen(user = uiState.currentUser)
+                is Screen.History -> HistoryScreen()
+                is Screen.ReportDetails -> ReportDetailsScreen(
+                    report = uiState.selectedReport,
+                    onBack = { viewModel.processIntent(NavigateTo(Screen.History)) }
+                )
+                is Screen.Profile -> ProfileScreen(
+                    user = uiState.currentUser,
+                    onBack = { viewModel.processIntent(NavigateTo(Screen.Home)) },
+                    onLogout = {viewModel.processIntent(Logout)}
+                )
                 
                 // Driver Screens
                 is Screen.DriverDashboard -> DriverDashboardScreen(
@@ -108,8 +119,10 @@ fun MainApp(
                     onNavigateToRoute = { viewModel.processIntent(NavigateTo(Screen.DriverRoute)) }
                 )
                 is Screen.DriverRoute -> DriverRouteScreen()
-                is Screen.DriverProfile -> DriverProfileScreen(user = uiState.currentUser)
-                is Screen.History -> HistoryScreen()
+                is Screen.DriverProfile -> DriverProfileScreen(user = uiState.currentUser,
+                    onBack = { viewModel.processIntent(NavigateTo(Screen.Home)) },
+                    onLogout = {viewModel.processIntent(Logout)}
+                )
             }
         }
     }
