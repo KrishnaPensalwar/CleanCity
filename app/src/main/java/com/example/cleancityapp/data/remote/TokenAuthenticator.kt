@@ -7,15 +7,33 @@ import okhttp3.Response
 import okhttp3.Route
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.koin.core.qualifier.named
 
 class TokenAuthenticator(context: Context) : Authenticator, KoinComponent {
-    private val authApi: AuthApi by inject()
+    // ✅ Fix: Inject the AuthService that doesn't have an authenticator to avoid circular dependency
+    private val authApi: AuthApi by inject(named("AuthService"))
     private val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
 
     override fun authenticate(route: Route?, response: Response): Request? {
+        // If we've already tried to refresh 3 times for this request, stop.
+        if (response.responseCount >= 3) {
+            return null
+        }
+
         val refreshToken = sharedPreferences.getString("refresh_token", null) ?: return null
 
         synchronized(this) {
+            // Check if token was already refreshed by another thread
+            val currentToken = sharedPreferences.getString("access_token", null)
+            val requestToken = response.request.header("Authorization")?.replace("Bearer ", "")
+            
+            if (currentToken != requestToken && currentToken != null) {
+                return response.request.newBuilder()
+                    .header("Authorization", "Bearer $currentToken")
+                    .build()
+            }
+
+            // Perform synchronous refresh call
             val newTokenResponse = authApi.refresh(mapOf("refreshToken" to refreshToken)).execute()
 
             if (newTokenResponse.isSuccessful && newTokenResponse.body() != null) {
@@ -32,4 +50,15 @@ class TokenAuthenticator(context: Context) : Authenticator, KoinComponent {
         }
         return null
     }
+
+    private val Response.responseCount: Int
+        get() {
+            var result = 1
+            var prevResponse = priorResponse
+            while (prevResponse != null) {
+                result++
+                prevResponse = prevResponse.priorResponse
+            }
+            return result
+        }
 }

@@ -72,29 +72,23 @@ fun MainApp(
         Box(modifier = Modifier.padding(if (isFullScreen) PaddingValues(0.dp) else innerPadding)) {
             when (uiState.currentScreen) {
                 is Screen.Login -> LoginScreen(
-                    onLogin = { email, password ->
-                        viewModel.processIntent(Login(email, password))
-                    },
-                    onNavigateToSignUp = { viewModel.processIntent(NavigateTo(Screen.SignUp)) },
-                    isLoading = uiState.isLoading,
-                    error = uiState.error
+                    onLoginSuccess = { viewModel.processIntent(MainContract.Intent.LoginSuccess) },
+                    onNavigateToSignUp = { viewModel.processIntent(NavigateTo(Screen.SignUp)) }
                 )
 
                 is Screen.SignUp -> SignUpScreen(
-                    onSignUp = { name, mobile, email, password, city ->
-                        viewModel.processIntent(SignUp(name, mobile, email, password, city))
-                    },
-                    onNavigateToLogin = { viewModel.processIntent(NavigateTo(Screen.Login)) },
-                    onFetchCities = { viewModel.processIntent(FetchCities) },
-                    cities = uiState.cities,
-                    isLoading = uiState.isLoading,
-                    error = uiState.error
+                    onSignUpSuccess = { viewModel.processIntent(NavigateTo(Screen.Login)) },
+                    onNavigateToLogin = { viewModel.processIntent(NavigateTo(Screen.Login)) }
                 )
 
                 // User Screens
                 is Screen.Home -> HomeScreen(
                     onNavigateToReport = { viewModel.processIntent(NavigateTo(Screen.Report)) },
-                    onNavigateToProfile = { viewModel.processIntent(NavigateTo(Screen.Profile)) }
+                    onNavigateToProfile = {
+                        viewModel.processIntent(GetMe)
+                        viewModel.processIntent(NavigateTo(Screen.Profile))
+                    },
+                    user = uiState.currentUser
                 )
                 is Screen.Report -> ReportScreen()
                 is Screen.Map -> MapScreen()
@@ -107,7 +101,7 @@ fun MainApp(
                 is Screen.Profile -> ProfileScreen(
                     user = uiState.currentUser,
                     onBack = { viewModel.processIntent(NavigateTo(Screen.Home)) },
-                    onLogout = {viewModel.processIntent(Logout)}
+                    onLogout = { viewModel.processIntent(Logout) }
                 )
                 
                 // Driver Screens
@@ -119,9 +113,10 @@ fun MainApp(
                     onNavigateToRoute = { viewModel.processIntent(NavigateTo(Screen.DriverRoute)) }
                 )
                 is Screen.DriverRoute -> DriverRouteScreen()
-                is Screen.DriverProfile -> DriverProfileScreen(user = uiState.currentUser,
-                    onBack = { viewModel.processIntent(NavigateTo(Screen.Home)) },
-                    onLogout = {viewModel.processIntent(Logout)}
+                is Screen.DriverProfile -> DriverProfileScreen(
+                    user = uiState.currentUser,
+                    onBack = { viewModel.processIntent(NavigateTo(Screen.DriverDashboard)) },
+                    onLogout = { viewModel.processIntent(Logout) }
                 )
             }
         }

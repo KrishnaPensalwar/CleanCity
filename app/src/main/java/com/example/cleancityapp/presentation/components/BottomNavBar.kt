@@ -85,10 +85,10 @@ fun BottomNavBar(
                 onClick = { onNavigate(Screen.DriverRoute) }
             )
             NavItem(
-                icon = "👤",
-                label = "Profile",
-                isSelected = currentScreen == Screen.DriverProfile,
-                onClick = { onNavigate(Screen.DriverProfile) }
+                icon = "📜",
+                label = "History",
+                isSelected = currentScreen == Screen.History,
+                onClick = { onNavigate(Screen.History) }
             )
         }
     }

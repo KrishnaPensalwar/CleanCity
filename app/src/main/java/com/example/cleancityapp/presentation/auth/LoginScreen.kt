@@ -13,16 +13,23 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cleancityapp.presentation.components.InputField
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoginScreen(
-    onLogin: (String, String) -> Unit,
+    onLoginSuccess: () -> Unit,
     onNavigateToSignUp: () -> Unit,
-    isLoading: Boolean = false,
-    error: String? = null
+    viewModel: AuthViewModel = koinViewModel()
 ) {
+    val state by viewModel.state.collectAsState()
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
+    LaunchedEffect(state.isLoginSuccess) {
+        if (state.isLoginSuccess) {
+            onLoginSuccess()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -46,15 +53,15 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(48.dp))
 
-        if (error != null) {
-            Text(text = error, color = Color.Red, fontSize = 12.sp, modifier = Modifier.padding(bottom = 8.dp))
+        if (state.error != null) {
+            Text(text = state.error!!, color = Color.Red, fontSize = 12.sp, modifier = Modifier.padding(bottom = 8.dp))
         }
 
         InputField(
             value = email,
             onValueChange = { email = it },
             label = "Email/Driver ID",
-            enabled = !isLoading
+            enabled = !state.isLoading
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -64,21 +71,21 @@ fun LoginScreen(
             onValueChange = { password = it },
             label = "Password",
             visualTransformation = PasswordVisualTransformation(),
-            enabled = !isLoading
+            enabled = !state.isLoading
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { onLogin(email, password) },
+            onClick = { viewModel.login(email, password) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1565C0)),
-            enabled = !isLoading && email.isNotBlank() && password.isNotBlank()
+            enabled = !state.isLoading && email.isNotBlank() && password.isNotBlank()
         ) {
-            if (isLoading) {
+            if (state.isLoading) {
                 CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
             } else {
                 Text("Login", fontSize = 16.sp, fontWeight = FontWeight.Bold)
@@ -89,7 +96,7 @@ fun LoginScreen(
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("Don't have an account? ", color = Color.Gray, fontSize = 14.sp)
-            TextButton(onClick = onNavigateToSignUp, enabled = !isLoading) {
+            TextButton(onClick = onNavigateToSignUp, enabled = !state.isLoading) {
                 Text("Sign Up", color = Color(0xFF1565C0), fontWeight = FontWeight.Bold)
             }
         }

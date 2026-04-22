@@ -1,43 +1,73 @@
 package com.example.cleancityapp.presentation.history
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cleancityapp.presentation.main.MainContract
-import com.example.cleancityapp.presentation.main.MainViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
-
-import kotlinx.coroutines.flow.SharingStarted
+import com.example.cleancityapp.data.remote.AuthApi
+import com.example.cleancityapp.data.remote.ReportResponse
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import retrofit2.Response
+
+data class HistoryState(
+    val reports: List<ReportResponse> = emptyList(),
+    val isLoading: Boolean = false,
+    val error: String? = null
+)
 
 class HistoryViewModel(
-    private val mainViewModel: MainViewModel
+    private val authApi: AuthApi,
+    private val context: Context
 ) : ViewModel() {
+    private val _state = MutableStateFlow(HistoryState())
+    val state: StateFlow<HistoryState> = _state.asStateFlow()
 
-    init {
-        mainViewModel.processIntent(MainContract.Intent.FetchUserReports)
-    }
+    private val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
 
-    val historyList: StateFlow<List<UploadHistory>> = mainViewModel.uiState
-        .map { state ->
-            state.userReports.map {
-                UploadHistory(
-                    id = it.id,
-                    title = "Upload #${it.id.take(4)}", // Mock title as it might be missing
-                    date = it.createdAt,
-                    status = getStatus(it.status),
-                    description = it.description
-                )
+    fun fetchReports(isDriver: Boolean) {
+        val token = sharedPreferences.getString("access_token", null) ?: return
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, error = null) }
+            val result = retryApiCall(3) {
+                if (isDriver) {
+                    authApi.getAssignedReports("Bearer $token")
+                } else {
+                    authApi.getMeReports("Bearer $token")
+                }
+            }
+            result?.let { response ->
+                if (response.isSuccessful && response.body() != null) {
+                    _state.update { it.copy(reports = response.body()!!, isLoading = false) }
+                } else {
+                    _state.update { it.copy(isLoading = false, error = "Failed to fetch history") }
+                }
+            } ?: run {
+                _state.update { it.copy(isLoading = false, error = "Connection failed") }
             }
         }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-}
+    }
 
-fun getStatus(status: String): HistoryStatus {
-    if (status.equals("pending", ignoreCase = true)) return HistoryStatus.PENDING
-    else if (status.equals("approved", ignoreCase = true)) return HistoryStatus.APPROVED
-    return HistoryStatus.REJECTED
+    private suspend fun <T> retryApiCall(
+        times: Int,
+        initialDelay: Long = 1000,
+        block: suspend () -> Response<T>
+    ): Response<T>? {
+        var currentDelay = initialDelay
+        repeat(times) { attempt ->
+            try {
+                val response = block()
+                if (response.isSuccessful) return response
+                if (response.code() in 400..499) return response
+            } catch (e: Exception) {
+                if (attempt == times - 1) return null
+            }
+            delay(currentDelay)
+            currentDelay *= 2
+        }
+        return null
+    }
 }

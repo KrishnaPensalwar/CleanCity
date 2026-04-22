@@ -30,25 +30,27 @@ import com.example.cleancityapp.presentation.components.TopNavBar
 import com.example.cleancityapp.presentation.main.MainContract
 import com.example.cleancityapp.presentation.main.MainViewModel
 import com.example.cleancityapp.presentation.main.Screen
+import com.example.cleancityapp.presentation.user.UserViewModel
 import org.koin.androidx.compose.koinViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
 fun HistoryScreen(
-    viewModel: MainViewModel = koinViewModel()
+    userViewModel: UserViewModel = koinViewModel(),
+    mainViewModel: MainViewModel = koinViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by userViewModel.state.collectAsState()
     var selectedFilter by remember { mutableStateOf("All") }
     val filters = listOf("All", "PENDING", "APPROVED", "REJECTED")
 
-    val filteredReports = remember(uiState.userReports, selectedFilter) {
-        if (selectedFilter == "All") uiState.userReports
-        else uiState.userReports.filter { it.status.uppercase() == selectedFilter }
+    val filteredReports = remember(uiState.reports, selectedFilter) {
+        if (selectedFilter == "All") uiState.reports
+        else uiState.reports.filter { it.status.uppercase() == selectedFilter }
     }
 
     LaunchedEffect(Unit) {
-        viewModel.processIntent(MainContract.Intent.FetchUserReports)
+        userViewModel.fetchUserReports()
     }
 
     Scaffold(
@@ -59,7 +61,7 @@ fun HistoryScreen(
                     subtitle = "History of your contributions"
                 )
                 IconButton(
-                    onClick = { viewModel.processIntent(MainContract.Intent.NavigateTo(Screen.Profile)) },
+                    onClick = { mainViewModel.processIntent(MainContract.Intent.NavigateTo(Screen.Profile)) },
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .padding(top = 10.dp, end = 8.dp)
@@ -95,7 +97,7 @@ fun HistoryScreen(
                 }
             }
 
-            if (uiState.isLoading && uiState.userReports.isEmpty()) {
+            if (uiState.isLoading && uiState.reports.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
@@ -112,7 +114,7 @@ fun HistoryScreen(
                     items(filteredReports) { report ->
                         ReportItem(
                             report = report,
-                            onClick = { viewModel.processIntent(MainContract.Intent.ViewReportDetails(report)) }
+                            onClick = { mainViewModel.processIntent(MainContract.Intent.ViewReportDetails(report)) }
                         )
                     }
                 }

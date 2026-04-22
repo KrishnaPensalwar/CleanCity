@@ -13,6 +13,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,22 +22,38 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.cleancityapp.data.remote.UserDto
 import com.example.cleancityapp.presentation.components.TopNavBar
 import com.example.cleancityapp.ui.theme.*
+import java.util.*
 
 @Composable
 fun HomeScreen(
+    user: UserDto?,
     onNavigateToReport: () -> Unit,
     onNavigateToProfile: () -> Unit = {}
 ) {
+    val greeting = remember {
+        val calendar = Calendar.getInstance()
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        when (hour) {
+            in 5..11 -> "Good morning"
+            in 12..16 -> "Good afternoon"
+            in 17..20 -> "Good evening"
+            else -> "Good night"
+        }
+    }
+    
+    val displayName = user?.name ?: "User"
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
         TopNavBar(
-            title = "Good morning, Priya!",
-            subtitle = "Hyderabad · 42 pts this week",
+            title = "$greeting, $displayName!",
+            subtitle = "Hyderabad · ${user?.rewardPoints ?: 0} pts total",
             onProfileClick = onNavigateToProfile
         )
         
@@ -52,7 +69,7 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 StatCard(num = "14", lbl = "Reports filed", modifier = Modifier.weight(1f))
-                StatCard(num = "340", lbl = "Total points", modifier = Modifier.weight(1f))
+                StatCard(num = (user?.rewardPoints ?: 0).toString(), lbl = "Total points", modifier = Modifier.weight(1f))
             }
             Spacer(modifier = Modifier.height(8.dp))
             Row(

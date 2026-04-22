@@ -36,4 +36,22 @@ interface AuthApi {
 
     @GET("api/reports/me")
     suspend fun getMeReports(@Header("Authorization") token: String): Response<List<ReportResponse>>
+
+    @GET("api/driver/reports/assigned")
+    suspend fun getAssignedReports(@Header("Authorization") token: String): Response<List<ReportResponse>>
+
+    @POST("api/driver/reports/{id}/assign")
+    suspend fun assignReport(
+        @Header("Authorization") token: String,
+        @Path("id") reportId: String,
+        @Body request: Map<String, String>
+    ): Response<ReportResponse>
+
+    @Multipart
+    @POST("api/driver/reports/{id}/completion-photo")
+    suspend fun uploadCompletionPhoto(
+        @Header("Authorization") token: String,
+        @Path("id") reportId: String,
+        @Part image: MultipartBody.Part
+    ): Response<ReportResponse>
 }

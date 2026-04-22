@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,17 +38,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cleancityapp.data.remote.CityDto
 import com.example.cleancityapp.presentation.components.InputField
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(
-    onSignUp: (String, String, String, String, String) -> Unit,
+    onSignUpSuccess: () -> Unit,
     onNavigateToLogin: () -> Unit,
-    onFetchCities: () -> Unit,
-    cities: List<CityDto>,
-    isLoading: Boolean = false,
-    error: String? = null
+    viewModel: AuthViewModel = koinViewModel()
 ) {
+    val state by viewModel.state.collectAsState()
     var fullName by remember { mutableStateOf("") }
     var mobile by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -60,14 +60,20 @@ fun SignUpScreen(
 
     // ✅ API trigger
     LaunchedEffect(expanded) {
-        if (expanded && cities.isEmpty()) {
-            onFetchCities()
+        if (expanded && state.cities.isEmpty()) {
+            viewModel.fetchCities()
         }
     }
 
-    val filteredCities = remember(citySearch, cities) {
-        if (citySearch.isEmpty()) cities
-        else cities.filter { it.name.contains(citySearch, true) }
+    LaunchedEffect(state.isSignUpSuccess) {
+        if (state.isSignUpSuccess) {
+            onSignUpSuccess()
+        }
+    }
+
+    val filteredCities = remember(citySearch, state.cities) {
+        if (citySearch.isEmpty()) state.cities
+        else state.cities.filter { it.name.contains(citySearch, true) }
     }
 
     Column(
@@ -84,7 +90,7 @@ fun SignUpScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        error?.let {
+        state.error?.let {
             Text(it, color = Color.Red, fontSize = 12.sp)
             Spacer(modifier = Modifier.height(8.dp))
         }
@@ -94,7 +100,7 @@ fun SignUpScreen(
             onValueChange = { fullName = it },
             label = "Full Name",
             modifier = Modifier.fillMaxWidth(),
-            enabled = !isLoading
+            enabled = !state.isLoading
         )
 
         Spacer(Modifier.height(16.dp))
@@ -104,7 +110,7 @@ fun SignUpScreen(
             onValueChange = { mobile = it },
             label = "Mobile Number",
             modifier = Modifier.fillMaxWidth(),
-            enabled = !isLoading
+            enabled = !state.isLoading
         )
 
         Spacer(Modifier.height(16.dp))
@@ -125,7 +131,7 @@ fun SignUpScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .menuAnchor(MenuAnchorType.PrimaryEditable, enabled = true),
-                enabled = !isLoading,
+                enabled = !state.isLoading,
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded)
                 }
@@ -156,7 +162,7 @@ fun SignUpScreen(
             onValueChange = { email = it },
             label = "Email",
             modifier = Modifier.fillMaxWidth(),
-            enabled = !isLoading
+            enabled = !state.isLoading
         )
 
         Spacer(Modifier.height(16.dp))
@@ -167,7 +173,7 @@ fun SignUpScreen(
             label = "Password",
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation(),
-            enabled = !isLoading
+            enabled = !state.isLoading
         )
 
         Spacer(Modifier.height(16.dp))
@@ -178,7 +184,7 @@ fun SignUpScreen(
             label = "Confirm Password",
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation(),
-            enabled = !isLoading
+            enabled = !state.isLoading
         )
 
         Spacer(Modifier.height(32.dp))
@@ -191,15 +197,15 @@ fun SignUpScreen(
                 password == confirmPassword
 
         Button(
-            onClick = { onSignUp(fullName, mobile, email, password, city) },
+            onClick = { viewModel.signUp(fullName, mobile, email, password, city) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
-            enabled = !isLoading && isValid,
+            enabled = !state.isLoading && isValid,
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1565C0))
         ) {
-            if (isLoading) {
+            if (state.isLoading) {
                 CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
             } else {
                 Text("Sign Up", fontWeight = FontWeight.Bold)

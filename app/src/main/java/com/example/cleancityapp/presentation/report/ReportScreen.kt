@@ -25,13 +25,16 @@ import com.example.cleancityapp.presentation.components.TopNavBar
 import com.example.cleancityapp.presentation.components.CameraCapture
 import com.example.cleancityapp.presentation.main.MainContract
 import com.example.cleancityapp.presentation.main.MainViewModel
+import com.example.cleancityapp.presentation.user.UserViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ReportScreen(
-    viewModel: MainViewModel = koinViewModel()
+    userViewModel: UserViewModel = koinViewModel(),
+    mainViewModel: MainViewModel = koinViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by userViewModel.state.collectAsState()
+    val mainState by mainViewModel.uiState.collectAsState()
     val context = LocalContext.current
 
     var capturedImageUri by remember { mutableStateOf<Uri?>(null) }
@@ -46,14 +49,14 @@ fun ReportScreen(
             Toast.makeText(context, "Report submitted successfully!", Toast.LENGTH_LONG).show()
             capturedImageUri = null
             description = ""
-            viewModel.processIntent(MainContract.Intent.ResetReportStatus)
+            userViewModel.resetReportStatus()
         }
     }
 
     LaunchedEffect(uiState.error) {
         if (uiState.error != null) {
             Toast.makeText(context, uiState.error, Toast.LENGTH_LONG).show()
-            viewModel.processIntent(MainContract.Intent.ClearError)
+            userViewModel.clearError()
         }
     }
 
@@ -170,13 +173,12 @@ fun ReportScreen(
             Button(
                 onClick = {
                     capturedImageUri?.let { uri ->
-                        viewModel.processIntent(
-                            MainContract.Intent.SubmitReport(
-                                imageUri = uri,
-                                description = "$category: $description",
-                                latitude = 37.7749, // Hardcoded for sample
-                                longitude = -122.4194 // Hardcoded for sample
-                            )
+                        userViewModel.submitReport(
+                            imageUri = uri,
+                            description = "$category: $description",
+                            lat = 37.7749, // Hardcoded for sample
+                            lon = -122.4194, // Hardcoded for sample
+                            userId = mainState.currentUser?.id ?: ""
                         )
                     }
                 },
