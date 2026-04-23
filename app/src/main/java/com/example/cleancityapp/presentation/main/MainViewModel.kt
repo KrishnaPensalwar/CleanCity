@@ -43,6 +43,9 @@ class MainViewModel(
             is MainContract.Intent.GetMe -> {
                 getMe()
             }
+            is MainContract.Intent.FetchUserReports -> {
+                fetchUserReports()
+            }
             is MainContract.Intent.FetchRank -> {
                 fetchRank()
             }
@@ -52,15 +55,37 @@ class MainViewModel(
             is MainContract.Intent.LoginSuccess -> {
                 getMe()
                 fetchRank()
+                fetchUserReports()
                 navigateToDashboard()
             }
+            is MainContract.Intent.ClearError -> {
+                _uiState.update { it.copy(error = null) }
+            }
             else -> {}
+        }
+    }
+
+    private fun fetchUserReports() {
+        val token = sharedPreferences.getString("access_token", null) ?: return
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, error = null) }
+            try {
+                val response = authApi.getMeReports("Bearer $token")
+                if (response.isSuccessful) {
+                    _uiState.update { it.copy(userReports = response.body() ?: emptyList(), isLoading = false) }
+                } else {
+                    _uiState.update { it.copy(isLoading = false, error = "Failed to fetch reports") }
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(isLoading = false, error = e.localizedMessage) }
+            }
         }
     }
 
     private fun getMe() {
         val token = sharedPreferences.getString("access_token", null) ?: return
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, error = null) }
             try {
                 val response = authApi.getMe("Bearer $token")
                 if (response.isSuccessful && response.body() != null) {
@@ -69,23 +94,33 @@ class MainViewModel(
                     _uiState.update { 
                         it.copy(
                             currentUser = user,
-                            userRole = role
+                            userRole = role,
+                            isLoading = false
                         ) 
                     }
+                } else {
+                    _uiState.update { it.copy(isLoading = false, error = "Failed to fetch user data") }
                 }
-            } catch (e: Exception) {}
+            } catch (e: Exception) {
+                _uiState.update { it.copy(isLoading = false, error = e.localizedMessage) }
+            }
         }
     }
 
     private fun fetchRank() {
         val token = sharedPreferences.getString("access_token", null) ?: return
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, error = null) }
             try {
                 val response = authApi.getUserRank("Bearer $token")
                 if (response.isSuccessful && response.body() != null) {
-                    _uiState.update { it.copy(userRank = response.body()) }
+                    _uiState.update { it.copy(userRank = response.body(), isLoading = false) }
+                } else {
+                    _uiState.update { it.copy(isLoading = false, error = "Failed to fetch rank") }
                 }
-            } catch (e: Exception) {}
+            } catch (e: Exception) {
+                _uiState.update { it.copy(isLoading = false, error = e.localizedMessage) }
+            }
         }
     }
 

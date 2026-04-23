@@ -25,10 +25,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.cleancityapp.data.remote.UserDto
-import com.example.cleancityapp.presentation.components.TopNavBar
+import com.example.cleancityapp.presentation.components.*
+import com.example.cleancityapp.presentation.main.MainContract
 import com.example.cleancityapp.presentation.main.MainViewModel
 import com.example.cleancityapp.ui.theme.*
 import org.koin.androidx.compose.koinViewModel
+import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
@@ -51,7 +53,12 @@ fun HomeScreen(
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     
-    val displayName = user?.name ?: "User"
+    val displayName = user?.name ?: state.currentUser?.name ?: "User"
+
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        viewModel.processIntent(MainContract.Intent.FetchUserReports)
+        viewModel.processIntent(MainContract.Intent.FetchRank)
+    }
 
     Column(
         modifier = Modifier
@@ -71,20 +78,46 @@ fun HomeScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             // Stats Row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                StatCard(num = (user?.reportsFiled ?: 0).toString(), lbl = "Reports filed", modifier = Modifier.weight(1f))
-                StatCard(num = (user?.rewardPoints ?: 0).toString(), lbl = "Total points", modifier = Modifier.weight(1f))
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                StatCard(num = (user?.reportsResolved ?: 0).toString(), lbl = "Resolved", modifier = Modifier.weight(1f))
-                StatCard(num = state.userRank?.currentUser?.rank.toString(), lbl = "City rank", modifier = Modifier.weight(1f))
+            if (state.isLoading && state.currentUser == null) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    StatCardSkeleton(modifier = Modifier.weight(1f))
+                    StatCardSkeleton(modifier = Modifier.weight(1f))
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    StatCardSkeleton(modifier = Modifier.weight(1f))
+                    StatCardSkeleton(modifier = Modifier.weight(1f))
+                }
+            } else if (state.error != null) {
+                ErrorState(
+                    message = state.error ?: "Error loading stats",
+                    onRetry = { 
+                        viewModel.processIntent(MainContract.Intent.GetMe)
+                        viewModel.processIntent(MainContract.Intent.FetchRank)
+                    }
+                )
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    StatCard(num = (state.currentUser?.reportsFiled ?: 0).toString(), lbl = "Reports filed", modifier = Modifier.weight(1f))
+                    StatCard(num = (state.currentUser?.rewardPoints ?: 0).toString(), lbl = "Total points", modifier = Modifier.weight(1f))
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    StatCard(num = (state.currentUser?.reportsResolved ?: 0).toString(), lbl = "Resolved", modifier = Modifier.weight(1f))
+                    StatCard(num = state.userRank?.currentUser?.rank?.toString() ?: "N/A", lbl = "City rank", modifier = Modifier.weight(1f))
+                }
             }
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -143,9 +176,33 @@ fun HomeScreen(
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 
-                ReportItem(icon = "🗑️", bg = Color(0xFFC0DD97), loc = "Jubilee Hills, Rd 36", time = "2 hours ago", status = "Pending")
-                ReportItem(icon = "♻️", bg = GreenLight, loc = "Banjara Hills, Rd 12", time = "Yesterday", status = "Approved")
-                ReportItem(icon = "🚯", bg = Color(0xFFFAC775), loc = "Madhapur Main Rd", time = "3 days ago", status = "Approved", isLast = true)
+                if (state.isLoading && state.userReports.isEmpty()) {
+                    repeat(3) {
+                        ReportItemSkeleton()
+                    }
+                } else if (state.userReports.isEmpty()) {
+                    Text(
+                        text = "No recent activity",
+                        fontSize = 12.sp,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(vertical = 12.dp)
+                    )
+                } else {
+                    state.userReports.take(3).forEachIndexed { index, report ->
+                        val date = remember(report.timestamp) {
+                            val sdf = SimpleDateFormat("dd MMM, hh:mm a", Locale.getDefault())
+                            sdf.format(Date(report.timestamp))
+                        }
+                        ReportItem(
+                            icon = if (report.description.contains("garbage", true)) "🗑️" else "📍",
+                            bg = if (report.status.uppercase() == "APPROVED") GreenLight else Color(0xFFFAEEDA),
+                            loc = report.description,
+                            time = date,
+                            status = report.status,
+                            isLast = index == state.userReports.take(3).size - 1
+                        )
+                    }
+                }
             }
             
             Spacer(modifier = Modifier.height(10.dp))
@@ -262,8 +319,8 @@ fun ReportItem(icon: String, bg: Color, loc: String, time: String, status: Strin
             )
         }
         
-        val badgeBg = if (status == "Pending") BadgePendingBg else if(status == "Approved" || status == "Resolved") BadgeApprovedBg else BadgeDeclinedBg
-        val badgeText = if (status == "Pending") BadgePendingText else if(status == "Approved" || status == "Resolved") BadgeApprovedText else BadgeDeclinedText
+        val badgeBg = if (status == "Pending") BadgePendingBg else if(status.equals("Approved", ignoreCase = true) || status.equals("Resolved",ignoreCase = true)) BadgeApprovedBg else BadgeDeclinedBg
+        val badgeText = if (status == "Pending") BadgePendingText else if(status.equals("Approved", ignoreCase = true) || status.equals("Resolved",ignoreCase = true)) BadgeApprovedText else BadgeDeclinedText
         
         Box(
             modifier = Modifier

@@ -16,9 +16,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.koin.androidx.compose.koinViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import org.koin.androidx.compose.koinViewModel
+import com.example.cleancityapp.presentation.components.*
 import com.example.cleancityapp.presentation.driver.DriverViewModel
 import com.example.cleancityapp.presentation.main.MainViewModel
 
@@ -98,20 +99,39 @@ fun DriverDashboardScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             // Stats Grid
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                StatCard(modifier = Modifier.weight(1f), state.assignedReports.size.toString(), "Tasks today")
-                StatCard(modifier = Modifier.weight(1f), completedReports.size.toString(), "Completed")
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                StatCard(modifier = Modifier.weight(1f), pendingReports.size.toString(), "Pending")
-                StatCard(modifier = Modifier.weight(1f), "38", "km driven")
+            if (state.isLoading && state.assignedReports.isEmpty()) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    SkeletonBox(modifier = Modifier.weight(1f).height(60.dp), shape = RoundedCornerShape(9.dp))
+                    SkeletonBox(modifier = Modifier.weight(1f).height(60.dp), shape = RoundedCornerShape(9.dp))
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    SkeletonBox(modifier = Modifier.weight(1f).height(60.dp), shape = RoundedCornerShape(9.dp))
+                    SkeletonBox(modifier = Modifier.weight(1f).height(60.dp), shape = RoundedCornerShape(9.dp))
+                }
+            } else if (state.error != null) {
+                ErrorState(
+                    message = state.error ?: "Error loading dashboard",
+                    onRetry = { driverViewModel.fetchAssignedReports() }
+                )
+            } else {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    StatCard(modifier = Modifier.weight(1f), state.assignedReports.size.toString(), "Tasks today")
+                    StatCard(modifier = Modifier.weight(1f), completedReports.size.toString(), "Completed")
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    StatCard(modifier = Modifier.weight(1f), pendingReports.size.toString(), "Pending")
+                    StatCard(modifier = Modifier.weight(1f), "38", "km driven")
+                }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
             // Next Task Card
-            if (nextTask != null) {
+            if (state.isLoading && state.assignedReports.isEmpty()) {
+                SkeletonBox(modifier = Modifier.fillMaxWidth().height(140.dp), shape = RoundedCornerShape(11.dp))
+            } else if (nextTask != null) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -144,7 +164,7 @@ fun DriverDashboardScreen(
                         }
                     }
                 }
-            } else {
+            } else if (state.error == null) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(containerColor = Color.White),

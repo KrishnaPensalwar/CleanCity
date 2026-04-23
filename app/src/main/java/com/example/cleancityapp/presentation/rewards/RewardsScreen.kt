@@ -19,16 +19,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.cleancityapp.presentation.components.TopNavBar
+import com.example.cleancityapp.presentation.components.*
+import com.example.cleancityapp.presentation.main.MainContract
 import com.example.cleancityapp.presentation.main.MainViewModel
 import com.example.cleancityapp.ui.theme.*
 import org.koin.androidx.compose.koinViewModel
-import org.koin.androidx.compose.viewModel
 
 @Composable
 fun RewardsScreen(mainViewModel: MainViewModel = koinViewModel()) {
 
     val state by mainViewModel.uiState.collectAsStateWithLifecycle()
+
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        mainViewModel.processIntent(MainContract.Intent.FetchRank)
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -61,13 +65,21 @@ fun RewardsScreen(mainViewModel: MainViewModel = koinViewModel()) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     letterSpacing = 0.6.sp
                 )
-                Text(
-                    text = state.userRank?.currentUser?.rewardPoints.toString(),
-                    fontSize = 44.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
+                
+                if (state.isLoading && state.userRank == null) {
+                    SkeletonBox(modifier = Modifier.padding(top = 4.dp).size(80.dp, 44.dp))
+                } else if (state.error != null) {
+                    Text(text = "Error loading", color = MaterialTheme.colorScheme.error, fontSize = 14.sp)
+                } else {
+                    Text(
+                        text = state.userRank?.currentUser?.rewardPoints?.toString() ?: "0",
+                        fontSize = 44.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+                
                 Text(text = "points", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 
                 Row(
@@ -138,7 +150,16 @@ fun RewardsScreen(mainViewModel: MainViewModel = koinViewModel()) {
                 )
                 val ranks = state.userRank
 
-                if (ranks == null) {
+                if (state.isLoading && state.userRank == null) {
+                    repeat(5) {
+                        LeaderboardRowSkeleton()
+                    }
+                } else if (state.error != null) {
+                    ErrorState(
+                        message = state.error ?: "Error loading leaderboard",
+                        onRetry = { mainViewModel.processIntent(MainContract.Intent.FetchRank) }
+                    )
+                } else if (ranks == null) {
                     Text(
                         text = "No leaderboard till now...",
                         fontSize = 12.sp,
@@ -189,7 +210,7 @@ fun RewardsScreen(mainViewModel: MainViewModel = koinViewModel()) {
                                 Box(
                                     modifier = Modifier
                                         .size(24.dp)
-                                        .clip(CircleShape).fillMaxWidth()
+                                        .clip(CircleShape)
                                         .background(Color(0xFF9FE1CB)),
                                     contentAlignment = Alignment.Center
                                 ) {

@@ -27,6 +27,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.cleancityapp.data.remote.ReportResponse
 import com.example.cleancityapp.presentation.components.TopNavBar
+import com.example.cleancityapp.presentation.components.ErrorState
+import com.example.cleancityapp.presentation.components.HistoryItemSkeleton
 import com.example.cleancityapp.presentation.main.MainContract
 import com.example.cleancityapp.presentation.main.MainViewModel
 import com.example.cleancityapp.presentation.main.Screen
@@ -98,9 +100,21 @@ fun HistoryScreen(
             }
 
             if (uiState.isLoading && uiState.reports.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(5) {
+                        HistoryItemSkeleton()
+                    }
                 }
+            } else if (uiState.error != null) {
+                ErrorState(
+                    message = uiState.error ?: "An unknown error occurred",
+                    onRetry = { userViewModel.fetchUserReports() },
+                    modifier = Modifier.fillMaxSize()
+                )
             } else if (filteredReports.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text("No reports found", color = Color.Gray)
