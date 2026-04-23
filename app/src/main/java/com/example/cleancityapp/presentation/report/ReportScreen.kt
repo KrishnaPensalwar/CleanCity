@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cleancityapp.presentation.components.TopNavBar
 import com.example.cleancityapp.presentation.components.CameraCapture
-import com.example.cleancityapp.presentation.main.MainContract
 import com.example.cleancityapp.presentation.main.MainViewModel
 import com.example.cleancityapp.presentation.user.UserViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -42,8 +41,6 @@ fun ReportScreen(
     var description by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("Jubilee Hills, Hyderabad") }
 
-    val categories = listOf("Garbage / Litter", "Open Drain", "Dead Animal", "Illegal Dumping", "Overflowing Bin")
-
     LaunchedEffect(uiState.isReportSuccess) {
         if (uiState.isReportSuccess) {
             Toast.makeText(context, "Report submitted successfully!", Toast.LENGTH_LONG).show()
@@ -59,6 +56,8 @@ fun ReportScreen(
             userViewModel.clearError()
         }
     }
+
+    val categories = listOf("Garbage / Litter", "Open Drain", "Dead Animal", "Illegal Dumping", "Overflowing Bin")
 
     Column(
         modifier = Modifier
@@ -76,8 +75,9 @@ fun ReportScreen(
                 .padding(12.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Camera Capture Section
+            // ✅ Camera Capture Section with live display
             CameraCapture(
+                capturedImageUri = capturedImageUri,
                 onImageCaptured = { uri -> capturedImageUri = uri },
                 buttonText = "📸 Capture Waste Photo"
             )

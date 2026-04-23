@@ -54,4 +54,7 @@ interface AuthApi {
         @Path("id") reportId: String,
         @Part image: MultipartBody.Part
     ): Response<ReportResponse>
+
+    @GET("api/users/rank")
+    suspend fun getUserRank(@Header("Authorization") token: String): Response<RankResponse>
 }

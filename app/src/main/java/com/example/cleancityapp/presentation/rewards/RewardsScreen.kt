@@ -10,6 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -17,11 +18,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.cleancityapp.presentation.components.TopNavBar
+import com.example.cleancityapp.presentation.main.MainViewModel
 import com.example.cleancityapp.ui.theme.*
+import org.koin.androidx.compose.koinViewModel
+import org.koin.androidx.compose.viewModel
 
 @Composable
-fun RewardsScreen() {
+fun RewardsScreen(mainViewModel: MainViewModel = koinViewModel()) {
+
+    val state by mainViewModel.uiState.collectAsStateWithLifecycle()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -55,7 +62,7 @@ fun RewardsScreen() {
                     letterSpacing = 0.6.sp
                 )
                 Text(
-                    text = "340",
+                    text = state.userRank?.currentUser?.rewardPoints.toString(),
                     fontSize = 44.sp,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.primary,
@@ -129,34 +136,87 @@ fun RewardsScreen() {
                     modifier = Modifier.padding(bottom = 8.dp),
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                
-                LeaderboardRow(rank = "1", name = "Ravi K.", pts = "580 pts", badgeBg = Color(0xFFFAEEDA), badgeColor = Color(0xFF854F0B))
-                LeaderboardRow(rank = "2", name = "Sneha M.", pts = "490 pts", badgeBg = Color(0xFFD3D1C7), badgeColor = Color(0xFF444441))
-                
-                // Current user highlighting
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Color(0xFFF0FAF4))
-                        .padding(horizontal = 4.dp, vertical = 6.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Box(
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clip(CircleShape)
-                                .background(Color(0xFF9FE1CB)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(text = "12", fontSize = 11.sp, fontWeight = FontWeight.Medium, color = Color(0xFF085041))
-                        }
-                        Text(text = "You", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.primary)
+                val ranks = state.userRank
+
+                if (ranks == null) {
+                    Text(
+                        text = "No leaderboard till now...",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                } else {
+
+                    val currentUser = ranks.currentUser
+
+                    val isCurrentUserInTop = ranks.topUsers.any {
+                        it.rank == currentUser.rank &&
+                                it.rewardPoints == currentUser.rewardPoints &&
+                                it.name == currentUser.name
                     }
-                    Text(text = "340 pts", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.primary)
+
+                    // Top users list
+                    ranks.topUsers.forEach {
+                        val isCurrent = it.rank == currentUser.rank &&
+                                it.rewardPoints == currentUser.rewardPoints &&
+                                it.name == currentUser.name
+
+                        LeaderboardRow(
+                            rank = it.rank.toString(),
+                            name = if (isCurrent) "You" else it.name,
+                            pts = "${it.rewardPoints} pts",
+                            badgeBg = if (isCurrent) Color(0xFF9FE1CB) else Color(0xFFF0FAF4),
+                            badgeColor = if (isCurrent) Color(0xFF085041) else MaterialTheme.colorScheme.primary
+                        )
+                    }
+
+                    // 👇 Show separately ONLY if not in top list
+                    if (!isCurrentUserInTop) {
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Color(0xFFF0FAF4))
+                                .padding(horizontal = 4.dp, vertical = 6.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .clip(CircleShape).fillMaxWidth()
+                                        .background(Color(0xFF9FE1CB)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = currentUser.rank.toString(),
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = Color(0xFF085041)
+                                    )
+                                }
+
+                                Text(
+                                    text = "You",
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+
+                            Text(
+                                text = "${currentUser.rewardPoints} pts",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
                 }
             }
         }

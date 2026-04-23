@@ -19,6 +19,8 @@ data class UserDto(
     val email: String,
     val role: String,
     val rewardPoints: Int,
+    val reportsFiled: Int,
+    val reportsResolved: Int,
     val isVerified: Boolean,
     val createdAt: String,
     val updatedAt: String
@@ -39,4 +41,15 @@ data class ReportResponse(
     val status: String,
     val timestamp: Long,
     val createdAt: String
+)
+
+data class RankResponse(
+    val currentUser: UserRankDto,
+    val topUsers: List<UserRankDto>
+)
+
+data class UserRankDto(
+    val name: String,
+    val rank: Int,
+    val rewardPoints: Int
 )

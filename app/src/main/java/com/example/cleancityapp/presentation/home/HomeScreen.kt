@@ -13,6 +13,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,16 +23,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.cleancityapp.data.remote.UserDto
 import com.example.cleancityapp.presentation.components.TopNavBar
+import com.example.cleancityapp.presentation.main.MainViewModel
 import com.example.cleancityapp.ui.theme.*
+import org.koin.androidx.compose.koinViewModel
 import java.util.*
 
 @Composable
 fun HomeScreen(
     user: UserDto?,
     onNavigateToReport: () -> Unit,
-    onNavigateToProfile: () -> Unit = {}
+    onNavigateToProfile: () -> Unit = {},
+    viewModel: MainViewModel = koinViewModel()
 ) {
     val greeting = remember {
         val calendar = Calendar.getInstance()
@@ -43,6 +48,8 @@ fun HomeScreen(
             else -> "Good night"
         }
     }
+
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
     
     val displayName = user?.name ?: "User"
 
@@ -68,7 +75,7 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                StatCard(num = "14", lbl = "Reports filed", modifier = Modifier.weight(1f))
+                StatCard(num = (user?.reportsFiled ?: 0).toString(), lbl = "Reports filed", modifier = Modifier.weight(1f))
                 StatCard(num = (user?.rewardPoints ?: 0).toString(), lbl = "Total points", modifier = Modifier.weight(1f))
             }
             Spacer(modifier = Modifier.height(8.dp))
@@ -76,8 +83,8 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                StatCard(num = "9", lbl = "Resolved", modifier = Modifier.weight(1f))
-                StatCard(num = "#12", lbl = "City rank", modifier = Modifier.weight(1f))
+                StatCard(num = (user?.reportsResolved ?: 0).toString(), lbl = "Resolved", modifier = Modifier.weight(1f))
+                StatCard(num = state.userRank?.currentUser?.rank.toString(), lbl = "City rank", modifier = Modifier.weight(1f))
             }
 
             Spacer(modifier = Modifier.height(10.dp))

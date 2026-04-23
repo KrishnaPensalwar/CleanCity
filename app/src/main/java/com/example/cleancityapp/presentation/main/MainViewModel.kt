@@ -1,26 +1,14 @@
 package com.example.cleancityapp.presentation.main
 
 import android.content.Context
-import android.net.Uri
-import android.util.Log
-import android.webkit.MimeTypeMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cleancityapp.data.remote.AuthApi
-import com.example.cleancityapp.data.remote.ReportResponse
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import retrofit2.Response
-import java.io.File
-import java.io.FileOutputStream
 
 class MainViewModel(
     private val authApi: AuthApi,
@@ -37,11 +25,9 @@ class MainViewModel(
 
     private fun checkLoggedIn() {
         val savedToken = sharedPreferences.getString("access_token", null)
-        val roleString = sharedPreferences.getString("user_role", null)
         if (!savedToken.isNullOrEmpty()) {
-            val role = if (roleString == "ROLE_DRIVER") UserRole.DRIVER else UserRole.USER
-            _uiState.update { it.copy(userRole = role) }
-            getMe() // Fetch user profile
+            getMe()
+            fetchRank()
             navigateToDashboard()
         }
     }
@@ -57,16 +43,18 @@ class MainViewModel(
             is MainContract.Intent.GetMe -> {
                 getMe()
             }
+            is MainContract.Intent.FetchRank -> {
+                fetchRank()
+            }
             is MainContract.Intent.Logout -> {
                 logout()
             }
             is MainContract.Intent.LoginSuccess -> {
                 getMe()
+                fetchRank()
                 navigateToDashboard()
             }
-            else -> {
-                // Other intents should be handled by specific viewmodels
-            }
+            else -> {}
         }
     }
 
@@ -85,9 +73,19 @@ class MainViewModel(
                         ) 
                     }
                 }
-            } catch (e: Exception) {
-                // Silently fail if getMe fails during background check
-            }
+            } catch (e: Exception) {}
+        }
+    }
+
+    private fun fetchRank() {
+        val token = sharedPreferences.getString("access_token", null) ?: return
+        viewModelScope.launch {
+            try {
+                val response = authApi.getUserRank("Bearer $token")
+                if (response.isSuccessful && response.body() != null) {
+                    _uiState.update { it.copy(userRank = response.body()) }
+                }
+            } catch (e: Exception) {}
         }
     }
 
@@ -99,10 +97,12 @@ class MainViewModel(
     }
 
     private fun navigateToDashboard() {
-        val initialScreen = when (_uiState.value.userRole) {
+        val roleString = sharedPreferences.getString("user_role", null)
+        val role = if (roleString == "ROLE_DRIVER") UserRole.DRIVER else UserRole.USER
+        val initialScreen = when (role) {
             UserRole.USER -> Screen.Home
             UserRole.DRIVER -> Screen.DriverDashboard
         }
-        _uiState.update { it.copy(currentScreen = initialScreen) }
+        _uiState.update { it.copy(userRole = role, currentScreen = initialScreen) }
     }
 }
