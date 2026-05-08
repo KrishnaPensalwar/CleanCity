@@ -1,19 +1,25 @@
 package com.example.cleancityapp.presentation.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,101 +32,79 @@ fun BottomNavBar(
     userRole: UserRole,
     onNavigate: (Screen) -> Unit
 ) {
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceAround,
-        verticalAlignment = Alignment.CenterVertically
+            .padding(bottom = 24.dp, start = 24.dp, end = 24.dp),
+        contentAlignment = Alignment.BottomCenter
     ) {
-        if (userRole == UserRole.USER) {
-            NavItem(
-                icon = "🏠",
-                label = "Home",
-                isSelected = currentScreen == Screen.Home,
-                onClick = { onNavigate(Screen.Home) }
-            )
-            NavItem(
-                icon = "📷",
-                label = "Report",
-                isSelected = currentScreen == Screen.Report,
-                onClick = { onNavigate(Screen.Report) }
-            )
-            NavItem(
-                icon = "🗺️",
-                label = "Map",
-                isSelected = currentScreen == Screen.Map,
-                onClick = { onNavigate(Screen.Map) }
-            )
-            NavItem(
-                icon = "🏆",
-                label = "Rewards",
-                isSelected = currentScreen == Screen.Rewards,
-                onClick = { onNavigate(Screen.Rewards) }
-            )
-            NavItem(
-                icon = "📜",
-                label = "History",
-                isSelected = currentScreen == Screen.History,
-                onClick = { onNavigate(Screen.History) }
-            )
-        } else {
-            NavItem(
-                icon = "🏠",
-                label = "Home",
-                isSelected = currentScreen == Screen.DriverDashboard,
-                onClick = { onNavigate(Screen.DriverDashboard) }
-            )
-            NavItem(
-                icon = "📋",
-                label = "Tasks",
-                isSelected = currentScreen == Screen.DriverTasks,
-                onClick = { onNavigate(Screen.DriverTasks) }
-            )
-            NavItem(
-                icon = "🗺️",
-                label = "Route",
-                isSelected = currentScreen == Screen.DriverRoute,
-                onClick = { onNavigate(Screen.DriverRoute) }
-            )
-            NavItem(
-                icon = "📜",
-                label = "History",
-                isSelected = currentScreen == Screen.History,
-                onClick = { onNavigate(Screen.History) }
-            )
+        Surface(
+            modifier = Modifier
+                .height(72.dp)
+                .fillMaxWidth()
+                .shadow(elevation = 16.dp, shape = RoundedCornerShape(36.dp)),
+            color = Color(0xFF1A1A1A), // Dark background as per image
+            shape = RoundedCornerShape(36.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                val screens = if (userRole == UserRole.USER) {
+                    listOf(
+                        Triple("🏠", "Home", Screen.Home),
+                        Triple("📷", "Report", Screen.Report),
+                        Triple("🗺️", "Map", Screen.Map),
+                        Triple("🏆", "Rewards", Screen.Rewards),
+                        Triple("📜", "History", Screen.History)
+                    )
+                } else {
+                    listOf(
+                        Triple("🏠", "Home", Screen.DriverDashboard),
+                        Triple("📋", "Tasks", Screen.DriverTasks),
+                        Triple("🗺️", "Route", Screen.DriverRoute),
+                        Triple("📜", "History", Screen.History)
+                    )
+                }
+
+                screens.forEach { (icon, label, screen) ->
+                    val isSelected = currentScreen == screen
+                    
+                    Box(
+                        modifier = Modifier
+                            .size(if (isSelected) 56.dp else 48.dp)
+                            .clip(CircleShape)
+                            .background(if (isSelected) Color.White else Color.Transparent)
+                            .clickable { onNavigate(screen) },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = icon,
+                                fontSize = if (isSelected) 24.sp else 20.sp,
+                                modifier = Modifier.graphicsLayer(
+                                    scaleX = if (isSelected) 1.1f else 1f,
+                                    scaleY = if (isSelected) 1.1f else 1f
+                                )
+                            )
+                            if (!isSelected) {
+                                Text(
+                                    text = label,
+                                    fontSize = 9.sp,
+                                    color = Color.White.copy(alpha = 0.6f),
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+                }
+            }
         }
-    }
-}
-
-@Composable
-fun NavItem(
-    icon: String,
-    label: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    val contentColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-    val fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .clip(RoundedCornerShape(8.dp))
-            .clickable(onClick = onClick)
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-    ) {
-        Text(
-            text = icon,
-            fontSize = 18.sp
-        )
-        Text(
-            text = label,
-            fontSize = 10.sp,
-            fontWeight = fontWeight,
-            color = contentColor,
-            modifier = Modifier.padding(top = 3.dp)
-        )
     }
 }

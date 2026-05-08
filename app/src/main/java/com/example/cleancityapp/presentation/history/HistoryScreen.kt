@@ -62,18 +62,6 @@ fun HistoryScreen(
                     title = "My Reports",
                     subtitle = "History of your contributions"
                 )
-                IconButton(
-                    onClick = { mainViewModel.processIntent(MainContract.Intent.NavigateTo(Screen.Profile)) },
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .padding(top = 10.dp, end = 8.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "Profile",
-                        tint = Color.White
-                    )
-                }
             }
         }
     ) { padding ->

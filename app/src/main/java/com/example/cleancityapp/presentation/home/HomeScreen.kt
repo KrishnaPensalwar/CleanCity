@@ -1,5 +1,7 @@
 package com.example.cleancityapp.presentation.home
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -8,17 +10,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -74,206 +74,238 @@ fun HomeScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp)
-                .verticalScroll(rememberScrollState())
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Stats Row
-            if (state.isLoading && state.currentUser == null) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    StatCardSkeleton(modifier = Modifier.weight(1f))
-                    StatCardSkeleton(modifier = Modifier.weight(1f))
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    StatCardSkeleton(modifier = Modifier.weight(1f))
-                    StatCardSkeleton(modifier = Modifier.weight(1f))
-                }
-            } else if (state.error != null) {
-                ErrorState(
-                    message = state.error ?: "Error loading stats",
-                    onRetry = { 
-                        viewModel.processIntent(MainContract.Intent.GetMe)
-                        viewModel.processIntent(MainContract.Intent.FetchRank)
+            // Stats Section
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (state.isLoading && state.currentUser == null) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        StatCardSkeleton(modifier = Modifier.weight(1f))
+                        StatCardSkeleton(modifier = Modifier.weight(1f))
                     }
-                )
-            } else {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    StatCard(num = (state.currentUser?.reportsFiled ?: 0).toString(), lbl = "Reports filed", modifier = Modifier.weight(1f))
-                    StatCard(num = (state.currentUser?.rewardPoints ?: 0).toString(), lbl = "Total points", modifier = Modifier.weight(1f))
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    StatCard(num = (state.currentUser?.reportsResolved ?: 0).toString(), lbl = "Resolved", modifier = Modifier.weight(1f))
-                    StatCard(num = state.userRank?.currentUser?.rank?.toString() ?: "N/A", lbl = "City rank", modifier = Modifier.weight(1f))
-                }
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-            
-            // Map Placeholder
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(140.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(Color(0xFFD4E9D4)),
-                contentAlignment = Alignment.Center
-            ) {
-                // Map Dots
-                MapDot(Modifier.align(Alignment.CenterStart).offset(x = 60.dp, y = (-10).dp))
-                MapDot(Modifier.align(Alignment.BottomEnd).offset(x = (-80).dp, y = (-40).dp))
-                MapDot(Modifier.align(Alignment.TopEnd).offset(x = (-60).dp, y = 30.dp))
-                MapDot(Modifier.align(Alignment.BottomStart).offset(x = 40.dp, y = (-20).dp))
-                
-                Text(
-                    text = "4 active reports nearby",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color(0xFF2D5A2D),
-                    modifier = Modifier.offset(y = 30.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-            
-            Button(
-                onClick = onNavigateToReport,
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                shape = RoundedCornerShape(10.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = "+ Report an issue", fontSize = 14.sp, fontWeight = FontWeight.Medium)
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Recent Activity Card
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .border(0.5.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
-                    .padding(12.dp)
-            ) {
-                Text(
-                    text = "Recent activity",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                
-                if (state.isLoading && state.userReports.isEmpty()) {
-                    repeat(3) {
-                        ReportItemSkeleton()
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        StatCardSkeleton(modifier = Modifier.weight(1f))
+                        StatCardSkeleton(modifier = Modifier.weight(1f))
                     }
-                } else if (state.userReports.isEmpty()) {
-                    Text(
-                        text = "No recent activity",
-                        fontSize = 12.sp,
-                        color = Color.Gray,
-                        modifier = Modifier.padding(vertical = 12.dp)
-                    )
                 } else {
-                    state.userReports.take(3).forEachIndexed { index, report ->
-                        val date = remember(report.timestamp) {
-                            val sdf = SimpleDateFormat("dd MMM, hh:mm a", Locale.getDefault())
-                            sdf.format(Date(report.timestamp))
-                        }
-                        ReportItem(
-                            icon = if (report.description.contains("garbage", true)) "🗑️" else "📍",
-                            bg = if (report.status.uppercase() == "APPROVED") GreenLight else Color(0xFFFAEEDA),
-                            loc = report.description,
-                            time = date,
-                            status = report.status,
-                            isLast = index == state.userReports.take(3).size - 1
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        StatCard(num = (state.currentUser?.reportsFiled ?: 0).toString(), lbl = "Reports filed", modifier = Modifier.weight(1f))
+                        StatCard(num = (state.currentUser?.rewardPoints ?: 0).toString(), lbl = "Total points", modifier = Modifier.weight(1f))
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        StatCard(num = (state.currentUser?.reportsResolved ?: 0).toString(), lbl = "Resolved", modifier = Modifier.weight(1f))
+                        StatCard(num = state.userRank?.currentUser?.rank?.toString() ?: "N/A", lbl = "City rank", modifier = Modifier.weight(1f))
+                    }
+                }
+            }
+            
+            // Map Section
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(160.dp)
+                    .shadow(elevation = 2.dp, shape = RoundedCornerShape(20.dp)),
+                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
+                shape = RoundedCornerShape(20.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    MapDot(Modifier.align(Alignment.CenterStart).offset(x = 60.dp, y = (-10).dp))
+                    MapDot(Modifier.align(Alignment.BottomEnd).offset(x = (-80).dp, y = (-40).dp))
+                    MapDot(Modifier.align(Alignment.TopEnd).offset(x = (-60).dp, y = 30.dp))
+                    MapDot(Modifier.align(Alignment.BottomStart).offset(x = 40.dp, y = (-20).dp))
+                    
+                    Surface(
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                        shape = RoundedCornerShape(20.dp),
+                        modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 12.dp)
+                    ) {
+                        Text(
+                            text = "4 active reports nearby",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                         )
                     }
                 }
             }
+
             
-            Spacer(modifier = Modifier.height(10.dp))
+            Button(
+                onClick = onNavigateToReport,
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
+            ) {
+                Text(text = "+ Report an issue", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            }
+
+            // Recent Activity Card
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                color = MaterialTheme.colorScheme.surface,
+                tonalElevation = 2.dp,
+                shadowElevation = 1.dp
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "Recent activity",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                    
+                    if (state.isLoading && state.userReports.isEmpty()) {
+                        repeat(3) { ReportItemSkeleton() }
+                    } else if (state.userReports.isEmpty()) {
+                        Text(
+                            text = "No recent activity",
+                            fontSize = 13.sp,
+                            color = Color.Gray,
+                            modifier = Modifier.padding(vertical = 12.dp)
+                        )
+                    } else {
+                        state.userReports.take(3).forEachIndexed { index, report ->
+                            val date = remember(report.timestamp) {
+                                val sdf = SimpleDateFormat("dd MMM, hh:mm a", Locale.getDefault())
+                                sdf.format(Date(report.timestamp))
+                            }
+                            ReportItem(
+                                icon = if (report.description.contains("garbage", true)) "🗑️" else "📍",
+                                bg = if (report.status.uppercase() == "APPROVED") GreenLight else Color(0xFFFAEEDA),
+                                loc = report.description,
+                                time = date,
+                                status = report.status,
+                                isLast = index == state.userReports.take(3).size - 1
+                            )
+                        }
+                    }
+                }
+            }
 
             // Weekly Challenge Card
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .border(0.5.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
-                    .padding(12.dp)
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                color = MaterialTheme.colorScheme.surface,
+                tonalElevation = 2.dp,
+                shadowElevation = 1.dp
             ) {
-                Text(
-                    text = "Weekly challenge",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(bottom = 6.dp)
-                )
-                Text(
-                    text = "Report 5 issues this week to earn 50 bonus points",
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 6.dp)
-                )
-                Text(
-                    text = "3 / 5 completed",
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 4.dp)
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(8.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                ) {
-                    Box(
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "Weekly challenge",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Text(
+                        text = "Report 5 issues this week to earn 50 bonus points",
+                        fontSize = 13.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        Text(
+                            text = "3 / 5 completed",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = "60%",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    LinearProgressIndicator(
+                        progress = { 0.6f },
                         modifier = Modifier
-                            .fillMaxWidth(0.6f)
-                            .fillMaxHeight()
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(MaterialTheme.colorScheme.primary)
+                            .fillMaxWidth()
+                            .height(10.dp)
+                            .clip(RoundedCornerShape(10.dp)),
+                        color = MaterialTheme.colorScheme.primary,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
                     )
                 }
             }
         }
+
     }
 }
 
 @Composable
 fun StatCard(num: String, lbl: String, modifier: Modifier = Modifier) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+    Surface(
         modifier = modifier
-            .clip(RoundedCornerShape(10.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .padding(10.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .shadow(elevation = 4.dp, shape = RoundedCornerShape(16.dp)),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
+        shape = RoundedCornerShape(16.dp)
     ) {
-        Text(text = num, fontSize = 22.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.primary)
-        Text(text = lbl, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 2.dp))
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = num,
+                fontSize = 26.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = lbl,
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp),
+                fontWeight = FontWeight.Medium
+            )
+        }
     }
 }
 
 @Composable
 fun MapDot(modifier: Modifier = Modifier) {
+    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.4f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ), label = "scale"
+    )
+
     Box(
         modifier = modifier
-            .size(14.dp)
+            .size(16.dp)
+            .graphicsLayer(scaleX = scale, scaleY = scale)
             .clip(CircleShape)
             .background(Color(0xFFE24B4A))
             .border(2.dp, Color.White, CircleShape)
@@ -282,38 +314,41 @@ fun MapDot(modifier: Modifier = Modifier) {
 
 @Composable
 fun ReportItem(icon: String, bg: Color, loc: String, time: String, status: String, isLast: Boolean = false) {
+    val animatedProgress by animateFloatAsState(targetValue = 1f, animationSpec = tween(500), label = "itemEntry")
+    
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .graphicsLayer(alpha = animatedProgress, translationX = (1f - animatedProgress) * 50f)
+            .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .size(42.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(bg),
-            contentAlignment = Alignment.Center
+        Surface(
+            modifier = Modifier.size(48.dp),
+            shape = RoundedCornerShape(12.dp),
+            color = bg
         ) {
-            Text(text = icon, fontSize = 18.sp)
+            Box(contentAlignment = Alignment.Center) {
+                Text(text = icon, fontSize = 20.sp)
+            }
         }
         
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = 10.dp)
+                .padding(horizontal = 12.dp)
         ) {
             Text(
                 text = loc,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Medium,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Text(
                 text = time,
-                fontSize = 11.sp,
+                fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 2.dp)
             )
@@ -322,24 +357,24 @@ fun ReportItem(icon: String, bg: Color, loc: String, time: String, status: Strin
         val badgeBg = if (status == "Pending") BadgePendingBg else if(status.equals("Approved", ignoreCase = true) || status.equals("Resolved",ignoreCase = true)) BadgeApprovedBg else BadgeDeclinedBg
         val badgeText = if (status == "Pending") BadgePendingText else if(status.equals("Approved", ignoreCase = true) || status.equals("Resolved",ignoreCase = true)) BadgeApprovedText else BadgeDeclinedText
         
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(6.dp))
-                .background(badgeBg)
-                .padding(horizontal = 8.dp, vertical = 3.dp)
+        Surface(
+            shape = RoundedCornerShape(8.dp),
+            color = badgeBg
         ) {
             Text(
                 text = status,
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Medium,
-                color = badgeText
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = badgeText,
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
             )
         }
     }
     if (!isLast) {
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .height(0.5.dp)
-            .background(MaterialTheme.colorScheme.outlineVariant))
+        HorizontalDivider(
+            thickness = 0.5.dp,
+            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+        )
     }
 }
+
