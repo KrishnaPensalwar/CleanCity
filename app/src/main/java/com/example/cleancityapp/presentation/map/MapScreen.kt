@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import com.example.cleancityapp.data.remote.UserDto
 import com.example.cleancityapp.presentation.map.sections.LegendItem
 import com.example.cleancityapp.presentation.map.sections.MapActivityItem
-import com.example.cleancityapp.presentation.map.sections.MapHeaderSection
 import com.example.cleancityapp.presentation.map.sections.MapHeatmapCard
 
 @Composable
@@ -34,9 +33,7 @@ fun MapScreen(user: UserDto?) {
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(scrollState),
     ) {
-        MapHeaderSection(title = "Live heatmap", location = "Hyderabad · ${user?.rewardPoints ?: 0} pts earned")
-
-        Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+        Column(modifier = Modifier.padding(24.dp)) {
             MapHeatmapCard()
 
             Spacer(modifier = Modifier.height(24.dp))

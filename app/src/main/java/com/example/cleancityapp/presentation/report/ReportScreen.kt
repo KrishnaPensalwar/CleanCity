@@ -16,23 +16,17 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -54,12 +48,11 @@ import com.example.cleancityapp.presentation.report.sections.ReportCategorySelec
 import com.example.cleancityapp.presentation.user.UserViewModel
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReportScreen(
     userViewModel: UserViewModel = koinViewModel(),
     mainViewModel: MainViewModel = koinViewModel(),
-    onBack: () -> Unit,
+    onBack: () -> Unit = {},
 ) {
     val uiState by userViewModel.state.collectAsState()
     val mainState by mainViewModel.uiState.collectAsState()
@@ -68,8 +61,8 @@ fun ReportScreen(
     var capturedImageUri by remember { mutableStateOf<Uri?>(null) }
     var category by remember { mutableStateOf("Garbage") }
     var description by remember { mutableStateOf("") }
-
     var customCategory by remember { mutableStateOf("") }
+
     LaunchedEffect(uiState.isReportSuccess) {
         if (uiState.isReportSuccess) {
             Toast.makeText(context, "Report submitted. Thank you.", Toast.LENGTH_LONG).show()
@@ -80,118 +73,54 @@ fun ReportScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("New report", fontWeight = FontWeight.Black, fontSize = 20.sp) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                ),
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(rememberScrollState()),
+    ) {
+        Box(modifier = Modifier.padding(24.dp)) {
+            CameraCapture(
+                capturedImageUri = capturedImageUri,
+                onImageCaptured = { uri -> capturedImageUri = uri },
             )
-        },
-        bottomBar = {
-            Box(modifier = Modifier.background(MaterialTheme.colorScheme.background).padding(24.dp)) {
-                Button(
-                    onClick = {
-                        capturedImageUri?.let { uri ->
-                            userViewModel.submitReport(
-                                imageUri = uri,
-                                description = "[$category] $description",
-                                lat = 17.4065,
-                                lon = 78.4772,
-                                userId = mainState.currentUser?.id ?: "",
-                            )
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth().height(58.dp),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                    enabled = capturedImageUri != null && description.length > 5 && !uiState.isLoading,
+        }
+
+        Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    if (uiState.isLoading) {
-                        CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.size(24.dp),
+                    Text("🎁", fontSize = 24.sp)
+                    Column(modifier = Modifier.padding(start = 12.dp)) {
+                        Text("Impact reward", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSecondaryContainer)
+                        Text(
+                            "Earn ~25 pts for validated reports",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.85f),
                         )
-                    } else {
-                        Text("Submit report", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
-        },
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(padding)
-                .verticalScroll(rememberScrollState()),
-        ) {
-            Box(modifier = Modifier.padding(24.dp)) {
-                CameraCapture(
-                    capturedImageUri = capturedImageUri,
-                    onImageCaptured = { uri -> capturedImageUri = uri },
-                )
-            }
 
-            Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-                ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text("🎁", fontSize = 24.sp)
-                        Column(modifier = Modifier.padding(start = 12.dp)) {
-                            Text("Impact reward", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSecondaryContainer)
-                            Text(
-                                "Earn ~25 pts for validated reports",
-                                fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.85f),
-                            )
-                        }
-                    }
-                }
+            Spacer(modifier = Modifier.height(24.dp))
 
+            Text("Category", fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(8.dp))
+            ReportCategorySelector(selected = category, onSelect = { category = it })
+
+            if (category.equals("other", ignoreCase = true)) {
                 Spacer(modifier = Modifier.height(24.dp))
-
-                Text("Category", fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(8.dp))
-                ReportCategorySelector(selected = category, onSelect = { category = it })
-
-                if(category.equals("other",ignoreCase = true)){
-                    Spacer(modifier = Modifier.height(24.dp))
-                    TextField(
-                        value = customCategory,
-                        onValueChange = { customCategory = it },
-                        placeholder = { Text("Enter custom category") },
-                        modifier = Modifier.fillMaxWidth().height(55.dp),
-                        shape = RoundedCornerShape(24.dp),
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = MaterialTheme.colorScheme.surface,
-                            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                        ),
-                    )
-                }
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Text("Describe the issue", fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(8.dp))
                 TextField(
-                    value = description,
-                    onValueChange = { description = it },
-                    placeholder = { Text("What needs attention?") },
-                    modifier = Modifier.fillMaxWidth().height(120.dp),
+                    value = customCategory,
+                    onValueChange = { customCategory = it },
+                    placeholder = { Text("Enter custom category") },
+                    modifier = Modifier.fillMaxWidth().height(55.dp),
                     shape = RoundedCornerShape(24.dp),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -200,26 +129,72 @@ fun ReportScreen(
                         unfocusedIndicatorColor = Color.Transparent,
                     ),
                 )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(MaterialTheme.colorScheme.surface)
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(Icons.Default.LocationOn, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                    Column(modifier = Modifier.padding(start = 12.dp)) {
-                        Text("Pinned location", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text("Jubilee Hills, Hyderabad", fontWeight = FontWeight.SemiBold)
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(100.dp))
             }
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text("Describe the issue", fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(8.dp))
+            TextField(
+                value = description,
+                onValueChange = { description = it },
+                placeholder = { Text("What needs attention?") },
+                modifier = Modifier.fillMaxWidth().height(120.dp),
+                shape = RoundedCornerShape(24.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                ),
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(Icons.Default.LocationOn, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                Column(modifier = Modifier.padding(start = 12.dp)) {
+                    Text("Pinned location", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Jubilee Hills, Hyderabad", fontWeight = FontWeight.SemiBold)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = {
+                    capturedImageUri?.let { uri ->
+                        userViewModel.submitReport(
+                            imageUri = uri,
+                            description = "[$category] $description",
+                            lat = 17.4065,
+                            lon = 78.4772,
+                            userId = mainState.currentUser?.id ?: "",
+                        )
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().height(58.dp),
+                shape = RoundedCornerShape(20.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                enabled = capturedImageUri != null && description.length > 5 && !uiState.isLoading,
+            ) {
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(24.dp),
+                    )
+                } else {
+                    Text("Submit report", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(100.dp))
         }
     }
 }

@@ -18,7 +18,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.cleancityapp.presentation.driver.DriverViewModel
-import com.example.cleancityapp.presentation.driver.dashboard.sections.DriverDashboardHeader
 import com.example.cleancityapp.presentation.driver.dashboard.sections.DriverDashboardNextTaskSection
 import com.example.cleancityapp.presentation.driver.dashboard.sections.DriverDashboardProgressCard
 import com.example.cleancityapp.presentation.driver.dashboard.sections.DriverDashboardQuickActions
@@ -35,7 +34,6 @@ fun DriverDashboardScreen(
     mainViewModel: MainViewModel = koinViewModel(),
 ) {
     val state by driverViewModel.state.collectAsState()
-    val mainState by mainViewModel.uiState.collectAsState()
     var onDuty by remember { mutableStateOf(true) }
 
     val pendingReports = state.assignedReports.filter {
@@ -51,11 +49,6 @@ fun DriverDashboardScreen(
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState()),
     ) {
-        DriverDashboardHeader(
-            greetingName = mainState.currentUser?.name ?: "Driver",
-            assignmentSummary = "On duty · ${state.assignedReports.size} tasks assigned",
-        )
-
         Column(modifier = Modifier.padding(16.dp)) {
             DriverDutyStatusRow(isActive = onDuty, onActiveChanged = { onDuty = it })
 

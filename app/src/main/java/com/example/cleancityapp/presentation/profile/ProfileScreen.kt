@@ -1,7 +1,7 @@
 package com.example.cleancityapp.presentation.profile
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,16 +14,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,7 +29,6 @@ import com.example.cleancityapp.data.remote.UserDto
 import com.example.cleancityapp.presentation.home.sections.StatBubble
 import com.example.cleancityapp.presentation.profile.sections.ProfileSettingRow
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     user: UserDto?,
@@ -48,85 +39,68 @@ fun ProfileScreen(
     val email = user?.email ?: "user@example.com"
     val initials = name.split(" ").mapNotNull { it.firstOrNull()?.toString() }.joinToString("").uppercase()
 
-    Scaffold(
-        topBar = {
-            LargeTopAppBar(
-                title = { Text("Profile", fontWeight = FontWeight.ExtraBold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = null)
-                    }
-                },
-                colors = TopAppBarDefaults.largeTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                ),
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(rememberScrollState())
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(110.dp)
+                .shadow(10.dp, CircleShape)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.surface),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(initials, fontSize = 32.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(name, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        Text(email, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            StatBubble(label = "Reports", value = "${user?.reportsFiled ?: 0}", modifier = Modifier.weight(1f))
+            StatBubble(
+                label = "Points",
+                value = "${user?.rewardPoints ?: 0}",
+                modifier = Modifier.weight(1f),
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
             )
-        },
-    ) { padding ->
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Text(
+            "ACCOUNT",
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.align(Alignment.Start).padding(start = 8.dp),
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
+                .clip(RoundedCornerShape(24.dp))
+                .background(MaterialTheme.colorScheme.surface),
         ) {
-            Box(
-                modifier = Modifier
-                    .size(110.dp)
-                    .shadow(10.dp, CircleShape)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surface),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(initials, fontSize = 32.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(name, fontSize = 24.sp, fontWeight = FontWeight.Bold)
-            Text(email, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                StatBubble(label = "Reports", value = "${user?.reportsFiled ?: 0}", modifier = Modifier.weight(1f))
-                StatBubble(
-                    label = "Points",
-                    value = "${user?.rewardPoints ?: 0}",
-                    modifier = Modifier.weight(1f),
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                )
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Text(
-                "ACCOUNT",
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.align(Alignment.Start).padding(start = 8.dp),
+            ProfileSettingRow(title = "Privacy policy", icon = "🛡️")
+            ProfileSettingRow(title = "Notifications", icon = "🔔", value = "On")
+            ProfileSettingRow(
+                title = "Log out",
+                icon = "🚪",
+                titleColor = Color(0xFFD32F2F),
+                isLast = true,
+                onClick = onLogout,
             )
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(MaterialTheme.colorScheme.surface),
-            ) {
-                ProfileSettingRow(title = "Privacy policy", icon = "🛡️")
-                ProfileSettingRow(title = "Notifications", icon = "🔔", value = "On")
-                ProfileSettingRow(
-                    title = "Log out",
-                    icon = "🚪",
-                    titleColor = Color(0xFFD32F2F),
-                    isLast = true,
-                    onClick = onLogout,
-                )
-            }
         }
     }
 }

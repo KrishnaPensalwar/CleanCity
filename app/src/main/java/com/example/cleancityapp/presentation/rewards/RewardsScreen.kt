@@ -24,7 +24,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.cleancityapp.presentation.home.sections.HeaderSection
 import com.example.cleancityapp.presentation.main.MainViewModel
 import com.example.cleancityapp.presentation.rewards.sections.RewardsLeaderboardSection
 import org.koin.androidx.compose.koinViewModel
@@ -37,68 +36,59 @@ fun RewardsScreen(mainViewModel: MainViewModel = koinViewModel()) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .background(MaterialTheme.colorScheme.background)
+            .padding(horizontal = 24.dp)
+            .verticalScroll(rememberScrollState()),
     ) {
-        HeaderSection(
-            name = "Rewards",
-            points = points,
-            onProfileClick = {},
-            subtitle = "Your city impact wallet",
-        )
-
-        Column(
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
-                .verticalScroll(rememberScrollState()),
+        Spacer(modifier = Modifier.height(24.dp))
+        
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(32.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         ) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(32.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            Column(
+                modifier = Modifier.padding(32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Column(
-                    modifier = Modifier.padding(32.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text(
-                        "CURRENT BALANCE",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Text(
-                        "$points",
-                        fontSize = 56.sp,
-                        fontWeight = FontWeight.Black,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                    Text(
-                        "Points earned",
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                Text(
+                    "CURRENT BALANCE",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    "$points",
+                    fontSize = 56.sp,
+                    fontWeight = FontWeight.Black,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Text(
+                    "Points earned",
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
 
-                    Spacer(modifier = Modifier.height(24.dp))
-                    Button(
-                        onClick = {},
-                        modifier = Modifier.fillMaxWidth().height(56.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.inverseSurface),
-                    ) {
-                        Text("Redeem rewards", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.inverseOnSurface)
-                    }
+                Spacer(modifier = Modifier.height(24.dp))
+                Button(
+                    onClick = {},
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.inverseSurface),
+                ) {
+                    Text("Redeem rewards", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.inverseOnSurface)
                 }
             }
+        }
 
-            Spacer(modifier = Modifier.height(28.dp))
+        Spacer(modifier = Modifier.height(28.dp))
 
-            state.userRank?.let { rank ->
-                RewardsLeaderboardSection(
-                    topUsers = rank.topUsers,
-                    currentUserRank = rank.currentUser.rank,
-                )
-            }
+        state.userRank?.let { rank ->
+            RewardsLeaderboardSection(
+                topUsers = rank.topUsers,
+                currentUserRank = rank.currentUser.rank,
+            )
         }
     }
 }
