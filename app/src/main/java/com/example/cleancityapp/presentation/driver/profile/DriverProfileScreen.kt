@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.sp
 import com.example.cleancityapp.data.remote.UserDto
 import com.example.cleancityapp.presentation.components.TopNavBar
 import com.example.cleancityapp.presentation.driver.route.DetailRow
-import com.example.cleancityapp.presentation.driver.dashboard.StatCard
+import com.example.cleancityapp.presentation.driver.dashboard.sections.StatCard
 
 @Composable
 fun DriverProfileScreen(

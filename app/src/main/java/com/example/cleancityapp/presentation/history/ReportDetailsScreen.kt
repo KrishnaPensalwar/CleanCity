@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.cleancityapp.data.remote.ReportResponse
 import com.example.cleancityapp.presentation.components.TopNavBar
+import com.example.cleancityapp.presentation.history.sections.StatusBadge
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -42,25 +43,15 @@ fun ReportDetailsScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .clip(shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
                 .background(MaterialTheme.colorScheme.primary),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(
-                onClick = onBack,
-                modifier = Modifier
-                    .padding(top = 10.dp, start = 8.dp)
-
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.White
-                )
-            }
             TopNavBar(
                 title = "Report Details",
-                subtitle = "ID: ${report.id.take(8)}..."
+                subtitle = "ID: ${report.id.take(8)}...",
+                onBackClick = onBack
             )
 
         }
@@ -122,12 +113,14 @@ fun ReportDetailsScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             // Helpful Hint
-            Text(
-                text = "Our team is reviewing your report. You will be notified once it is approved.",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray,
-                modifier = Modifier.padding(horizontal = 8.dp)
-            )
+            if(report.status.equals("PENDING",ignoreCase = true)){
+                Text(
+                    text = "Our team is reviewing your report. You will be notified once it is approved.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+            }
         }
     }
 }

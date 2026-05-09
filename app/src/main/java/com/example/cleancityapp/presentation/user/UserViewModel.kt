@@ -7,11 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cleancityapp.data.remote.AuthApi
 import com.example.cleancityapp.data.remote.ReportResponse
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -41,7 +43,9 @@ class UserViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             try {
-                val response = authApi.getMeReports("Bearer $token")
+                val response = withContext(Dispatchers.IO) {
+                    authApi.getMeReports("Bearer $token")
+                }
                 if (response.isSuccessful) {
                     _state.update { it.copy(reports = response.body() ?: emptyList(), isLoading = false) }
                 } else {
@@ -60,26 +64,28 @@ class UserViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             try {
-                val mimeType = context.contentResolver.getType(imageUri)
-                val file = getFileFromUri(imageUri)
-                val requestFile = file.asRequestBody(mimeType?.toMediaTypeOrNull())
-                val body = MultipartBody.Part.createFormData("image", file.name, requestFile)
+                val response = withContext(Dispatchers.IO) {
+                    val mimeType = context.contentResolver.getType(imageUri)
+                    val file = getFileFromUri(imageUri)
+                    val requestFile = file.asRequestBody(mimeType?.toMediaTypeOrNull())
+                    val body = MultipartBody.Part.createFormData("image", file.name, requestFile)
 
-                val userIdBody = userId.toRequestBody("text/plain".toMediaTypeOrNull())
-                val timestampBody = timestamp.toRequestBody("text/plain".toMediaTypeOrNull())
-                val latBody = lat.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-                val lonBody = lon.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-                val descBody = description.toRequestBody("text/plain".toMediaTypeOrNull())
+                    val userIdBody = userId.toRequestBody("text/plain".toMediaTypeOrNull())
+                    val timestampBody = timestamp.toRequestBody("text/plain".toMediaTypeOrNull())
+                    val latBody = lat.toString().toRequestBody("text/plain".toMediaTypeOrNull())
+                    val lonBody = lon.toString().toRequestBody("text/plain".toMediaTypeOrNull())
+                    val descBody = description.toRequestBody("text/plain".toMediaTypeOrNull())
 
-                val response = authApi.submitReport(
-                    "Bearer $token",
-                    body,
-                    userIdBody,
-                    timestampBody,
-                    latBody,
-                    lonBody,
-                    descBody
-                )
+                    authApi.submitReport(
+                        "Bearer $token",
+                        body,
+                        userIdBody,
+                        timestampBody,
+                        latBody,
+                        lonBody,
+                        descBody
+                    )
+                }
 
                 if (response.isSuccessful) {
                     _state.update { it.copy(isLoading = false, isReportSuccess = true) }

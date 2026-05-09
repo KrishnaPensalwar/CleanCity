@@ -6,11 +6,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.cleancityapp.data.remote.AuthApi
 import com.example.cleancityapp.data.remote.CityDto
 import com.example.cleancityapp.data.remote.LoginResponse
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 data class AuthState(
     val isLoading: Boolean = false,
@@ -35,7 +37,9 @@ class AuthViewModel(
         if (_state.value.cities.isNotEmpty()) return
         viewModelScope.launch {
             try {
-                val response = authApi.getCities()
+                val response = withContext(Dispatchers.IO) {
+                    authApi.getCities()
+                }
                 if (response.isSuccessful) {
                     _state.update { it.copy(cities = response.body() ?: emptyList()) }
                 }
@@ -49,7 +53,9 @@ class AuthViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             try {
-                val response = authApi.login(mapOf("email" to email, "password" to pass))
+                val response = withContext(Dispatchers.IO) {
+                    authApi.login(mapOf("email" to email, "password" to pass))
+                }
                 if (response.isSuccessful && response.body() != null) {
                     val loginData = response.body()!!
                     saveAuthData(loginData)
@@ -67,15 +73,17 @@ class AuthViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             try {
-                val response = authApi.signUp(
-                    mapOf(
-                        "name" to name,
-                        "mobile" to mobile,
-                        "email" to email,
-                        "password" to pass,
-                        "city" to city
+                val response = withContext(Dispatchers.IO) {
+                    authApi.signUp(
+                        mapOf(
+                            "name" to name,
+                            "mobile" to mobile,
+                            "email" to email,
+                            "password" to pass,
+                            "city" to city
+                        )
                     )
-                )
+                }
                 if (response.isSuccessful && response.body()?.isSuccess == true) {
                     _state.update { it.copy(isLoading = false, isSignUpSuccess = true) }
                 } else {

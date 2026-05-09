@@ -1,16 +1,29 @@
 package com.example.cleancityapp.presentation.profile
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,167 +34,99 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cleancityapp.data.remote.UserDto
-import com.example.cleancityapp.presentation.components.TopNavBar
-import com.example.cleancityapp.presentation.home.StatCard
+import com.example.cleancityapp.presentation.home.sections.StatBubble
+import com.example.cleancityapp.presentation.profile.sections.ProfileSettingRow
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     user: UserDto?,
     onLogout: () -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
 ) {
     val name = user?.name ?: "User"
-    val email = user?.email ?: ""
-    val initials = if (name.isNotBlank()) {
-        name.split(" ").mapNotNull { it.firstOrNull()?.toString() }.joinToString("").uppercase()
-    } else "U"
-    
-    val rewardPoints = user?.rewardPoints ?: 0
-    val reportsFiled = user?.reportsFiled ?: 0
-    val reportsResolved = user?.reportsResolved ?: 0
+    val email = user?.email ?: "user@example.com"
+    val initials = name.split(" ").mapNotNull { it.firstOrNull()?.toString() }.joinToString("").uppercase()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        TopNavBar(
-            title = "Profile",
-            subtitle = "Your account details",
-            onBackClick = onBack
-        )
-        
+    Scaffold(
+        topBar = {
+            LargeTopAppBar(
+                title = { Text("Profile", fontWeight = FontWeight.ExtraBold) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = null)
+                    }
+                },
+                colors = TopAppBarDefaults.largeTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                ),
+            )
+        },
+    ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .background(MaterialTheme.colorScheme.background)
+                .padding(padding)
                 .verticalScroll(rememberScrollState())
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // Profile Card
-            Surface(
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .shadow(elevation = 2.dp, shape = RoundedCornerShape(20.dp)),
-                color = MaterialTheme.colorScheme.surface,
-                shape = RoundedCornerShape(20.dp)
+                    .size(110.dp)
+                    .shadow(10.dp, CircleShape)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surface),
+                contentAlignment = Alignment.Center,
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(20.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(72.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primaryContainer),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = initials,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                    }
-                    Column(modifier = Modifier.padding(start = 20.dp)) {
-                        Text(
-                            text = name,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = email,
-                            fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Surface(
-                            color = MaterialTheme.colorScheme.secondaryContainer,
-                            shape = RoundedCornerShape(8.dp),
-                            modifier = Modifier.padding(top = 8.dp)
-                        ) {
-                            Text(
-                                text = "Hyderabad · Member since 2025",
-                                fontSize = 11.sp,
-                                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(20.dp))
-            
-            // Stats Row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                StatCard(num = reportsFiled.toString(), lbl = "Reports", modifier = Modifier.weight(1f))
-                StatCard(num = rewardPoints.toString(), lbl = "Reward Pts", modifier = Modifier.weight(1f))
-                StatCard(num = reportsResolved.toString(), lbl = "Resolved", modifier = Modifier.weight(1f))
+                Text(initials, fontSize = 32.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
             }
 
-            
-            Spacer(modifier = Modifier.height(24.dp))
-            
-            // Settings
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(name, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+            Text(email, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                StatBubble(label = "Reports", value = "${user?.reportsFiled ?: 0}", modifier = Modifier.weight(1f))
+                StatBubble(
+                    label = "Points",
+                    value = "${user?.rewardPoints ?: 0}",
+                    modifier = Modifier.weight(1f),
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
             Text(
-                text = "Account Settings",
-                fontSize = 14.sp,
+                "ACCOUNT",
+                fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 8.dp, start = 4.dp),
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.align(Alignment.Start).padding(start = 8.dp),
             )
+            Spacer(modifier = Modifier.height(8.dp))
+
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .border(0.5.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
-                    .padding(horizontal = 12.dp)
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(MaterialTheme.colorScheme.surface),
             ) {
-                SettingRow(title = "Notifications", value = "On", valueColor = MaterialTheme.colorScheme.primary)
-                SettingRow(title = "Privacy settings", value = "›", valueColor = MaterialTheme.colorScheme.onSurfaceVariant)
-                SettingRow(
-                    title = "Sign out",
-                    value = "›",
-                    valueColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    titleColor = Color(0xFFA32D2D),
+                ProfileSettingRow(title = "Privacy policy", icon = "🛡️")
+                ProfileSettingRow(title = "Notifications", icon = "🔔", value = "On")
+                ProfileSettingRow(
+                    title = "Log out",
+                    icon = "🚪",
+                    titleColor = Color(0xFFD32F2F),
                     isLast = true,
-                    onClick = onLogout
+                    onClick = onLogout,
                 )
             }
         }
-    }
-}
-
-@Composable
-fun SettingRow(
-    title: String,
-    value: String,
-    valueColor: Color,
-    titleColor: Color = MaterialTheme.colorScheme.onSurface,
-    isLast: Boolean = false,
-    onClick: (() -> Unit)? = null
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(enabled = onClick != null) { onClick?.invoke() }
-            .padding(vertical = 12.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(text = title, fontSize = 14.sp, color = titleColor, fontWeight = if(title == "Sign out") FontWeight.Medium else FontWeight.Normal)
-        Text(text = value, fontSize = 14.sp, fontWeight = if(value == "On") FontWeight.Medium else FontWeight.Normal, color = valueColor)
-    }
-    if (!isLast) {
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .height(0.5.dp)
-            .background(MaterialTheme.colorScheme.outlineVariant))
     }
 }

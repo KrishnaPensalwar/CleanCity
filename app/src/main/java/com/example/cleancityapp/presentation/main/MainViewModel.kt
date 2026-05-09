@@ -4,11 +4,13 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cleancityapp.data.remote.AuthApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainViewModel(
     private val authApi: AuthApi,
@@ -61,7 +63,29 @@ class MainViewModel(
             is MainContract.Intent.ClearError -> {
                 _uiState.update { it.copy(error = null) }
             }
-            else -> {}
+            is MainContract.Intent.ViewReportDetails -> {
+                _uiState.update { 
+                    it.copy(
+                        selectedReport = intent.report,
+                        currentScreen = Screen.ReportDetails
+                    ) 
+                }
+            }
+            is MainContract.Intent.Login -> {
+                // Delegated to AuthViewModel but present in Contract
+            }
+            is MainContract.Intent.SignUp -> {
+                // Delegated to AuthViewModel but present in Contract
+            }
+            is MainContract.Intent.SubmitReport -> {
+                // Delegated to UserViewModel but present in Contract
+            }
+            is MainContract.Intent.ResetReportStatus -> {
+                _uiState.update { it.copy(isReportSuccess = false) }
+            }
+            is MainContract.Intent.FetchCities -> {
+                // Delegated to AuthViewModel
+            }
         }
     }
 
@@ -70,7 +94,9 @@ class MainViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             try {
-                val response = authApi.getMeReports("Bearer $token")
+                val response = withContext(Dispatchers.IO) {
+                    authApi.getMeReports("Bearer $token")
+                }
                 if (response.isSuccessful) {
                     _uiState.update { it.copy(userReports = response.body() ?: emptyList(), isLoading = false) }
                 } else {
@@ -87,7 +113,9 @@ class MainViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             try {
-                val response = authApi.getMe("Bearer $token")
+                val response = withContext(Dispatchers.IO) {
+                    authApi.getMe("Bearer $token")
+                }
                 if (response.isSuccessful && response.body() != null) {
                     val user = response.body()!!
                     val role = if (user.role == "ROLE_DRIVER") UserRole.DRIVER else UserRole.USER
@@ -112,7 +140,9 @@ class MainViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             try {
-                val response = authApi.getUserRank("Bearer $token")
+                val response = withContext(Dispatchers.IO) {
+                    authApi.getUserRank("Bearer $token")
+                }
                 if (response.isSuccessful && response.body() != null) {
                     _uiState.update { it.copy(userRank = response.body(), isLoading = false) }
                 } else {

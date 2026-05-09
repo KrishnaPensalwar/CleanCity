@@ -3,16 +3,43 @@ package com.example.cleancityapp.presentation.report
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,241 +48,177 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.cleancityapp.presentation.components.TopNavBar
 import com.example.cleancityapp.presentation.components.CameraCapture
 import com.example.cleancityapp.presentation.main.MainViewModel
+import com.example.cleancityapp.presentation.report.sections.ReportCategorySelector
 import com.example.cleancityapp.presentation.user.UserViewModel
 import org.koin.androidx.compose.koinViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReportScreen(
     userViewModel: UserViewModel = koinViewModel(),
-    mainViewModel: MainViewModel = koinViewModel()
+    mainViewModel: MainViewModel = koinViewModel(),
+    onBack: () -> Unit,
 ) {
     val uiState by userViewModel.state.collectAsState()
     val mainState by mainViewModel.uiState.collectAsState()
     val context = LocalContext.current
 
     var capturedImageUri by remember { mutableStateOf<Uri?>(null) }
-    var category by remember { mutableStateOf("Garbage / Litter") }
+    var category by remember { mutableStateOf("Garbage") }
     var description by remember { mutableStateOf("") }
-    var location by remember { mutableStateOf("Jubilee Hills, Hyderabad") }
 
+    var customCategory by remember { mutableStateOf("") }
     LaunchedEffect(uiState.isReportSuccess) {
         if (uiState.isReportSuccess) {
-            Toast.makeText(context, "Report submitted successfully!", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Report submitted. Thank you.", Toast.LENGTH_LONG).show()
             capturedImageUri = null
             description = ""
             userViewModel.resetReportStatus()
+            onBack()
         }
     }
 
-    LaunchedEffect(uiState.error) {
-        if (uiState.error != null) {
-            Toast.makeText(context, uiState.error, Toast.LENGTH_LONG).show()
-            userViewModel.clearError()
-        }
-    }
-
-    val categories = listOf("Garbage / Litter", "Open Drain", "Dead Animal", "Illegal Dumping", "Overflowing Bin")
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        TopNavBar(
-            title = "File a report",
-            subtitle = "Capture image & details"
-        )
-        
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text("New report", fontWeight = FontWeight.Black, fontSize = 20.sp) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                ),
+            )
+        },
+        bottomBar = {
+            Box(modifier = Modifier.background(MaterialTheme.colorScheme.background).padding(24.dp)) {
+                Button(
+                    onClick = {
+                        capturedImageUri?.let { uri ->
+                            userViewModel.submitReport(
+                                imageUri = uri,
+                                description = "[$category] $description",
+                                lat = 17.4065,
+                                lon = 78.4772,
+                                userId = mainState.currentUser?.id ?: "",
+                            )
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth().height(58.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                    enabled = capturedImageUri != null && description.length > 5 && !uiState.isLoading,
+                ) {
+                    if (uiState.isLoading) {
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.size(24.dp),
+                        )
+                    } else {
+                        Text("Submit report", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+        },
+    ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp)
-                .verticalScroll(rememberScrollState())
+                .background(MaterialTheme.colorScheme.background)
+                .padding(padding)
+                .verticalScroll(rememberScrollState()),
         ) {
-            // ✅ Camera Capture Section with live display
-            CameraCapture(
-                capturedImageUri = capturedImageUri,
-                onImageCaptured = { uri -> capturedImageUri = uri },
-                buttonText = "📸 Capture Waste Photo"
-            )
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            // Issue Details Card
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .border(0.5.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
-                    .padding(12.dp)
-            ) {
-                Text(
-                    text = "Issue details",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(bottom = 10.dp),
-                    color = MaterialTheme.colorScheme.onSurface
+            Box(modifier = Modifier.padding(24.dp)) {
+                CameraCapture(
+                    capturedImageUri = capturedImageUri,
+                    onImageCaptured = { uri -> capturedImageUri = uri },
                 )
-                
-                CategoryDropdown(
-                    label = "Category",
-                    selectedCategory = category,
-                    categories = categories,
-                    onCategorySelected = { category = it }
-                )
+            }
 
-                Spacer(modifier = Modifier.height(10.dp))
+            Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text("🎁", fontSize = 24.sp)
+                        Column(modifier = Modifier.padding(start = 12.dp)) {
+                            Text("Impact reward", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSecondaryContainer)
+                            Text(
+                                "Earn ~25 pts for validated reports",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.85f),
+                            )
+                        }
+                    }
+                }
 
-                Text(text = "Description", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = 4.dp))
-                OutlinedTextField(
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text("Category", fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(8.dp))
+                ReportCategorySelector(selected = category, onSelect = { category = it })
+
+                if(category.equals("other",ignoreCase = true)){
+                    Spacer(modifier = Modifier.height(24.dp))
+                    TextField(
+                        value = customCategory,
+                        onValueChange = { customCategory = it },
+                        placeholder = { Text("Enter custom category") },
+                        modifier = Modifier.fillMaxWidth().height(55.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surface,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                        ),
+                    )
+                }
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text("Describe the issue", fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(8.dp))
+                TextField(
                     value = description,
                     onValueChange = { description = it },
-                    placeholder = { Text("Describe the issue briefly…", fontSize = 13.sp) },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp),
-                    enabled = !uiState.isLoading,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                    )
+                    placeholder = { Text("What needs attention?") },
+                    modifier = Modifier.fillMaxWidth().height(120.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                    ),
                 )
-                
-                Spacer(modifier = Modifier.height(10.dp))
 
-                Text(text = "Location", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = 4.dp))
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(8.dp))
-                            .border(0.5.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
-                            .padding(horizontal = 12.dp, vertical = 9.dp)
-                    ) {
-                        Text(text = location, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface)
-                    }
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(Color(0xFFEAF3DE))
-                            .clickable { /* Update location logic */ }
-                            .padding(horizontal = 10.dp, vertical = 8.dp)
-                    ) {
-                        Text(text = "📍 GPS", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = Color(0xFF3B6D11))
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(MaterialTheme.colorScheme.surface)
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(Icons.Default.LocationOn, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    Column(modifier = Modifier.padding(start = 12.dp)) {
+                        Text("Pinned location", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("Jubilee Hills, Hyderabad", fontWeight = FontWeight.SemiBold)
                     }
                 }
-            }
-            
-            Spacer(modifier = Modifier.height(16.dp))
 
-            // Earn Points Card
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .border(0.5.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
-                    .padding(12.dp)
-            ) {
-                Text(text = "🎁", fontSize = 22.sp, modifier = Modifier.padding(end = 10.dp))
-                Column {
-                    Text(text = "Earn 25 points", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface)
-                    Text(text = "Upon admin approval of your report", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            Button(
-                onClick = {
-                    capturedImageUri?.let { uri ->
-                        userViewModel.submitReport(
-                            imageUri = uri,
-                            description = "$category: $description",
-                            lat = 37.7749, // Hardcoded for sample
-                            lon = -122.4194, // Hardcoded for sample
-                            userId = mainState.currentUser?.id ?: ""
-                        )
-                    }
-                },
-                enabled = capturedImageUri != null && description.isNotBlank() && !uiState.isLoading,
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                shape = RoundedCornerShape(10.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                if (uiState.isLoading) {
-                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
-                } else {
-                    Text(text = "Submit report", fontSize = 14.sp, fontWeight = FontWeight.Medium)
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            OutlinedButton(
-                onClick = {
-                    capturedImageUri = null
-                    description = ""
-                },
-                shape = RoundedCornerShape(10.dp),
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !uiState.isLoading
-            ) {
-                Text(text = "Cancel", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.primary)
-            }
-        }
-    }
-}
-
-@Composable
-fun CategoryDropdown(
-    label: String,
-    selectedCategory: String,
-    categories: List<String>,
-    onCategorySelected: (String) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Column {
-        Text(text = label, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = 4.dp))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(8.dp))
-                .border(0.5.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
-                .clickable { expanded = true }
-                .padding(horizontal = 12.dp, vertical = 12.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = selectedCategory, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface)
-                Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier.fillMaxWidth(0.9f)
-            ) {
-                categories.forEach { category ->
-                    DropdownMenuItem(
-                        text = { Text(category) },
-                        onClick = {
-                            onCategorySelected(category)
-                            expanded = false
-                        }
-                    )
-                }
+                Spacer(modifier = Modifier.height(100.dp))
             }
         }
     }

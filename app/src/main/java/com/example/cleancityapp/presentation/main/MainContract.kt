@@ -21,9 +21,6 @@ class MainContract {
     )
     
     sealed class Intent {
-        data class NavigateTo(val screen: Screen) : Intent()
-        data class SetRole(val role: UserRole) : Intent()
-        
         data class Login(val email: String, val password: String) : Intent()
         data class SignUp(
             val name: String,
@@ -41,6 +38,8 @@ class MainContract {
         ) : Intent()
         
         data class ViewReportDetails(val report: ReportResponse) : Intent()
+        data class NavigateTo(val screen: Screen) : Intent()
+        data class SetRole(val role: UserRole) : Intent()
         
         object ResetReportStatus : Intent()
         object FetchCities : Intent()

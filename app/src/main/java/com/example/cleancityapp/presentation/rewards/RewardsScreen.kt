@@ -1,303 +1,104 @@
 package com.example.cleancityapp.presentation.rewards
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.cleancityapp.presentation.components.*
-import com.example.cleancityapp.presentation.main.MainContract
+import com.example.cleancityapp.presentation.home.sections.HeaderSection
 import com.example.cleancityapp.presentation.main.MainViewModel
-import com.example.cleancityapp.ui.theme.*
+import com.example.cleancityapp.presentation.rewards.sections.RewardsLeaderboardSection
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun RewardsScreen(mainViewModel: MainViewModel = koinViewModel()) {
-
     val state by mainViewModel.uiState.collectAsStateWithLifecycle()
+    val points = state.userRank?.currentUser?.rewardPoints ?: state.currentUser?.rewardPoints ?: 0
 
-    androidx.compose.runtime.LaunchedEffect(Unit) {
-        mainViewModel.processIntent(MainContract.Intent.FetchRank)
-    }
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.colorScheme.background),
     ) {
-        TopNavBar(
-            title = "Rewards",
-            subtitle = "Your points & leaderboard"
+        HeaderSection(
+            name = "Rewards",
+            points = points,
+            onProfileClick = {},
+            subtitle = "Your city impact wallet",
         )
-        
+
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(12.dp)
-                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp)
+                .verticalScroll(rememberScrollState()),
         ) {
-            // Balance Card
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .border(0.5.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
-                    .padding(vertical = 20.dp, horizontal = 12.dp)
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(32.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             ) {
-                Text(
-                    text = "YOUR BALANCE",
-                    fontSize = 11.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    letterSpacing = 0.6.sp
-                )
-                
-                if (state.isLoading && state.userRank == null) {
-                    SkeletonBox(modifier = Modifier.padding(top = 4.dp).size(80.dp, 44.dp))
-                } else if (state.error != null) {
-                    Text(text = "Error loading", color = MaterialTheme.colorScheme.error, fontSize = 14.sp)
-                } else {
-                    Text(
-                        text = state.userRank?.currentUser?.rewardPoints?.toString() ?: "0",
-                        fontSize = 44.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                }
-                
-                Text(text = "points", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.padding(top = 14.dp)
+                Column(
+                    modifier = Modifier.padding(32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(Color(0xFFEAF3DE))
-                            .padding(horizontal = 14.dp, vertical = 8.dp)
-                    ) {
-                        Text(text = "Redeem", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = Color(0xFF3B6D11))
-                    }
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(Color(0xFFE6F1FB))
-                            .padding(horizontal = 14.dp, vertical = 8.dp)
-                    ) {
-                        Text(text = "Share", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = Color(0xFF185FA5))
-                    }
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(10.dp))
-            
-            // How to earn points
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .border(0.5.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
-                    .padding(12.dp)
-            ) {
-                Text(
-                    text = "How to earn points",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(bottom = 4.dp),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                
-                RewardRow(text = "Valid report uploaded", pts = "+25 pts")
-                RewardRow(text = "Issue resolved & closed", pts = "+15 pts")
-                RewardRow(text = "Weekly challenge bonus", pts = "+50 pts")
-                RewardRow(text = "Referral (new user)", pts = "+30 pts", isLast = true)
-            }
-            
-            Spacer(modifier = Modifier.height(10.dp))
-            
-            // City Leaderboard
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .border(0.5.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
-                    .padding(12.dp)
-            ) {
-                Text(
-                    text = "City leaderboard",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                val ranks = state.userRank
-
-                if (state.isLoading && state.userRank == null) {
-                    repeat(5) {
-                        LeaderboardRowSkeleton()
-                    }
-                } else if (state.error != null) {
-                    ErrorState(
-                        message = state.error ?: "Error loading leaderboard",
-                        onRetry = { mainViewModel.processIntent(MainContract.Intent.FetchRank) }
-                    )
-                } else if (ranks == null) {
                     Text(
-                        text = "No leaderboard till now...",
+                        "CURRENT BALANCE",
                         fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                } else {
+                    Text(
+                        "$points",
+                        fontSize = 56.sp,
+                        fontWeight = FontWeight.Black,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    Text(
+                        "Points earned",
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
 
-                    val currentUser = ranks.currentUser
-
-                    val isCurrentUserInTop = ranks.topUsers.any {
-                        it.rank == currentUser.rank &&
-                                it.rewardPoints == currentUser.rewardPoints &&
-                                it.name == currentUser.name
-                    }
-
-                    // Top users list
-                    ranks.topUsers.forEach {
-                        val isCurrent = it.rank == currentUser.rank &&
-                                it.rewardPoints == currentUser.rewardPoints &&
-                                it.name == currentUser.name
-
-                        LeaderboardRow(
-                            rank = it.rank.toString(),
-                            name = if (isCurrent) "You" else it.name,
-                            pts = "${it.rewardPoints} pts",
-                            badgeBg = if (isCurrent) Color(0xFF9FE1CB) else Color(0xFFF0FAF4),
-                            badgeColor = if (isCurrent) Color(0xFF085041) else MaterialTheme.colorScheme.primary
-                        )
-                    }
-
-                    // 👇 Show separately ONLY if not in top list
-                    if (!isCurrentUserInTop) {
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(Color(0xFFF0FAF4))
-                                .padding(horizontal = 4.dp, vertical = 6.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .clip(CircleShape)
-                                        .background(Color(0xFF9FE1CB)),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = currentUser.rank.toString(),
-                                        fontSize = 11.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        color = Color(0xFF085041)
-                                    )
-                                }
-
-                                Text(
-                                    text = "You",
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            }
-
-                            Text(
-                                text = "${currentUser.rewardPoints} pts",
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Button(
+                        onClick = {},
+                        modifier = Modifier.fillMaxWidth().height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.inverseSurface),
+                    ) {
+                        Text("Redeem rewards", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.inverseOnSurface)
                     }
                 }
             }
-        }
-    }
-}
 
-@Composable
-fun RewardRow(text: String, pts: String, isLast: Boolean = false) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(text = text, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(20.dp))
-                .background(MaterialTheme.colorScheme.primary)
-                .padding(horizontal = 9.dp, vertical = 3.dp)
-        ) {
-            Text(text = pts, fontSize = 11.sp, fontWeight = FontWeight.Medium, color = Color.White)
-        }
-    }
-    if (!isLast) {
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .height(0.5.dp)
-            .background(MaterialTheme.colorScheme.outlineVariant))
-    }
-}
+            Spacer(modifier = Modifier.height(28.dp))
 
-@Composable
-fun LeaderboardRow(rank: String, name: String, pts: String, badgeBg: Color, badgeColor: Color, isLast: Boolean = false) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Box(
-                modifier = Modifier
-                    .size(24.dp)
-                    .clip(CircleShape)
-                    .background(badgeBg),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = rank, fontSize = 11.sp, fontWeight = FontWeight.Medium, color = badgeColor)
+            state.userRank?.let { rank ->
+                RewardsLeaderboardSection(
+                    topUsers = rank.topUsers,
+                    currentUserRank = rank.currentUser.rank,
+                )
             }
-            Text(text = name, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface)
         }
-        Text(text = pts, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.primary)
-    }
-    if (!isLast) {
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .height(0.5.dp)
-            .background(MaterialTheme.colorScheme.outlineVariant))
     }
 }
