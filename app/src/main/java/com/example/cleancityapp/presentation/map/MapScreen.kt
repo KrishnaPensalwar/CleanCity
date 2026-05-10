@@ -18,13 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.cleancityapp.data.remote.UserDto
 import com.example.cleancityapp.presentation.map.sections.LegendItem
 import com.example.cleancityapp.presentation.map.sections.MapActivityItem
 import com.example.cleancityapp.presentation.map.sections.MapHeatmapCard
 
 @Composable
-fun MapScreen(user: UserDto?) {
+fun MapScreen() {
     val scrollState = rememberScrollState()
 
     Column(

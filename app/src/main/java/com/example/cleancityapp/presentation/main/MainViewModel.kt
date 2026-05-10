@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import androidx.core.content.edit
 
 class MainViewModel(
     private val authApi: AuthApi,
@@ -22,7 +23,18 @@ class MainViewModel(
     private val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
 
     init {
+        loadTheme()
         checkLoggedIn()
+    }
+
+    private fun loadTheme() {
+        val themeStr = sharedPreferences.getString("theme_mode", ThemeMode.SYSTEM.name)
+        val mode = try {
+            ThemeMode.valueOf(themeStr ?: ThemeMode.SYSTEM.name)
+        } catch (e: Exception) {
+            ThemeMode.SYSTEM
+        }
+        _uiState.update { it.copy(themeMode = mode) }
     }
 
     private fun checkLoggedIn() {
@@ -38,6 +50,10 @@ class MainViewModel(
         when (intent) {
             is MainContract.Intent.NavigateTo -> {
                 _uiState.update { it.copy(currentScreen = intent.screen, error = null) }
+            }
+            is MainContract.Intent.SetThemeMode -> {
+                sharedPreferences.edit { putString("theme_mode", intent.mode.name) }
+                _uiState.update { it.copy(themeMode = intent.mode) }
             }
             is MainContract.Intent.SetRole -> {
                 _uiState.update { it.copy(userRole = intent.role) }

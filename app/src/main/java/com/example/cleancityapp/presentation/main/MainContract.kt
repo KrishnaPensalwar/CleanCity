@@ -17,10 +17,12 @@ class MainContract {
         val cities: List<CityDto> = emptyList(),
         val isReportSuccess: Boolean = false,
         val userReports: List<ReportResponse> = emptyList(),
-        val selectedReport: ReportResponse? = null
+        val selectedReport: ReportResponse? = null,
+        val themeMode: ThemeMode = ThemeMode.SYSTEM
     )
     
     sealed class Intent {
+        data class SetThemeMode(val mode: ThemeMode) : Intent()
         data class Login(val email: String, val password: String) : Intent()
         data class SignUp(
             val name: String,
