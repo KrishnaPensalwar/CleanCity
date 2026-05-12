@@ -18,21 +18,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.cleancityapp.data.remote.ReportResponse
 import com.example.cleancityapp.presentation.components.ErrorState
 import com.example.cleancityapp.presentation.components.HistoryItemSkeleton
 import com.example.cleancityapp.presentation.history.sections.HistoryEmptyState
 import com.example.cleancityapp.presentation.history.sections.HistoryFilterBar
 import com.example.cleancityapp.presentation.history.sections.ReportHistoryCard
-import com.example.cleancityapp.presentation.main.MainContract
-import com.example.cleancityapp.presentation.main.MainViewModel
 import com.example.cleancityapp.presentation.user.UserViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HistoryScreen(
-    userViewModel: UserViewModel = koinViewModel(),
-    mainViewModel: MainViewModel = koinViewModel(),
-    onBack: () -> Unit = {},
+    onReportClick: (ReportResponse) -> Unit,
+    userViewModel: UserViewModel = koinViewModel()
 ) {
     val uiState by userViewModel.state.collectAsState()
     var selectedFilter by remember { mutableStateOf("All") }
@@ -79,7 +77,7 @@ fun HistoryScreen(
                     items(filteredReports) { report ->
                         ReportHistoryCard(
                             report = report,
-                            onClick = { mainViewModel.processIntent(MainContract.Intent.ViewReportDetails(report)) },
+                            onClick = { onReportClick(report) },
                         )
                     }
                 }

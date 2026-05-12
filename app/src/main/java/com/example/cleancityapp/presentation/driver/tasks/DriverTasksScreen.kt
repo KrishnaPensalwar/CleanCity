@@ -121,24 +121,6 @@ fun DriverTasksScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.primary)
-                .padding(16.dp),
-        ) {
-            Text(
-                text = "Clean City · Driver",
-                color = Color.White.copy(alpha = 0.75f),
-                fontSize = 12.sp,
-            )
-            Text(text = "My tasks", color = Color.White, fontSize = 19.sp, fontWeight = FontWeight.Bold)
-            Text(
-                text = "${state.assignedReports.size} total · $doneCount done · $pendingCount pending",
-                color = Color.White.copy(alpha = 0.7f),
-                fontSize = 11.sp,
-            )
-        }
 
         Column(modifier = Modifier.padding(16.dp)) {
             LazyRow(

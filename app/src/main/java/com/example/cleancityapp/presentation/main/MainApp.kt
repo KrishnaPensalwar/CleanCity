@@ -1,7 +1,7 @@
 package com.example.cleancityapp.presentation.main
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,12 +13,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.example.cleancityapp.presentation.auth.LoginScreen
 import com.example.cleancityapp.presentation.auth.SignUpScreen
 import com.example.cleancityapp.presentation.components.BottomNavBar
@@ -44,7 +49,53 @@ import java.util.Calendar
 @Composable
 fun MainApp(viewModel: MainViewModel = koinViewModel()) {
     val uiState by viewModel.uiState.collectAsState()
-    
+    val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    // Sync NavController state back to ViewModel (for highlight & state consistency)
+    LaunchedEffect(currentRoute) {
+        currentRoute?.let { route ->
+            val screen = when (route) {
+                Screen.Home.route -> Screen.Home
+                Screen.Report.route -> Screen.Report
+                Screen.Map.route -> Screen.Map
+                Screen.Rewards.route -> Screen.Rewards
+                Screen.History.route -> Screen.History
+                Screen.Profile.route -> Screen.Profile
+                Screen.DriverDashboard.route -> Screen.DriverDashboard
+                Screen.DriverTasks.route -> Screen.DriverTasks
+                Screen.DriverRoute.route -> Screen.DriverRoute
+                Screen.DriverProfile.route -> Screen.DriverProfile
+                Screen.ReportDetails.route -> Screen.ReportDetails
+                else -> null
+            }
+            screen?.let { viewModel.processIntent(NavigateTo(it)) }
+        }
+    }
+
+    val bottomNavRoutes = remember(uiState.userRole) {
+        if (uiState.userRole == UserRole.USER) {
+            listOf(Screen.Home.route, Screen.Report.route, Screen.Map.route, Screen.Rewards.route, Screen.History.route)
+        } else {
+            listOf(Screen.DriverDashboard.route, Screen.DriverTasks.route, Screen.DriverRoute.route, Screen.History.route)
+        }
+    }
+
+    // Sync ViewModel navigation state with NavController
+    LaunchedEffect(uiState.currentScreen) {
+        val targetRoute = uiState.currentScreen.route
+        if (currentRoute != targetRoute) {
+            navController.navigate(targetRoute) {
+                // Clear backstack on core transitions
+                if (targetRoute == Screen.Login.route || targetRoute == Screen.Home.route || targetRoute == Screen.DriverDashboard.route) {
+                    popUpTo(0) { inclusive = true }
+                }
+                launchSingleTop = true
+            }
+        }
+    }
+
     val darkTheme = when (uiState.themeMode) {
         ThemeMode.LIGHT -> false
         ThemeMode.DARK -> true
@@ -52,8 +103,18 @@ fun MainApp(viewModel: MainViewModel = koinViewModel()) {
     }
 
     CleanCityAppTheme(darkTheme = darkTheme) {
-        val currentScreen = uiState.currentScreen
-        val isAuthScreen = currentScreen == Screen.Login || currentScreen == Screen.SignUp
+        val isAuthScreen = currentRoute == Screen.Login.route || currentRoute == Screen.SignUp.route
+
+        BackHandler(enabled = !isAuthScreen && currentRoute != Screen.Home.route && currentRoute != Screen.DriverDashboard.route) {
+            if (bottomNavRoutes.contains(currentRoute)) {
+                val startDestination = if (uiState.userRole == UserRole.DRIVER) Screen.DriverDashboard.route else Screen.Home.route
+                navController.navigate(startDestination) {
+                    popUpTo(0) { inclusive = true }
+                }
+            } else {
+                navController.popBackStack()
+            }
+        }
         
         val greeting = remember {
             val calendar = Calendar.getInstance()
@@ -65,66 +126,73 @@ fun MainApp(viewModel: MainViewModel = koinViewModel()) {
             }
         }
 
-        val topBarInfo = when (currentScreen) {
-            is Screen.Home -> {
+        val topBarInfo = when (currentRoute) {
+            Screen.Home.route -> {
                 val displayName = uiState.currentUser?.name ?: "User"
                 Pair("$greeting, $displayName!", "Hyderabad · ${uiState.currentUser?.rewardPoints ?: 0} pts")
             }
-            is Screen.Report -> Pair("File a report", "Capture image & details")
-            is Screen.Map -> Pair("Nearby Activity", "Live waste tracking")
-            is Screen.Rewards -> Pair("Rewards", "Earn points for a clean city")
-            is Screen.History -> Pair("My Reports", "History of your contributions")
-            is Screen.ReportDetails -> Pair("Report Details", "Status: ${uiState.selectedReport?.status ?: ""}")
-            is Screen.Profile -> Pair("Profile", "Your account details")
-            is Screen.DriverDashboard -> Pair("Driver Dashboard", "Manage your tasks")
-            is Screen.DriverTasks -> Pair("My Tasks", "Pending assignments")
-            is Screen.DriverRoute -> Pair("Optimized Route", "Follow the path")
-            is Screen.DriverProfile -> Pair("Driver Profile", "Account details")
+            Screen.Report.route -> Pair("File a report", "Capture image & details")
+            Screen.Map.route -> Pair("Nearby Activity", "Live waste tracking")
+            Screen.Rewards.route -> Pair("Rewards", "Earn points for a clean city")
+            Screen.History.route -> Pair("My Reports", "History of your contributions")
+            Screen.ReportDetails.route -> Pair("Report Details", "Status: ${uiState.selectedReport?.status ?: ""}")
+            Screen.Profile.route -> Pair("Profile", "Your account details")
+            Screen.DriverDashboard.route -> Pair("Driver Dashboard", "Manage your tasks")
+            Screen.DriverTasks.route -> Pair("My Tasks", "Pending assignments")
+            Screen.DriverRoute.route -> Pair("Optimized Route", "Follow the path")
+            Screen.DriverProfile.route -> Pair("Driver Profile", "Account details")
             else -> Pair("", "")
         }
 
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             topBar = {
-                if (!isAuthScreen) {
+                if (!isAuthScreen && currentRoute != null) {
                     TopNavBar(
                         title = topBarInfo.first,
                         subtitle = topBarInfo.second,
-                        onProfileClick = if (currentScreen == Screen.Home) {
+                        onProfileClick = if (currentRoute == Screen.Home.route) {
                             {
                                 viewModel.processIntent(GetMe)
-                                viewModel.processIntent(NavigateTo(if (uiState.userRole == UserRole.DRIVER) Screen.DriverProfile else Screen.Profile))
+                                navController.navigate(if (uiState.userRole == UserRole.DRIVER) Screen.DriverProfile.route else Screen.Profile.route)
                             }
                         } else null,
-                        onBackClick = if (currentScreen != Screen.Home && currentScreen != Screen.DriverDashboard) {
+                        onBackClick = if (currentRoute != Screen.Home.route && currentRoute != Screen.DriverDashboard.route) {
                             {
-                                val backScreen = when (currentScreen) {
-                                    Screen.ReportDetails -> Screen.History
-                                    Screen.Profile, Screen.Report, Screen.Map, Screen.Rewards, Screen.History -> Screen.Home
-                                    Screen.DriverTasks, Screen.DriverRoute, Screen.DriverProfile -> Screen.DriverDashboard
-                                    else -> Screen.Home
+                                if (bottomNavRoutes.contains(currentRoute)) {
+                                    val startDestination = if (uiState.userRole == UserRole.DRIVER) Screen.DriverDashboard.route else Screen.Home.route
+                                    navController.navigate(startDestination) {
+                                        popUpTo(0) { inclusive = true }
+                                    }
+                                } else {
+                                    navController.popBackStack()
                                 }
-                                viewModel.processIntent(NavigateTo(backScreen))
                             }
                         } else null
                     )
                 }
             },
             bottomBar = {
-                if (!isAuthScreen && currentScreen != Screen.ReportDetails) {
+                if (!isAuthScreen && currentRoute != Screen.ReportDetails.route && currentRoute != null) {
                     BottomNavBar(
-                        currentScreen = currentScreen,
+                        currentRoute = currentRoute,
                         userRole = uiState.userRole,
                         onNavigate = { screen ->
-                            viewModel.processIntent(NavigateTo(screen))
+                            navController.navigate(screen.route) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         }
                     )
                 }
             },
             floatingActionButton = {
-                if (currentScreen == Screen.Home) {
+                if (currentRoute == Screen.Home.route) {
                     ExtendedFloatingActionButton(
-                        onClick = { viewModel.processIntent(NavigateTo(Screen.Report)) },
+                        onClick = { navController.navigate(Screen.Report.route) },
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary,
                         shape = RoundedCornerShape(20.dp),
@@ -136,60 +204,81 @@ fun MainApp(viewModel: MainViewModel = koinViewModel()) {
                 }
             }
         ) { innerPadding ->
-            Box(
+            NavHost(
+                navController = navController,
+                startDestination = Screen.Login.route,
                 modifier = Modifier.padding(innerPadding)
             ) {
-                when (currentScreen) {
-                    is Screen.Login -> LoginScreen(
+                composable(Screen.Login.route) {
+                    LoginScreen(
                         onLoginSuccess = { viewModel.processIntent(MainContract.Intent.LoginSuccess) },
-                        onNavigateToSignUp = { viewModel.processIntent(NavigateTo(Screen.SignUp)) }
+                        onNavigateToSignUp = { navController.navigate(Screen.SignUp.route) }
                     )
-
-                    is Screen.SignUp -> SignUpScreen(
-                        onSignUpSuccess = { viewModel.processIntent(NavigateTo(Screen.Login)) },
-                        onNavigateToLogin = { viewModel.processIntent(NavigateTo(Screen.Login)) }
+                }
+                composable(Screen.SignUp.route) {
+                    SignUpScreen(
+                        onSignUpSuccess = { navController.navigate(Screen.Login.route) },
+                        onNavigateToLogin = { navController.navigate(Screen.Login.route) }
                     )
-
-                    is Screen.Home -> HomeScreen(
-                        onNavigateToReport = { viewModel.processIntent(NavigateTo(Screen.Report)) },
+                }
+                composable(Screen.Home.route) {
+                    HomeScreen(
+                        onNavigateToReport = { navController.navigate(Screen.Report.route) },
                         onNavigateToProfile = {
                             viewModel.processIntent(GetMe)
-                            viewModel.processIntent(NavigateTo(Screen.Profile))
+                            navController.navigate(Screen.Profile.route)
                         },
                         user = uiState.currentUser
                     )
-
-                    is Screen.Report -> ReportScreen()
-                    is Screen.Map -> MapScreen()
-                    is Screen.Rewards -> RewardsScreen()
-
-                    is Screen.History -> HistoryScreen()
-
-                    is Screen.ReportDetails -> ReportDetailsScreen(
+                }
+                composable(Screen.Report.route) {
+                    ReportScreen()
+                }
+                composable(Screen.Map.route) {
+                    MapScreen()
+                }
+                composable(Screen.Rewards.route) {
+                    RewardsScreen()
+                }
+                composable(Screen.History.route) {
+                    HistoryScreen(
+                        onReportClick = { report ->
+                            viewModel.processIntent(MainContract.Intent.ViewReportDetails(report))
+                        }
+                    )
+                }
+                composable(Screen.ReportDetails.route) {
+                    ReportDetailsScreen(
                         report = uiState.selectedReport,
-                        onBack = { viewModel.processIntent(NavigateTo(Screen.History)) }
+                        onBack = { navController.popBackStack() }
                     )
-
-                    is Screen.Profile -> ProfileScreen(
+                }
+                composable(Screen.Profile.route) {
+                    ProfileScreen(
                         user = uiState.currentUser,
-                        onBack = { viewModel.processIntent(NavigateTo(Screen.Home)) },
-                        onLogout = { viewModel.processIntent(Logout) }
+                        onBack = { navController.popBackStack() },
+                        onLogout = { viewModel.processIntent(Logout) },
+                        viewModel = viewModel
                     )
-
-                    is Screen.DriverDashboard -> DriverDashboardScreen(
-                        onNavigateToTasks = { viewModel.processIntent(NavigateTo(Screen.DriverTasks)) },
-                        onNavigateToRoute = { viewModel.processIntent(NavigateTo(Screen.DriverRoute)) }
+                }
+                composable(Screen.DriverDashboard.route) {
+                    DriverDashboardScreen(
+                        onNavigateToTasks = { navController.navigate(Screen.DriverTasks.route) },
+                        onNavigateToRoute = { navController.navigate(Screen.DriverRoute.route) }
                     )
-
-                    is Screen.DriverTasks -> DriverTasksScreen(
-                        onNavigateToRoute = { viewModel.processIntent(NavigateTo(Screen.DriverRoute)) }
+                }
+                composable(Screen.DriverTasks.route) {
+                    DriverTasksScreen(
+                        onNavigateToRoute = { navController.navigate(Screen.DriverRoute.route) }
                     )
-
-                    is Screen.DriverRoute -> DriverRouteScreen()
-
-                    is Screen.DriverProfile -> DriverProfileScreen(
+                }
+                composable(Screen.DriverRoute.route) {
+                    DriverRouteScreen()
+                }
+                composable(Screen.DriverProfile.route) {
+                    DriverProfileScreen(
                         user = uiState.currentUser,
-                        onBack = { viewModel.processIntent(NavigateTo(Screen.DriverDashboard)) },
+                        onBack = { navController.popBackStack() },
                         onLogout = { viewModel.processIntent(Logout) }
                     )
                 }

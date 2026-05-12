@@ -171,9 +171,19 @@ class MainViewModel(
     }
 
     private fun logout() {
-        sharedPreferences.edit().clear().apply()
-        _uiState.update { 
-            MainContract.State(currentScreen = Screen.Login)
+        sharedPreferences.edit {
+            remove("access_token")
+            remove("user_role")
+        }
+
+        _uiState.update {
+            it.copy(
+                currentScreen = Screen.Login,
+                currentUser = null,
+                userReports = emptyList(),
+                selectedReport = null,
+                userRank = null
+            )
         }
     }
 
