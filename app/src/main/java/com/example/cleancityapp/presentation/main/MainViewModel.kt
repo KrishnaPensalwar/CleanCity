@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cleancityapp.data.remote.AuthApi
+import com.example.cleancityapp.data.repository.DeviceRegistrationRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,9 +13,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.core.content.edit
+import com.google.firebase.messaging.FirebaseMessaging
+import android.util.Log
 
 class MainViewModel(
     private val authApi: AuthApi,
+    private val deviceRepository: DeviceRegistrationRepository,
     private val context: Context
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(MainContract.State())
@@ -42,7 +46,24 @@ class MainViewModel(
         if (!savedToken.isNullOrEmpty()) {
             getMe()
             fetchRank()
+            registerFCMToken(savedToken)
             navigateToDashboard()
+        }
+    }
+
+    private fun registerFCMToken(accessToken: String) {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token = task.result
+                viewModelScope.launch {
+                    try {
+                        deviceRepository.registerDevice(accessToken, token)
+                        Log.d("FCM", "Registered token on startup")
+                    } catch (e: Exception) {
+                        Log.e("FCM", "Failed to register token on startup", e)
+                    }
+                }
+            }
         }
     }
 
@@ -50,6 +71,12 @@ class MainViewModel(
         when (intent) {
             is MainContract.Intent.NavigateTo -> {
                 _uiState.update { it.copy(currentScreen = intent.screen, error = null) }
+            }
+            is MainContract.Intent.HandleDeepLink -> {
+                _uiState.update { it.copy(deepLinkComplaintId = intent.complaintId) }
+            }
+            is MainContract.Intent.ClearDeepLink -> {
+                _uiState.update { it.copy(deepLinkComplaintId = null) }
             }
             is MainContract.Intent.SetThemeMode -> {
                 sharedPreferences.edit { putString("theme_mode", intent.mode.name) }
@@ -71,6 +98,8 @@ class MainViewModel(
                 logout()
             }
             is MainContract.Intent.LoginSuccess -> {
+                val token = sharedPreferences.getString("access_token", null)
+                if (token != null) registerFCMToken(token)
                 getMe()
                 fetchRank()
                 fetchUserReports()
@@ -87,21 +116,7 @@ class MainViewModel(
                     ) 
                 }
             }
-            is MainContract.Intent.Login -> {
-                // Delegated to AuthViewModel but present in Contract
-            }
-            is MainContract.Intent.SignUp -> {
-                // Delegated to AuthViewModel but present in Contract
-            }
-            is MainContract.Intent.SubmitReport -> {
-                // Delegated to UserViewModel but present in Contract
-            }
-            is MainContract.Intent.ResetReportStatus -> {
-                _uiState.update { it.copy(isReportSuccess = false) }
-            }
-            is MainContract.Intent.FetchCities -> {
-                // Delegated to AuthViewModel
-            }
+            else -> {}
         }
     }
 
@@ -171,6 +186,17 @@ class MainViewModel(
     }
 
     private fun logout() {
+        val token = sharedPreferences.getString("access_token", null)
+        if (token != null) {
+            viewModelScope.launch {
+                try {
+                    deviceRepository.unregisterDevice(token)
+                } catch (e: Exception) {
+                    Log.e("FCM", "Failed to unregister device on logout", e)
+                }
+            }
+        }
+
         sharedPreferences.edit {
             remove("access_token")
             remove("user_role")

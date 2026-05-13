@@ -2,13 +2,15 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.gms.google-services")
+    id("com.google.dagger.hilt.android")
+    kotlin("kapt")
+    kotlin("plugin.serialization") version "2.0.21"
 }
 
 android {
     namespace = "com.example.cleancityapp"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.cleancityapp"
@@ -65,14 +67,33 @@ dependencies {
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.8.8")
 
-    // Koin for Compose
-    implementation("io.insert-koin:koin-androidx-compose:3.5.3")
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
+    implementation("com.google.firebase:firebase-messaging-ktx")
+    implementation("com.google.firebase:firebase-analytics-ktx")
+
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.51.1")
+    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+    // Ktor Client
+    val ktor_version = "3.0.1"
+    implementation("io.ktor:ktor-client-android:$ktor_version")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
+    implementation("io.ktor:ktor-client-logging:$ktor_version")
+    implementation("io.ktor:ktor-client-serialization:$ktor_version")
+    implementation("io.ktor:ktor-client-core:$ktor_version")
 
     // Coil for Image Loading
     implementation("io.coil-kt:coil-compose:2.6.0")
 
-    // Retrofit & OkHttp
+    // Retrofit & OkHttp (keeping for compatibility)
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    
+    // Koin for Compose (keeping for now during transition)
+    implementation("io.insert-koin:koin-androidx-compose:3.5.3")
 }

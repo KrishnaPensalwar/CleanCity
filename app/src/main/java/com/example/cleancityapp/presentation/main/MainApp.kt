@@ -1,6 +1,7 @@
 package com.example.cleancityapp.presentation.main
 
 import androidx.activity.compose.BackHandler
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -18,12 +19,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.cleancityapp.presentation.auth.LoginScreen
 import com.example.cleancityapp.presentation.auth.SignUpScreen
 import com.example.cleancityapp.presentation.components.BottomNavBar
@@ -32,6 +36,7 @@ import com.example.cleancityapp.presentation.driver.dashboard.DriverDashboardScr
 import com.example.cleancityapp.presentation.driver.profile.DriverProfileScreen
 import com.example.cleancityapp.presentation.driver.route.DriverRouteScreen
 import com.example.cleancityapp.presentation.driver.tasks.DriverTasksScreen
+import com.example.cleancityapp.presentation.history.ComplaintDetailsScreen
 import com.example.cleancityapp.presentation.history.HistoryScreen
 import com.example.cleancityapp.presentation.history.ReportDetailsScreen
 import com.example.cleancityapp.presentation.home.HomeScreen
@@ -96,6 +101,15 @@ fun MainApp(viewModel: MainViewModel = koinViewModel()) {
         }
     }
 
+    LaunchedEffect(uiState.deepLinkComplaintId) {
+        uiState.deepLinkComplaintId?.let { id ->
+            navController.navigate("complaint_details/$id") {
+                launchSingleTop = true
+            }
+            viewModel.processIntent(MainContract.Intent.ClearDeepLink)
+        }
+    }
+
     val darkTheme = when (uiState.themeMode) {
         ThemeMode.LIGHT -> false
         ThemeMode.DARK -> true
@@ -126,21 +140,22 @@ fun MainApp(viewModel: MainViewModel = koinViewModel()) {
             }
         }
 
-        val topBarInfo = when (currentRoute) {
-            Screen.Home.route -> {
+        val topBarInfo = when {
+            currentRoute == Screen.Home.route -> {
                 val displayName = uiState.currentUser?.name ?: "User"
                 Pair("$greeting, $displayName!", "Hyderabad · ${uiState.currentUser?.rewardPoints ?: 0} pts")
             }
-            Screen.Report.route -> Pair("File a report", "Capture image & details")
-            Screen.Map.route -> Pair("Nearby Activity", "Live waste tracking")
-            Screen.Rewards.route -> Pair("Rewards", "Earn points for a clean city")
-            Screen.History.route -> Pair("My Reports", "History of your contributions")
-            Screen.ReportDetails.route -> Pair("Report Details", "Status: ${uiState.selectedReport?.status ?: ""}")
-            Screen.Profile.route -> Pair("Profile", "Your account details")
-            Screen.DriverDashboard.route -> Pair("Driver Dashboard", "Manage your tasks")
-            Screen.DriverTasks.route -> Pair("My Tasks", "Pending assignments")
-            Screen.DriverRoute.route -> Pair("Optimized Route", "Follow the path")
-            Screen.DriverProfile.route -> Pair("Driver Profile", "Account details")
+            currentRoute == Screen.Report.route -> Pair("File a report", "Capture image & details")
+            currentRoute == Screen.Map.route -> Pair("Nearby Activity", "Live waste tracking")
+            currentRoute == Screen.Rewards.route -> Pair("Rewards", "Earn points for a clean city")
+            currentRoute == Screen.History.route -> Pair("My Reports", "History of your contributions")
+            currentRoute == Screen.ReportDetails.route -> Pair("Report Details", "Status: ${uiState.selectedReport?.status ?: ""}")
+            currentRoute?.startsWith("complaint_details") == true -> Pair("Complaint Details", "Viewing complaint details")
+            currentRoute == Screen.Profile.route -> Pair("Profile", "Your account details")
+            currentRoute == Screen.DriverDashboard.route -> Pair("Driver Dashboard", "Manage your tasks")
+            currentRoute == Screen.DriverTasks.route -> Pair("My Tasks", "Pending assignments")
+            currentRoute == Screen.DriverRoute.route -> Pair("Optimized Route", "Follow the path")
+            currentRoute == Screen.DriverProfile.route -> Pair("Driver Profile", "Account details")
             else -> Pair("", "")
         }
 
@@ -173,7 +188,7 @@ fun MainApp(viewModel: MainViewModel = koinViewModel()) {
                 }
             },
             bottomBar = {
-                if (!isAuthScreen && currentRoute != Screen.ReportDetails.route && currentRoute != null) {
+                if (!isAuthScreen && currentRoute != Screen.ReportDetails.route && currentRoute?.startsWith("complaint_details") == false && currentRoute != null) {
                     BottomNavBar(
                         currentRoute = currentRoute,
                         userRole = uiState.userRole,
@@ -245,6 +260,16 @@ fun MainApp(viewModel: MainViewModel = koinViewModel()) {
                         onReportClick = { report ->
                             viewModel.processIntent(MainContract.Intent.ViewReportDetails(report))
                         }
+                    )
+                }
+                composable(
+                    route = "complaint_details/{id}",
+                    arguments = listOf(navArgument("id") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val complaintId = backStackEntry.arguments?.getString("id") ?: ""
+                    ComplaintDetailsScreen(
+                        complaintId = complaintId,
+                        onBack = { navController.popBackStack() }
                     )
                 }
                 composable(Screen.ReportDetails.route) {

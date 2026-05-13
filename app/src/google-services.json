@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "667272004662",
+    "project_id": "cleancity-1f08e",
+    "storage_bucket": "cleancity-1f08e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:667272004662:android:292c7678226154b4554497",
+        "android_client_info": {
+          "package_name": "com.example.cleancityapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "667272004662-amc9ovspuv1lm8d1vsneeejo2hok5t16.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_KGnlW_Aos1iuVuoxe3nd1SDHvv9miGI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "667272004662-amc9ovspuv1lm8d1vsneeejo2hok5t16.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:667272004662:android:d911e72d722fd834554497",
+        "android_client_info": {
+          "package_name": "com.example.garbagecollection"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "667272004662-amc9ovspuv1lm8d1vsneeejo2hok5t16.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_KGnlW_Aos1iuVuoxe3nd1SDHvv9miGI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "667272004662-amc9ovspuv1lm8d1vsneeejo2hok5t16.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

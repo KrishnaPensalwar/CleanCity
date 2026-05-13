@@ -12,6 +12,9 @@ sealed class Screen(val route: String) {
     object History : Screen("history")
     object ReportDetails : Screen("report_details")
     object Profile : Screen("profile")
+    data class ComplaintDetails(val id: String) : Screen("complaint_details/{id}") {
+        fun createRoute(id: String) = "complaint_details/$id"
+    }
 
     // Driver Screens
     object DriverDashboard : Screen("driver_dashboard")

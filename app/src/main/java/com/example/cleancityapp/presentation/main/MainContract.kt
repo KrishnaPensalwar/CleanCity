@@ -18,10 +18,13 @@ class MainContract {
         val isReportSuccess: Boolean = false,
         val userReports: List<ReportResponse> = emptyList(),
         val selectedReport: ReportResponse? = null,
-        val themeMode: ThemeMode = ThemeMode.SYSTEM
+        val themeMode: ThemeMode = ThemeMode.SYSTEM,
+        val deepLinkComplaintId: String? = null
     )
     
     sealed class Intent {
+        data class HandleDeepLink(val complaintId: String) : Intent()
+        object ClearDeepLink : Intent()
         data class SetThemeMode(val mode: ThemeMode) : Intent()
         data class Login(val email: String, val password: String) : Intent()
         data class SignUp(
