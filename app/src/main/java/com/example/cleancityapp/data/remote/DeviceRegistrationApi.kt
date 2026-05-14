@@ -15,7 +15,7 @@ data class DeviceRegistrationRequest(
 )
 
 class DeviceRegistrationApi(private val client: HttpClient) {
-    private val baseUrl = "http://10.0.2.2:8080" // Consistent with existing Retrofit config
+    private val baseUrl = "http://10.0.2.2:8080/api"
 
     suspend fun registerDevice(token: String, request: DeviceRegistrationRequest): HttpResponse {
         return client.post("$baseUrl/devices/register") {

@@ -58,9 +58,9 @@ class MainViewModel(
                 viewModelScope.launch {
                     try {
                         deviceRepository.registerDevice(accessToken, token)
-                        Log.d("FCM", "Registered token on startup")
+                        Log.d("FCM", "Token registration check completed")
                     } catch (e: Exception) {
-                        Log.e("FCM", "Failed to register token on startup", e)
+                        Log.e("FCM", "Failed to register token", e)
                     }
                 }
             }
@@ -191,6 +191,7 @@ class MainViewModel(
             viewModelScope.launch {
                 try {
                     deviceRepository.unregisterDevice(token)
+                    deviceRepository.clearCachedToken()
                 } catch (e: Exception) {
                     Log.e("FCM", "Failed to unregister device on logout", e)
                 }

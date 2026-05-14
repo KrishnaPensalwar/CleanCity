@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         handleNotificationIntent(intent)
         setContent {
-            MainApp()
+            MainApp(viewModel)
         }
     }
 

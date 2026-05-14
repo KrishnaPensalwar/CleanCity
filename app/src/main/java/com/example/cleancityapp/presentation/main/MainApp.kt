@@ -1,7 +1,6 @@
 package com.example.cleancityapp.presentation.main
 
 import androidx.activity.compose.BackHandler
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,7 +18,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavType
@@ -48,36 +46,14 @@ import com.example.cleancityapp.presentation.profile.ProfileScreen
 import com.example.cleancityapp.presentation.report.ReportScreen
 import com.example.cleancityapp.presentation.rewards.RewardsScreen
 import com.example.cleancityapp.ui.theme.CleanCityAppTheme
-import org.koin.androidx.compose.koinViewModel
 import java.util.Calendar
 
 @Composable
-fun MainApp(viewModel: MainViewModel = koinViewModel()) {
+fun MainApp(viewModel: MainViewModel) {
     val uiState by viewModel.uiState.collectAsState()
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-
-    // Sync NavController state back to ViewModel (for highlight & state consistency)
-    LaunchedEffect(currentRoute) {
-        currentRoute?.let { route ->
-            val screen = when (route) {
-                Screen.Home.route -> Screen.Home
-                Screen.Report.route -> Screen.Report
-                Screen.Map.route -> Screen.Map
-                Screen.Rewards.route -> Screen.Rewards
-                Screen.History.route -> Screen.History
-                Screen.Profile.route -> Screen.Profile
-                Screen.DriverDashboard.route -> Screen.DriverDashboard
-                Screen.DriverTasks.route -> Screen.DriverTasks
-                Screen.DriverRoute.route -> Screen.DriverRoute
-                Screen.DriverProfile.route -> Screen.DriverProfile
-                Screen.ReportDetails.route -> Screen.ReportDetails
-                else -> null
-            }
-            screen?.let { viewModel.processIntent(NavigateTo(it)) }
-        }
-    }
 
     val bottomNavRoutes = remember(uiState.userRole) {
         if (uiState.userRole == UserRole.USER) {
@@ -92,7 +68,6 @@ fun MainApp(viewModel: MainViewModel = koinViewModel()) {
         val targetRoute = uiState.currentScreen.route
         if (currentRoute != targetRoute) {
             navController.navigate(targetRoute) {
-                // Clear backstack on core transitions
                 if (targetRoute == Screen.Login.route || targetRoute == Screen.Home.route || targetRoute == Screen.DriverDashboard.route) {
                     popUpTo(0) { inclusive = true }
                 }
