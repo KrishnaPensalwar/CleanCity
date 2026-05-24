@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cleancityapp.data.remote.AuthApi
+import com.example.cleancityapp.data.remote.DriverApi
 import com.example.cleancityapp.data.remote.ReportResponse
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +22,7 @@ data class HistoryState(
 
 class HistoryViewModel(
     private val authApi: AuthApi,
+    private val driverApi: DriverApi,
     private val context: Context
 ) : ViewModel() {
     private val _state = MutableStateFlow(HistoryState())
@@ -32,21 +34,16 @@ class HistoryViewModel(
         val token = sharedPreferences.getString("access_token", null) ?: return
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
-            val result = retryApiCall(3) {
-                if (isDriver) {
-                    authApi.getAssignedReports("Bearer $token")
+            try {
+                val reports = if (isDriver) {
+                    driverApi.getAssignedReports(token)
                 } else {
-                    authApi.getMeReports("Bearer $token")
+                    val response = authApi.getMeReports("Bearer $token")
+                    if (response.isSuccessful) response.body() ?: emptyList() else throw Exception("Failed to fetch reports")
                 }
-            }
-            result?.let { response ->
-                if (response.isSuccessful && response.body() != null) {
-                    _state.update { it.copy(reports = response.body()!!, isLoading = false) }
-                } else {
-                    _state.update { it.copy(isLoading = false, error = "Failed to fetch history") }
-                }
-            } ?: run {
-                _state.update { it.copy(isLoading = false, error = "Connection failed") }
+                _state.update { it.copy(reports = reports, isLoading = false) }
+            } catch (e: Exception) {
+                _state.update { it.copy(isLoading = false, error = e.localizedMessage) }
             }
         }
     }

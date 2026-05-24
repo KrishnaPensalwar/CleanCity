@@ -33,7 +33,7 @@ fun HomeScreen(
     user: UserDto?,
     onNavigateToReport: () -> Unit,
     onNavigateToProfile: () -> Unit = {},
-    viewModel: MainViewModel = koinViewModel(),
+    viewModel: MainViewModel,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()

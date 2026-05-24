@@ -97,10 +97,17 @@ class AuthViewModel(
 
     private fun saveAuthData(loginData: LoginResponse) {
         sharedPreferences.edit()
-            .putString("access_token", loginData.accessToken)
+            .putString("access_token", loginData.token)
             .putString("refresh_token", loginData.refreshToken)
-            .putString("user_role", loginData.user.role)
             .apply()
+
+        if (loginData.roles.size == 1) {
+            val role = if (loginData.roles.contains("DRIVER")) "ROLE_DRIVER" else "ROLE_USER"
+            sharedPreferences.edit().putString("user_role", role).apply()
+        } else {
+            // Multiple roles, clear user_role to force selection
+            sharedPreferences.edit().remove("user_role").apply()
+        }
     }
 
     fun clearError() {

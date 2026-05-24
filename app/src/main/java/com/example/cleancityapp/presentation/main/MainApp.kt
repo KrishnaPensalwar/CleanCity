@@ -92,7 +92,7 @@ fun MainApp(viewModel: MainViewModel) {
     }
 
     CleanCityAppTheme(darkTheme = darkTheme) {
-        val isAuthScreen = currentRoute == Screen.Login.route || currentRoute == Screen.SignUp.route
+        val isAuthScreen = currentRoute == Screen.Login.route || currentRoute == Screen.SignUp.route || currentRoute == Screen.RoleSelection.route
 
         BackHandler(enabled = !isAuthScreen && currentRoute != Screen.Home.route && currentRoute != Screen.DriverDashboard.route) {
             if (bottomNavRoutes.contains(currentRoute)) {
@@ -143,7 +143,6 @@ fun MainApp(viewModel: MainViewModel) {
                         subtitle = topBarInfo.second,
                         onProfileClick = if (currentRoute == Screen.Home.route || currentRoute == Screen.DriverDashboard.route) {
                             {
-                                viewModel.processIntent(GetMe)
                                 navController.navigate(if (uiState.userRole == UserRole.DRIVER) Screen.DriverProfile.route else Screen.Profile.route)
                             }
                         } else null,
@@ -211,18 +210,25 @@ fun MainApp(viewModel: MainViewModel) {
                         onNavigateToLogin = { navController.navigate(Screen.Login.route) }
                     )
                 }
+                composable(Screen.RoleSelection.route) {
+                    RoleSelectionScreen(
+                        onRoleSelected = { role ->
+                            viewModel.processIntent(MainContract.Intent.SetRole(role))
+                        }
+                    )
+                }
                 composable(Screen.Home.route) {
                     HomeScreen(
                         onNavigateToReport = { navController.navigate(Screen.Report.route) },
                         onNavigateToProfile = {
-                            viewModel.processIntent(GetMe)
                             navController.navigate(Screen.Profile.route)
                         },
-                        user = uiState.currentUser
+                        user = uiState.currentUser,
+                        viewModel = viewModel
                     )
                 }
                 composable(Screen.Report.route) {
-                    ReportScreen()
+                    ReportScreen(mainViewModel = viewModel, onBack = { navController.popBackStack() })
                 }
                 composable(Screen.Map.route) {
                     MapScreen()
@@ -264,7 +270,8 @@ fun MainApp(viewModel: MainViewModel) {
                 composable(Screen.DriverDashboard.route) {
                     DriverDashboardScreen(
                         onNavigateToTasks = { navController.navigate(Screen.DriverTasks.route) },
-                        onNavigateToRoute = { navController.navigate(Screen.DriverRoute.route) }
+                        onNavigateToRoute = { navController.navigate(Screen.DriverRoute.route) },
+                        mainViewModel = viewModel
                     )
                 }
                 composable(Screen.DriverTasks.route) {

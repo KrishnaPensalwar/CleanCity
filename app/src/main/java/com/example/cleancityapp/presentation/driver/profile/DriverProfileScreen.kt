@@ -62,27 +62,6 @@ fun DriverProfileScreen(
             .verticalScroll(rememberScrollState())
     ) {
 
-        Box(modifier = Modifier.fillMaxWidth()) {
-
-            TopNavBar(
-                title = "My profile",
-                subtitle = "Driver account details"
-            )
-
-            IconButton(
-                onClick = onBack,
-                modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .padding(top = 10.dp, start = 8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back",
-                    tint = colorScheme.onPrimary
-                )
-            }
-        }
-
         Column(modifier = Modifier.padding(16.dp)) {
 
             // Profile Card

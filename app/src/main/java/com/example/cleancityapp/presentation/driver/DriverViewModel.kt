@@ -6,6 +6,7 @@ import android.webkit.MimeTypeMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cleancityapp.data.remote.AuthApi
+import com.example.cleancityapp.data.remote.DriverApi
 import com.example.cleancityapp.data.remote.ReportResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,6 +29,7 @@ data class DriverState(
 
 class DriverViewModel(
     private val authApi: AuthApi,
+    private val driverApi: DriverApi,
     private val context: Context
 ) : ViewModel() {
 
@@ -45,12 +47,8 @@ class DriverViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             try {
-                val response = authApi.getAssignedReports("Bearer $token")
-                if (response.isSuccessful) {
-                    _state.update { it.copy(assignedReports = response.body() ?: emptyList(), isLoading = false) }
-                } else {
-                    _state.update { it.copy(isLoading = false, error = "Failed to fetch tasks: ${response.message()}") }
-                }
+                val reports = driverApi.getAssignedReports(token)
+                _state.update { it.copy(assignedReports = reports, isLoading = false) }
             } catch (e: Exception) {
                 _state.update { it.copy(isLoading = false, error = e.localizedMessage) }
             }

@@ -39,12 +39,12 @@ class TokenAuthenticator(context: Context) : Authenticator, KoinComponent {
             if (newTokenResponse.isSuccessful && newTokenResponse.body() != null) {
                 val loginResponse = newTokenResponse.body()!!
                 sharedPreferences.edit()
-                    .putString("access_token", loginResponse.accessToken)
+                    .putString("access_token", loginResponse.token)
                     .putString("refresh_token", loginResponse.refreshToken)
                     .apply()
 
                 return response.request.newBuilder()
-                    .header("Authorization", "Bearer ${loginResponse.accessToken}")
+                    .header("Authorization", "Bearer ${loginResponse.token}")
                     .build()
             }
         }

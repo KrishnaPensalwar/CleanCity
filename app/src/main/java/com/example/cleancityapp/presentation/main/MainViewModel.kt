@@ -83,7 +83,10 @@ class MainViewModel(
                 _uiState.update { it.copy(themeMode = intent.mode) }
             }
             is MainContract.Intent.SetRole -> {
+                val roleString = if (intent.role == UserRole.DRIVER) "ROLE_DRIVER" else "ROLE_USER"
+                sharedPreferences.edit().putString("user_role", roleString).apply()
                 _uiState.update { it.copy(userRole = intent.role) }
+                navigateToDashboard()
             }
             is MainContract.Intent.GetMe -> {
                 getMe()
@@ -149,13 +152,24 @@ class MainViewModel(
                 }
                 if (response.isSuccessful && response.body() != null) {
                     val user = response.body()!!
-                    val role = if (user.role == "ROLE_DRIVER") UserRole.DRIVER else UserRole.USER
-                    _uiState.update { 
-                        it.copy(
-                            currentUser = user,
-                            userRole = role,
-                            isLoading = false
-                        ) 
+                    val roles = user.roles
+                    
+                    _uiState.update { it.copy(currentUser = user, isLoading = false) }
+
+                    // If user has multiple roles and hasn't picked one this session, go to selection
+                    val savedRole = sharedPreferences.getString("user_role", null)
+                    
+                    if (roles.contains("USER") && roles.contains("DRIVER") && savedRole == null) {
+                        _uiState.update { it.copy(currentScreen = Screen.RoleSelection) }
+                    } else {
+                        val role = when {
+                            savedRole == "ROLE_DRIVER" -> UserRole.DRIVER
+                            savedRole == "ROLE_USER" -> UserRole.USER
+                            roles.contains("DRIVER") -> UserRole.DRIVER
+                            else -> UserRole.USER
+                        }
+                        _uiState.update { it.copy(userRole = role) }
+                        navigateToDashboard()
                     }
                 } else {
                     _uiState.update { it.copy(isLoading = false, error = "Failed to fetch user data") }
@@ -216,6 +230,19 @@ class MainViewModel(
 
     private fun navigateToDashboard() {
         val roleString = sharedPreferences.getString("user_role", null)
+        val currentUser = _uiState.value.currentUser
+        val roles = currentUser?.roles ?: emptyList()
+        
+        if (roleString == null && roles.isEmpty()) {
+            // Still loading user data to determine roles
+            return
+        }
+
+        if (roles.contains("USER") && roles.contains("DRIVER") && roleString == null) {
+            _uiState.update { it.copy(currentScreen = Screen.RoleSelection) }
+            return
+        }
+
         val role = if (roleString == "ROLE_DRIVER") UserRole.DRIVER else UserRole.USER
         val initialScreen = when (role) {
             UserRole.USER -> Screen.Home

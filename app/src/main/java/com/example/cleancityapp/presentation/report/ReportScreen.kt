@@ -51,7 +51,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun ReportScreen(
     userViewModel: UserViewModel = koinViewModel(),
-    mainViewModel: MainViewModel = koinViewModel(),
+    mainViewModel: MainViewModel,
     onBack: () -> Unit = {},
 ) {
     val uiState by userViewModel.state.collectAsState()

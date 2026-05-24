@@ -3,6 +3,7 @@ package com.example.cleancityapp.presentation.main
 sealed class Screen(val route: String) {
     object Login : Screen("login")
     object SignUp : Screen("signup")
+    object RoleSelection : Screen("role_selection")
     
     // User Screens
     object Home : Screen("home")

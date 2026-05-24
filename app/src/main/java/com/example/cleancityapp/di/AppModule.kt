@@ -4,6 +4,7 @@ import com.example.cleancityapp.data.remote.AuthApi
 import com.example.cleancityapp.data.remote.TokenAuthenticator
 import com.example.cleancityapp.data.remote.ComplaintDetailsApi
 import com.example.cleancityapp.data.remote.DeviceRegistrationApi
+import com.example.cleancityapp.data.remote.DriverApi
 import com.example.cleancityapp.data.repository.ComplaintDetailsRepository
 import com.example.cleancityapp.data.repository.DeviceRegistrationRepository
 import com.example.cleancityapp.notification.NotificationHelper
@@ -93,6 +94,7 @@ val appModule = module {
     // Services/APIs
     single { DeviceRegistrationApi(get()) }
     single { ComplaintDetailsApi(get()) }
+    single { DriverApi(get()) }
     single { NotificationHelper(androidContext()) }
 
     // Repositories
@@ -101,9 +103,9 @@ val appModule = module {
 
     // ViewModels
     viewModel { MainViewModel(get(), get(), androidContext()) }
-    viewModel { DriverViewModel(get(), androidContext()) }
+    viewModel { DriverViewModel(get(), get(), androidContext()) }
     viewModel { AuthViewModel(get(), androidContext()) }
-    viewModel { HistoryViewModel(get(), androidContext()) }
+    viewModel { HistoryViewModel(get(), get(), androidContext()) }
     viewModel { UserViewModel(get(), androidContext()) }
     viewModel { ComplaintDetailsViewModel(get(), androidContext()) }
 }
