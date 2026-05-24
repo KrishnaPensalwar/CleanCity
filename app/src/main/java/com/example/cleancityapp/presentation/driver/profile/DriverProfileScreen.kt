@@ -30,10 +30,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import android.Manifest
+import android.os.Build
+import android.content.pm.PackageManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import com.example.cleancityapp.data.remote.UserDto
 import com.example.cleancityapp.presentation.driver.dashboard.sections.StatCard
 import com.example.cleancityapp.presentation.driver.route.DetailRow
 import com.example.cleancityapp.presentation.profile.ProfileViewModel
+import com.example.cleancityapp.presentation.main.ThemeMode
+import com.example.cleancityapp.presentation.components.ThemeSelectorRow
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -41,10 +50,23 @@ fun DriverProfileScreen(
     user: UserDto?,
     onLogout: () -> Unit,
     onBack: () -> Unit,
+    onThemeSelected: (ThemeMode) -> Unit,
+    currentThemeMode: ThemeMode,
     viewModel: ProfileViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     val colorScheme = MaterialTheme.colorScheme
+    val context = LocalContext.current
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { _ -> }
+
+    val notificationStatus = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) "On" else "Off"
+    } else {
+        "On"
+    }
 
     val name = "${state.user?.name ?: user?.name ?: "Driver"}"
     val email = "${state.user?.email ?: user?.email ?: "driver@example.com"}"
@@ -175,6 +197,21 @@ fun DriverProfileScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            // Appearance Card
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
+                shape = RoundedCornerShape(11.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+            ) {
+                ThemeSelectorRow(
+                    currentMode = currentThemeMode,
+                    onModeSelected = onThemeSelected
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
             // Settings Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -187,7 +224,15 @@ fun DriverProfileScreen(
 
                 Column(modifier = Modifier.padding(12.dp)) {
 
-                    SettingRow("Notifications", "On")
+                    SettingRow(
+                        label = "Notifications",
+                        value = notificationStatus,
+                        onClick = {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            }
+                        }
+                    )
 
                     SettingRow("Location sharing", "On")
 
@@ -218,17 +263,20 @@ fun DriverProfileScreen(
 }
 
 @Composable
-fun SettingRow(label: String, value: String) {
-
+fun SettingRow(
+    label: String,
+    value: String,
+    onClick: (() -> Unit)? = null
+) {
     val colorScheme = MaterialTheme.colorScheme
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable(enabled = onClick != null) { onClick?.invoke() }
             .padding(vertical = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-
         Text(
             text = label,
             fontSize = 13.sp,

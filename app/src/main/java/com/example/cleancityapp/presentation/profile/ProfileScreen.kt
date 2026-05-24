@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,11 +22,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import android.Manifest
+import android.os.Build
+import android.content.Context
+import android.content.pm.PackageManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import com.example.cleancityapp.data.remote.UserDto
 import com.example.cleancityapp.presentation.home.sections.StatBubble
 import com.example.cleancityapp.presentation.main.MainContract
 import com.example.cleancityapp.presentation.main.MainViewModel
 import com.example.cleancityapp.presentation.main.ThemeMode
+import com.example.cleancityapp.presentation.components.ThemeSelectorRow
 import com.example.cleancityapp.presentation.profile.sections.ProfileSettingRow
 import org.koin.androidx.compose.koinViewModel
 
@@ -34,9 +44,25 @@ fun ProfileScreen(
     user: UserDto?,
     onLogout: () -> Unit,
     onBack: () -> Unit,
+    onThemeSelected: (ThemeMode) -> Unit,
+    currentThemeMode: ThemeMode,
     viewModel: ProfileViewModel = koinViewModel()
 ) {
     val uiState by viewModel.state.collectAsState()
+    val context = LocalContext.current
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        // Handle result if needed
+    }
+
+    val notificationStatus = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) "On" else "Off"
+    } else {
+        "On"
+    }
+
     val name = "${uiState.user?.name ?: user?.name ?: "User"}"
     val email = "${uiState.user?.email ?: user?.email ?: "user@example.com"}"
     val initials = try {
@@ -104,8 +130,8 @@ fun ProfileScreen(
                 .background(MaterialTheme.colorScheme.surface),
         ) {
             ThemeSelectorRow(
-                currentMode = uiState.themeMode,
-                onModeSelected = { viewModel.setThemeMode(it) }
+                currentMode = currentThemeMode,
+                onModeSelected = { onThemeSelected(it) }
             )
         }
 
@@ -127,7 +153,16 @@ fun ProfileScreen(
                 .background(MaterialTheme.colorScheme.surface),
         ) {
             ProfileSettingRow(title = "Privacy policy", icon = "🛡️")
-            ProfileSettingRow(title = "Notifications", icon = "🔔", value = "On")
+            ProfileSettingRow(
+                title = "Notifications",
+                icon = "🔔",
+                value = notificationStatus,
+                onClick = {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    }
+                }
+            )
             ProfileSettingRow(
                 title = "Log out",
                 icon = "🚪",
@@ -135,85 +170,6 @@ fun ProfileScreen(
                 isLast = true,
                 onClick = onLogout,
             )
-        }
-    }
-}
-
-@Composable
-fun ThemeSelectorRow(
-    currentMode: ThemeMode,
-    onModeSelected: (ThemeMode) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp, horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(text = "🎨", fontSize = 18.sp)
-            }
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = "App Theme",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        }
-    }
-    
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 20.dp, start = 16.dp, end = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        ThemeOptionChip(
-            label = "Light",
-            isSelected = currentMode == ThemeMode.LIGHT,
-            onClick = { onModeSelected(ThemeMode.LIGHT) },
-            modifier = Modifier.weight(1f)
-        )
-        ThemeOptionChip(
-            label = "Dark",
-            isSelected = currentMode == ThemeMode.DARK,
-            onClick = { onModeSelected(ThemeMode.DARK) },
-            modifier = Modifier.weight(1f)
-        )
-        ThemeOptionChip(
-            label = "System",
-            isSelected = currentMode == ThemeMode.SYSTEM,
-            onClick = { onModeSelected(ThemeMode.SYSTEM) },
-            modifier = Modifier.weight(1f)
-        )
-    }
-}
-
-@Composable
-fun ThemeOptionChip(
-    label: String,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        onClick = onClick,
-        shape = RoundedCornerShape(12.dp),
-        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-        contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = modifier.height(40.dp)
-    ) {
-        Box(contentAlignment = Alignment.Center) {
-            Text(text = label, fontSize = 13.sp, fontWeight = FontWeight.Bold)
         }
     }
 }

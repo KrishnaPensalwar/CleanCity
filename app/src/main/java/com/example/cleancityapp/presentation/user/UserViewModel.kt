@@ -39,6 +39,7 @@ class UserViewModel(
     private val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
 
     fun fetchUserReports() {
+        if (_state.value.reports.isNotEmpty()) return
         val token = sharedPreferences.getString("access_token", null) ?: return
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }

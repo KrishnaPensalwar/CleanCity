@@ -43,6 +43,7 @@ class DriverViewModel(
     }
 
     fun fetchAssignedReports() {
+        if (_state.value.assignedReports.isNotEmpty()) return
         val token = sharedPreferences.getString("access_token", null) ?: return
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }

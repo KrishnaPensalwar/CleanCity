@@ -45,6 +45,7 @@ class MainContract {
         data class ViewReportDetails(val report: ReportResponse) : Intent()
         data class NavigateTo(val screen: Screen) : Intent()
         data class SetRole(val role: UserRole) : Intent()
+        data class SyncScreenState(val screen: Screen) : Intent()
         
         object ResetReportStatus : Intent()
         object FetchCities : Intent()

@@ -117,6 +117,11 @@ class MainViewModel(
                     ) 
                 }
             }
+            is MainContract.Intent.SyncScreenState -> {
+                if (_uiState.value.currentScreen != intent.screen) {
+                    _uiState.update { it.copy(currentScreen = intent.screen) }
+                }
+            }
             is MainContract.Intent.ClearError -> {
                 _uiState.update { it.copy(error = null) }
             }

@@ -19,8 +19,7 @@ import kotlinx.coroutines.withContext
 data class ProfileState(
     val user: UserDto? = null,
     val isLoading: Boolean = false,
-    val error: String? = null,
-    val themeMode: ThemeMode = ThemeMode.SYSTEM
+    val error: String? = null
 )
 
 class ProfileViewModel(
@@ -33,10 +32,10 @@ class ProfileViewModel(
 
     init {
         loadUser()
-        loadTheme()
     }
 
     private fun loadUser() {
+        if (_state.value.user != null) return
         val token = sharedPreferences.getString("access_token", null) ?: return
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
@@ -55,21 +54,6 @@ class ProfileViewModel(
                 _state.update { it.copy(isLoading = false, error = e.localizedMessage) }
             }
         }
-    }
-
-    private fun loadTheme() {
-        val themeStr = sharedPreferences.getString("theme_mode", ThemeMode.SYSTEM.name)
-        val mode = try {
-            ThemeMode.valueOf(themeStr ?: ThemeMode.SYSTEM.name)
-        } catch (e: Exception) {
-            ThemeMode.SYSTEM
-        }
-        _state.update { it.copy(themeMode = mode) }
-    }
-
-    fun setThemeMode(mode: ThemeMode) {
-        sharedPreferences.edit().putString("theme_mode", mode.name).apply()
-        _state.update { it.copy(themeMode = mode) }
     }
 
     fun logout(onLogoutSuccess: () -> Unit) {

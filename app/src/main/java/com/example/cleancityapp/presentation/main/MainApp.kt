@@ -66,12 +66,39 @@ fun MainApp(viewModel: MainViewModel) {
     // Sync ViewModel navigation state with NavController
     LaunchedEffect(uiState.currentScreen) {
         val targetRoute = uiState.currentScreen.route
-        if (currentRoute != targetRoute) {
+        if (currentRoute != null && currentRoute != targetRoute) {
             navController.navigate(targetRoute) {
                 if (targetRoute == Screen.Login.route || targetRoute == Screen.Home.route || targetRoute == Screen.DriverDashboard.route) {
                     popUpTo(0) { inclusive = true }
                 }
                 launchSingleTop = true
+            }
+        }
+    }
+
+    // Sync back NavController state to ViewModel to avoid reset on rotation
+    LaunchedEffect(currentRoute) {
+        currentRoute?.let { route ->
+            val screen = when {
+                route == Screen.Home.route -> Screen.Home
+                route == Screen.Profile.route -> Screen.Profile
+                route == Screen.Report.route -> Screen.Report
+                route == Screen.Map.route -> Screen.Map
+                route == Screen.Rewards.route -> Screen.Rewards
+                route == Screen.History.route -> Screen.History
+                route == Screen.DriverDashboard.route -> Screen.DriverDashboard
+                route == Screen.DriverTasks.route -> Screen.DriverTasks
+                route == Screen.DriverRoute.route -> Screen.DriverRoute
+                route == Screen.DriverProfile.route -> Screen.DriverProfile
+                route == Screen.Login.route -> Screen.Login
+                route == Screen.SignUp.route -> Screen.SignUp
+                route == Screen.RoleSelection.route -> Screen.RoleSelection
+                route == Screen.ReportDetails.route -> Screen.ReportDetails
+                route.startsWith("complaint_details") -> null // Handled via deep link state if needed
+                else -> null
+            }
+            if (screen != null && screen != uiState.currentScreen) {
+                viewModel.processIntent(MainContract.Intent.SyncScreenState(screen))
             }
         }
     }
@@ -263,6 +290,8 @@ fun MainApp(viewModel: MainViewModel) {
                         user = uiState.currentUser,
                         onBack = { navController.popBackStack() },
                         onLogout = { viewModel.processIntent(Logout) },
+                        onThemeSelected = { viewModel.processIntent(MainContract.Intent.SetThemeMode(it)) },
+                        currentThemeMode = uiState.themeMode
                     )
                 }
                 composable(Screen.DriverDashboard.route) {
@@ -283,7 +312,9 @@ fun MainApp(viewModel: MainViewModel) {
                     DriverProfileScreen(
                         user = uiState.currentUser,
                         onBack = { navController.popBackStack() },
-                        onLogout = { viewModel.processIntent(Logout) }
+                        onLogout = { viewModel.processIntent(Logout) },
+                        onThemeSelected = { viewModel.processIntent(MainContract.Intent.SetThemeMode(it)) },
+                        currentThemeMode = uiState.themeMode
                     )
                 }
             }

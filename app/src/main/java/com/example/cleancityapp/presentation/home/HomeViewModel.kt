@@ -34,13 +34,14 @@ class HomeViewModel(
         refreshHome()
     }
 
-    fun refreshHome() {
-        getMe()
-        fetchRank()
-        fetchUserReports()
+    fun refreshHome(force: Boolean = false) {
+        getMe(force)
+        fetchRank(force)
+        fetchUserReports(force)
     }
 
-    private fun getMe() {
+    private fun getMe(force: Boolean = false) {
+        if (!force && _state.value.currentUser != null) return
         val token = sharedPreferences.getString("access_token", null) ?: return
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
@@ -61,7 +62,8 @@ class HomeViewModel(
         }
     }
 
-    private fun fetchRank() {
+    private fun fetchRank(force: Boolean = false) {
+        if (!force && _state.value.userRank != null) return
         val token = sharedPreferences.getString("access_token", null) ?: return
         viewModelScope.launch {
             try {
@@ -75,7 +77,8 @@ class HomeViewModel(
         }
     }
 
-    private fun fetchUserReports() {
+    private fun fetchUserReports(force: Boolean = false) {
+        if (!force && _state.value.userReports.isNotEmpty()) return
         val token = sharedPreferences.getString("access_token", null) ?: return
         viewModelScope.launch {
             try {
