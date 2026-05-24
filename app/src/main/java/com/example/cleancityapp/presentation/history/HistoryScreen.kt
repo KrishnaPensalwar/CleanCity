@@ -24,15 +24,15 @@ import com.example.cleancityapp.presentation.components.HistoryItemSkeleton
 import com.example.cleancityapp.presentation.history.sections.HistoryEmptyState
 import com.example.cleancityapp.presentation.history.sections.HistoryFilterBar
 import com.example.cleancityapp.presentation.history.sections.ReportHistoryCard
-import com.example.cleancityapp.presentation.user.UserViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HistoryScreen(
+    isDriver: Boolean,
     onReportClick: (ReportResponse) -> Unit,
-    userViewModel: UserViewModel = koinViewModel()
+    viewModel: HistoryViewModel = koinViewModel()
 ) {
-    val uiState by userViewModel.state.collectAsState()
+    val uiState by viewModel.state.collectAsState()
     var selectedFilter by remember { mutableStateOf("All") }
     val filters = listOf("All", "Pending", "Approved", "Rejected")
 
@@ -42,7 +42,7 @@ fun HistoryScreen(
     }
 
     LaunchedEffect(Unit) {
-        userViewModel.fetchUserReports()
+        viewModel.fetchReports(isDriver)
     }
 
     Column(
@@ -63,7 +63,7 @@ fun HistoryScreen(
                 }
 
             uiState.error != null ->
-                ErrorState(message = uiState.error!!, onRetry = { userViewModel.fetchUserReports() })
+                ErrorState(message = uiState.error!!, onRetry = { viewModel.fetchReports(isDriver) })
 
             filteredReports.isEmpty() ->
                 HistoryEmptyState()

@@ -131,7 +131,10 @@ fun ProfileScreen(
         ) {
             ThemeSelectorRow(
                 currentMode = currentThemeMode,
-                onModeSelected = { onThemeSelected(it) }
+                onModeSelected = { 
+                    viewModel.setThemeMode(it)
+                    onThemeSelected(it)
+                }
             )
         }
 

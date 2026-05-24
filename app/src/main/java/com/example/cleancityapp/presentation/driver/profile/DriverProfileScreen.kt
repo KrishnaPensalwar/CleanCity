@@ -206,7 +206,10 @@ fun DriverProfileScreen(
             ) {
                 ThemeSelectorRow(
                     currentMode = currentThemeMode,
-                    onModeSelected = onThemeSelected
+                    onModeSelected = {
+                        viewModel.setThemeMode(it)
+                        onThemeSelected(it)
+                    }
                 )
             }
 

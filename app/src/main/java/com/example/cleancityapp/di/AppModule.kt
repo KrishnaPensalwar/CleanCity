@@ -17,6 +17,7 @@ import com.example.cleancityapp.presentation.user.UserViewModel
 import com.example.cleancityapp.presentation.history.ComplaintDetailsViewModel
 import com.example.cleancityapp.presentation.home.HomeViewModel
 import com.example.cleancityapp.presentation.profile.ProfileViewModel
+import com.example.cleancityapp.presentation.rewards.RewardsViewModel
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -108,12 +109,13 @@ val appModule = module {
     single { ComplaintDetailsRepository(get()) }
 
     // ViewModels
-    viewModel { MainViewModel(get(), get(), androidContext()) }
-    viewModel { DriverViewModel(get(), get(), androidContext()) }
-    viewModel { AuthViewModel(get(), androidContext()) }
-    viewModel { HistoryViewModel(get(), get(), androidContext()) }
-    viewModel { UserViewModel(get(), androidContext()) }
-    viewModel { ComplaintDetailsViewModel(get(), androidContext()) }
+    viewModel { MainViewModel(get(), get(), get()) }
+    viewModel { DriverViewModel(get(), get(), get(), androidContext()) }
+    viewModel { AuthViewModel(get(), get()) }
+    viewModel { HistoryViewModel(get(), get(), get()) }
+    viewModel { UserViewModel(get(), get(), androidContext()) }
+    viewModel { ComplaintDetailsViewModel(get(), get()) }
     viewModel { HomeViewModel(get(), get()) }
     viewModel { ProfileViewModel(get(), get(), get()) }
+    viewModel { RewardsViewModel(get(), get()) }
 }

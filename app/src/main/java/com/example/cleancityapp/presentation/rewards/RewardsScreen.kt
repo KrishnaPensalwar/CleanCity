@@ -24,13 +24,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.cleancityapp.presentation.main.MainViewModel
 import com.example.cleancityapp.presentation.rewards.sections.RewardsLeaderboardSection
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun RewardsScreen(mainViewModel: MainViewModel = koinViewModel()) {
-    val state by mainViewModel.uiState.collectAsStateWithLifecycle()
+fun RewardsScreen(viewModel: RewardsViewModel = koinViewModel()) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
     val points = state.userRank?.currentUser?.rewardPoints ?: state.currentUser?.rewardPoints ?: 0
 
     Column(

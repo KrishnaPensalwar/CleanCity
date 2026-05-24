@@ -1,6 +1,6 @@
 package com.example.cleancityapp.presentation.auth
 
-import android.content.Context
+import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cleancityapp.data.remote.AuthApi
@@ -25,13 +25,11 @@ data class AuthState(
 
 class AuthViewModel(
     private val authApi: AuthApi,
-    private val context: Context
+    private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AuthState())
     val state: StateFlow<AuthState> = _state.asStateFlow()
-
-    private val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
 
     fun fetchCities() {
         if (_state.value.cities.isNotEmpty()) return
@@ -43,9 +41,7 @@ class AuthViewModel(
                 if (response.isSuccessful) {
                     _state.update { it.copy(cities = response.body() ?: emptyList()) }
                 }
-            } catch (e: Exception) {
-                // Background fetch, ignore error for now
-            }
+            } catch (e: Exception) { }
         }
     }
 
@@ -96,18 +92,18 @@ class AuthViewModel(
     }
 
     private fun saveAuthData(loginData: LoginResponse) {
-        sharedPreferences.edit()
-            .putString("access_token", loginData.token)
-            .putString("refresh_token", loginData.refreshToken)
-            .putString("user_id", loginData.profile.id)
-            .apply()
-
-        if (loginData.roles.size == 1) {
-            val role = if (loginData.roles.contains("DRIVER")) "ROLE_DRIVER" else "ROLE_USER"
-            sharedPreferences.edit().putString("user_role", role).apply()
-        } else {
-            // Multiple roles, clear user_role to force selection
-            sharedPreferences.edit().remove("user_role").apply()
+        sharedPreferences.edit().apply {
+            putString("access_token", loginData.token)
+            putString("refresh_token", loginData.refreshToken)
+            putString("user_id", loginData.profile.id)
+            
+            if (loginData.roles.size == 1) {
+                val role = if (loginData.roles.contains("DRIVER")) "ROLE_DRIVER" else "ROLE_USER"
+                putString("user_role", role)
+            } else {
+                remove("user_role")
+            }
+            apply()
         }
     }
 

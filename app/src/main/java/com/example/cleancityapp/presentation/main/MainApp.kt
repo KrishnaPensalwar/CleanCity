@@ -38,9 +38,7 @@ import com.example.cleancityapp.presentation.history.ComplaintDetailsScreen
 import com.example.cleancityapp.presentation.history.HistoryScreen
 import com.example.cleancityapp.presentation.history.ReportDetailsScreen
 import com.example.cleancityapp.presentation.home.HomeScreen
-import com.example.cleancityapp.presentation.main.MainContract.Intent.GetMe
 import com.example.cleancityapp.presentation.main.MainContract.Intent.Logout
-import com.example.cleancityapp.presentation.main.MainContract.Intent.NavigateTo
 import com.example.cleancityapp.presentation.map.MapScreen
 import com.example.cleancityapp.presentation.profile.ProfileScreen
 import com.example.cleancityapp.presentation.report.ReportScreen
@@ -264,6 +262,7 @@ fun MainApp(viewModel: MainViewModel) {
                 }
                 composable(Screen.History.route) {
                     HistoryScreen(
+                        isDriver = uiState.userRole == UserRole.DRIVER,
                         onReportClick = { report ->
                             viewModel.processIntent(MainContract.Intent.ViewReportDetails(report))
                         }

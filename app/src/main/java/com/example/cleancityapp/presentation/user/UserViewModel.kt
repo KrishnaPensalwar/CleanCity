@@ -1,6 +1,7 @@
 package com.example.cleancityapp.presentation.user
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.net.Uri
 import android.webkit.MimeTypeMap
 import androidx.lifecycle.ViewModel
@@ -30,13 +31,12 @@ data class UserState(
 
 class UserViewModel(
     private val authApi: AuthApi,
+    private val sharedPreferences: SharedPreferences,
     private val context: Context
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UserState())
     val state: StateFlow<UserState> = _state.asStateFlow()
-
-    private val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
 
     fun fetchUserReports() {
         if (_state.value.reports.isNotEmpty()) return
@@ -91,6 +91,8 @@ class UserViewModel(
 
                 if (response.isSuccessful) {
                     _state.update { it.copy(isLoading = false, isReportSuccess = true) }
+                    // Clear reports so next fetch gets new data
+                    _state.update { it.copy(reports = emptyList()) }
                     fetchUserReports()
                 } else {
                     _state.update { it.copy(isLoading = false, error = "Failed to submit report: ${response.message()}") }

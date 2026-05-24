@@ -1,6 +1,6 @@
 package com.example.cleancityapp.presentation.history
 
-import android.content.Context
+import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cleancityapp.data.repository.ComplaintDetailsRepository
@@ -11,12 +11,10 @@ import kotlinx.coroutines.launch
 
 class ComplaintDetailsViewModel(
     private val repository: ComplaintDetailsRepository,
-    private val context: Context
+    private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
     private val _state = MutableStateFlow(ComplaintDetailsContract.State())
     val state = _state.asStateFlow()
-
-    private val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
 
     fun processIntent(intent: ComplaintDetailsContract.Intent) {
         when (intent) {

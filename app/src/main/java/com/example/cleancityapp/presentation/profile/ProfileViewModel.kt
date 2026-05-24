@@ -56,6 +56,10 @@ class ProfileViewModel(
         }
     }
 
+    fun setThemeMode(mode: ThemeMode) {
+        sharedPreferences.edit().putString("theme_mode", mode.name).apply()
+    }
+
     fun logout(onLogoutSuccess: () -> Unit) {
         val token = sharedPreferences.getString("access_token", null)
         viewModelScope.launch {

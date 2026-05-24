@@ -1,6 +1,6 @@
 package com.example.cleancityapp.presentation.main
 
-import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
@@ -19,12 +19,10 @@ import kotlinx.coroutines.withContext
 class MainViewModel(
     private val authApi: AuthApi,
     private val deviceRepository: DeviceRegistrationRepository,
-    private val context: Context
+    private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(MainContract.State())
     val uiState: StateFlow<MainContract.State> = _uiState.asStateFlow()
-
-    private val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
 
     init {
         loadTheme()
@@ -94,7 +92,6 @@ class MainViewModel(
                 _uiState.update { it.copy(deepLinkComplaintId = null) }
             }
             is MainContract.Intent.SetThemeMode -> {
-                sharedPreferences.edit { putString("theme_mode", intent.mode.name) }
                 _uiState.update { it.copy(themeMode = intent.mode) }
             }
             is MainContract.Intent.SetRole -> {
@@ -109,21 +106,18 @@ class MainViewModel(
             is MainContract.Intent.LoginSuccess -> {
                 fetchInitialData()
             }
-            is MainContract.Intent.ViewReportDetails -> {
-                _uiState.update { 
-                    it.copy(
-                        selectedReport = intent.report,
-                        currentScreen = Screen.ReportDetails
-                    ) 
-                }
-            }
             is MainContract.Intent.SyncScreenState -> {
                 if (_uiState.value.currentScreen != intent.screen) {
                     _uiState.update { it.copy(currentScreen = intent.screen) }
                 }
             }
-            is MainContract.Intent.ClearError -> {
-                _uiState.update { it.copy(error = null) }
+            is MainContract.Intent.ViewReportDetails -> {
+                _uiState.update { 
+                    it.copy(
+                        selectedReport = intent.report,
+                        currentScreen = Screen.ReportDetails
+                    )
+                }
             }
             else -> {}
         }

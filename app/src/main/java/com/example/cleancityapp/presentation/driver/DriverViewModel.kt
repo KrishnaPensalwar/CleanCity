@@ -1,6 +1,7 @@
 package com.example.cleancityapp.presentation.driver
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.net.Uri
 import android.webkit.MimeTypeMap
 import androidx.lifecycle.ViewModel
@@ -30,13 +31,12 @@ data class DriverState(
 class DriverViewModel(
     private val authApi: AuthApi,
     private val driverApi: DriverApi,
+    private val sharedPreferences: SharedPreferences,
     private val context: Context
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(DriverState())
     val state: StateFlow<DriverState> = _state.asStateFlow()
-
-    private val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
 
     init {
         fetchAssignedReports()
@@ -73,6 +73,8 @@ class DriverViewModel(
                 val response = authApi.uploadCompletionPhoto("Bearer $token", reportId, body)
                 if (response.isSuccessful) {
                     _state.update { it.copy(isLoading = false, isActionSuccess = true) }
+                    // Force refresh
+                    _state.update { it.copy(assignedReports = emptyList()) }
                     fetchAssignedReports()
                     if (_state.value.selectedReport?.id == reportId) {
                         _state.update { it.copy(selectedReport = null) }
