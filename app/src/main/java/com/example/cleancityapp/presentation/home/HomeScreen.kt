@@ -25,7 +25,7 @@ import com.example.cleancityapp.data.remote.UserDto
 import com.example.cleancityapp.presentation.home.sections.ActivityItem
 import com.example.cleancityapp.presentation.home.sections.MapCard
 import com.example.cleancityapp.presentation.home.sections.StatBubble
-import com.example.cleancityapp.presentation.main.MainViewModel
+import com.example.cleancityapp.presentation.home.HomeViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -33,9 +33,9 @@ fun HomeScreen(
     user: UserDto?,
     onNavigateToReport: () -> Unit,
     onNavigateToProfile: () -> Unit = {},
-    viewModel: MainViewModel,
+    viewModel: HomeViewModel = koinViewModel(),
 ) {
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
 
     Column(
@@ -57,12 +57,12 @@ fun HomeScreen(
             ) {
                 StatBubble(
                     label = "Rank",
-                    value = state.userRank?.currentUser?.rank?.toString() ?: "—",
+                    value = "${state.userRank?.currentUser?.rank ?: "—"}",
                     modifier = Modifier.weight(1f),
                 )
                 StatBubble(
                     label = "Resolved",
-                    value = (state.currentUser?.reportsResolved ?: 0).toString(),
+                    value = "${state.currentUser?.reportsResolved ?: 0}",
                     modifier = Modifier.weight(1f),
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -94,7 +94,7 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             state.userReports.take(3).forEach { report ->
-                ActivityItem(report.description, "Recently updated", report.status)
+                ActivityItem("${report.description}", "Recently updated", "${report.status}")
                 Spacer(modifier = Modifier.height(12.dp))
             }
 

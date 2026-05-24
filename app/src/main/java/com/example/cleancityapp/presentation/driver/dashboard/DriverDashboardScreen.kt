@@ -31,7 +31,6 @@ fun DriverDashboardScreen(
     onNavigateToTasks: () -> Unit,
     onNavigateToRoute: () -> Unit,
     driverViewModel: DriverViewModel = koinViewModel(),
-    mainViewModel: MainViewModel,
 ) {
     val state by driverViewModel.state.collectAsState()
     var onDuty by remember { mutableStateOf(true) }

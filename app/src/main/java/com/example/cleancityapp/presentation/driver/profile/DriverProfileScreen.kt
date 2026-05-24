@@ -17,15 +17,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,27 +31,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cleancityapp.data.remote.UserDto
-import com.example.cleancityapp.presentation.components.TopNavBar
 import com.example.cleancityapp.presentation.driver.dashboard.sections.StatCard
 import com.example.cleancityapp.presentation.driver.route.DetailRow
+import com.example.cleancityapp.presentation.profile.ProfileViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun DriverProfileScreen(
     user: UserDto?,
     onLogout: () -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    viewModel: ProfileViewModel = koinViewModel()
 ) {
+    val state by viewModel.state.collectAsState()
     val colorScheme = MaterialTheme.colorScheme
 
-    val name = user?.name ?: "Arjun Kumar"
-    val email = user?.email ?: "driver@example.com"
+    val name = "${state.user?.name ?: user?.name ?: "Driver"}"
+    val email = "${state.user?.email ?: user?.email ?: "driver@example.com"}"
 
-    val initials = if (name.isNotBlank()) {
+    val initials = try {
         name.split(" ")
+            .filter { it.isNotBlank() }
             .mapNotNull { it.firstOrNull()?.toString() }
             .joinToString("")
             .uppercase()
-    } else "AK"
+            .ifEmpty { "D" }
+    } catch (e: Exception) {
+        "D"
+    }
 
     Column(
         modifier = Modifier
@@ -61,7 +66,6 @@ fun DriverProfileScreen(
             .background(colorScheme.background)
             .verticalScroll(rememberScrollState())
     ) {
-
         Column(modifier = Modifier.padding(16.dp)) {
 
             // Profile Card

@@ -34,12 +34,21 @@ fun ProfileScreen(
     user: UserDto?,
     onLogout: () -> Unit,
     onBack: () -> Unit,
-    viewModel: MainViewModel = koinViewModel()
+    viewModel: ProfileViewModel = koinViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val name = user?.name ?: "User"
-    val email = user?.email ?: "user@example.com"
-    val initials = name.split(" ").mapNotNull { it.firstOrNull()?.toString() }.joinToString("").uppercase()
+    val uiState by viewModel.state.collectAsState()
+    val name = "${uiState.user?.name ?: user?.name ?: "User"}"
+    val email = "${uiState.user?.email ?: user?.email ?: "user@example.com"}"
+    val initials = try {
+        name.split(" ")
+            .filter { it.isNotBlank() }
+            .mapNotNull { it.firstOrNull()?.toString() }
+            .joinToString("")
+            .uppercase()
+            .ifEmpty { "U" }
+    } catch (e: Exception) {
+        "U"
+    }
 
     Column(
         modifier = Modifier
@@ -96,7 +105,7 @@ fun ProfileScreen(
         ) {
             ThemeSelectorRow(
                 currentMode = uiState.themeMode,
-                onModeSelected = { viewModel.processIntent(MainContract.Intent.SetThemeMode(it)) }
+                onModeSelected = { viewModel.setThemeMode(it) }
             )
         }
 

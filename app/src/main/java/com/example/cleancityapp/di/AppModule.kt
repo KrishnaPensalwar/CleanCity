@@ -1,5 +1,6 @@
 package com.example.cleancityapp.di
 
+import android.content.Context
 import com.example.cleancityapp.data.remote.AuthApi
 import com.example.cleancityapp.data.remote.TokenAuthenticator
 import com.example.cleancityapp.data.remote.ComplaintDetailsApi
@@ -14,6 +15,8 @@ import com.example.cleancityapp.presentation.auth.AuthViewModel
 import com.example.cleancityapp.presentation.history.HistoryViewModel
 import com.example.cleancityapp.presentation.user.UserViewModel
 import com.example.cleancityapp.presentation.history.ComplaintDetailsViewModel
+import com.example.cleancityapp.presentation.home.HomeViewModel
+import com.example.cleancityapp.presentation.profile.ProfileViewModel
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -97,6 +100,9 @@ val appModule = module {
     single { DriverApi(get()) }
     single { NotificationHelper(androidContext()) }
 
+    // Shared Preferences
+    single { androidContext().getSharedPreferences("auth_prefs", Context.MODE_PRIVATE) }
+
     // Repositories
     single { DeviceRegistrationRepository(get(), androidContext()) }
     single { ComplaintDetailsRepository(get()) }
@@ -108,4 +114,6 @@ val appModule = module {
     viewModel { HistoryViewModel(get(), get(), androidContext()) }
     viewModel { UserViewModel(get(), androidContext()) }
     viewModel { ComplaintDetailsViewModel(get(), androidContext()) }
+    viewModel { HomeViewModel(get(), get()) }
+    viewModel { ProfileViewModel(get(), get(), get()) }
 }

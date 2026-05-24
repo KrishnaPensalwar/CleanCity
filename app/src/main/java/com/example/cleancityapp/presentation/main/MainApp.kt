@@ -223,12 +223,11 @@ fun MainApp(viewModel: MainViewModel) {
                         onNavigateToProfile = {
                             navController.navigate(Screen.Profile.route)
                         },
-                        user = uiState.currentUser,
-                        viewModel = viewModel
+                        user = uiState.currentUser
                     )
                 }
                 composable(Screen.Report.route) {
-                    ReportScreen(mainViewModel = viewModel, onBack = { navController.popBackStack() })
+                    ReportScreen(onBack = { navController.popBackStack() })
                 }
                 composable(Screen.Map.route) {
                     MapScreen()
@@ -264,14 +263,12 @@ fun MainApp(viewModel: MainViewModel) {
                         user = uiState.currentUser,
                         onBack = { navController.popBackStack() },
                         onLogout = { viewModel.processIntent(Logout) },
-                        viewModel = viewModel
                     )
                 }
                 composable(Screen.DriverDashboard.route) {
                     DriverDashboardScreen(
                         onNavigateToTasks = { navController.navigate(Screen.DriverTasks.route) },
-                        onNavigateToRoute = { navController.navigate(Screen.DriverRoute.route) },
-                        mainViewModel = viewModel
+                        onNavigateToRoute = { navController.navigate(Screen.DriverRoute.route) }
                     )
                 }
                 composable(Screen.DriverTasks.route) {

@@ -1,10 +1,13 @@
 package com.example.cleancityapp.presentation.main
 
 import android.content.Context
+import android.util.Log
+import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cleancityapp.data.remote.AuthApi
 import com.example.cleancityapp.data.repository.DeviceRegistrationRepository
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,9 +15,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import androidx.core.content.edit
-import com.google.firebase.messaging.FirebaseMessaging
-import android.util.Log
 
 class MainViewModel(
     private val authApi: AuthApi,
@@ -44,10 +44,29 @@ class MainViewModel(
     private fun checkLoggedIn() {
         val savedToken = sharedPreferences.getString("access_token", null)
         if (!savedToken.isNullOrEmpty()) {
-            getMe()
-            fetchRank()
-            registerFCMToken(savedToken)
-            navigateToDashboard()
+            fetchInitialData()
+        }
+    }
+
+    private fun fetchInitialData() {
+        val token = sharedPreferences.getString("access_token", null) ?: return
+        viewModelScope.launch {
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    authApi.getMe("Bearer $token")
+                }
+                if (response.isSuccessful && response.body() != null) {
+                    val meData = response.body()!!
+                    val profile = meData.userProfile ?: meData.driverProfile
+                    _uiState.update { it.copy(currentUser = profile) }
+                    registerFCMToken(token)
+                    navigateToDashboard()
+                } else {
+                    _uiState.update { it.copy(currentScreen = Screen.Login) }
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(currentScreen = Screen.Login) }
+            }
         }
     }
 
@@ -58,7 +77,6 @@ class MainViewModel(
                 viewModelScope.launch {
                     try {
                         deviceRepository.registerDevice(accessToken, token)
-                        Log.d("FCM", "Token registration check completed")
                     } catch (e: Exception) {
                         Log.e("FCM", "Failed to register token", e)
                     }
@@ -69,9 +87,6 @@ class MainViewModel(
 
     fun processIntent(intent: MainContract.Intent) {
         when (intent) {
-            is MainContract.Intent.NavigateTo -> {
-                _uiState.update { it.copy(currentScreen = intent.screen, error = null) }
-            }
             is MainContract.Intent.HandleDeepLink -> {
                 _uiState.update { it.copy(deepLinkComplaintId = intent.complaintId) }
             }
@@ -88,28 +103,11 @@ class MainViewModel(
                 _uiState.update { it.copy(userRole = intent.role) }
                 navigateToDashboard()
             }
-            is MainContract.Intent.GetMe -> {
-                getMe()
-            }
-            is MainContract.Intent.FetchUserReports -> {
-                fetchUserReports()
-            }
-            is MainContract.Intent.FetchRank -> {
-                fetchRank()
-            }
             is MainContract.Intent.Logout -> {
                 logout()
             }
             is MainContract.Intent.LoginSuccess -> {
-                val token = sharedPreferences.getString("access_token", null)
-                if (token != null) registerFCMToken(token)
-                getMe()
-                fetchRank()
-                fetchUserReports()
-                navigateToDashboard()
-            }
-            is MainContract.Intent.ClearError -> {
-                _uiState.update { it.copy(error = null) }
+                fetchInitialData()
             }
             is MainContract.Intent.ViewReportDetails -> {
                 _uiState.update { 
@@ -119,112 +117,29 @@ class MainViewModel(
                     ) 
                 }
             }
+            is MainContract.Intent.ClearError -> {
+                _uiState.update { it.copy(error = null) }
+            }
             else -> {}
-        }
-    }
-
-    private fun fetchUserReports() {
-        val token = sharedPreferences.getString("access_token", null) ?: return
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
-            try {
-                val response = withContext(Dispatchers.IO) {
-                    authApi.getMeReports("Bearer $token")
-                }
-                if (response.isSuccessful) {
-                    _uiState.update { it.copy(userReports = response.body() ?: emptyList(), isLoading = false) }
-                } else {
-                    _uiState.update { it.copy(isLoading = false, error = "Failed to fetch reports") }
-                }
-            } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, error = e.localizedMessage) }
-            }
-        }
-    }
-
-    private fun getMe() {
-        val token = sharedPreferences.getString("access_token", null) ?: return
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
-            try {
-                val response = withContext(Dispatchers.IO) {
-                    authApi.getMe("Bearer $token")
-                }
-                if (response.isSuccessful && response.body() != null) {
-                    val user = response.body()!!
-                    val roles = user.roles
-                    
-                    _uiState.update { it.copy(currentUser = user, isLoading = false) }
-
-                    // If user has multiple roles and hasn't picked one this session, go to selection
-                    val savedRole = sharedPreferences.getString("user_role", null)
-                    
-                    if (roles.contains("USER") && roles.contains("DRIVER") && savedRole == null) {
-                        _uiState.update { it.copy(currentScreen = Screen.RoleSelection) }
-                    } else {
-                        val role = when {
-                            savedRole == "ROLE_DRIVER" -> UserRole.DRIVER
-                            savedRole == "ROLE_USER" -> UserRole.USER
-                            roles.contains("DRIVER") -> UserRole.DRIVER
-                            else -> UserRole.USER
-                        }
-                        _uiState.update { it.copy(userRole = role) }
-                        navigateToDashboard()
-                    }
-                } else {
-                    _uiState.update { it.copy(isLoading = false, error = "Failed to fetch user data") }
-                }
-            } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, error = e.localizedMessage) }
-            }
-        }
-    }
-
-    private fun fetchRank() {
-        val token = sharedPreferences.getString("access_token", null) ?: return
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
-            try {
-                val response = withContext(Dispatchers.IO) {
-                    authApi.getUserRank("Bearer $token")
-                }
-                if (response.isSuccessful && response.body() != null) {
-                    _uiState.update { it.copy(userRank = response.body(), isLoading = false) }
-                } else {
-                    _uiState.update { it.copy(isLoading = false, error = "Failed to fetch rank") }
-                }
-            } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, error = e.localizedMessage) }
-            }
         }
     }
 
     private fun logout() {
         val token = sharedPreferences.getString("access_token", null)
-        if (token != null) {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            if (token != null) {
                 try {
                     deviceRepository.unregisterDevice(token)
                     deviceRepository.clearCachedToken()
-                } catch (e: Exception) {
-                    Log.e("FCM", "Failed to unregister device on logout", e)
-                }
+                } catch (e: Exception) { }
             }
-        }
-
-        sharedPreferences.edit {
-            remove("access_token")
-            remove("user_role")
-        }
-
-        _uiState.update {
-            it.copy(
-                currentScreen = Screen.Login,
-                currentUser = null,
-                userReports = emptyList(),
-                selectedReport = null,
-                userRank = null
-            )
+            sharedPreferences.edit { clear() }
+            _uiState.update {
+                MainContract.State(
+                    currentScreen = Screen.Login,
+                    themeMode = it.themeMode
+                )
+            }
         }
     }
 
@@ -233,21 +148,19 @@ class MainViewModel(
         val currentUser = _uiState.value.currentUser
         val roles = currentUser?.roles ?: emptyList()
         
-        if (roleString == null && roles.isEmpty()) {
-            // Still loading user data to determine roles
-            return
-        }
-
-        if (roles.contains("USER") && roles.contains("DRIVER") && roleString == null) {
+        if (roleString == null && roles.size > 1) {
             _uiState.update { it.copy(currentScreen = Screen.RoleSelection) }
             return
         }
 
-        val role = if (roleString == "ROLE_DRIVER") UserRole.DRIVER else UserRole.USER
-        val initialScreen = when (role) {
-            UserRole.USER -> Screen.Home
-            UserRole.DRIVER -> Screen.DriverDashboard
+        val role = when {
+            roleString == "ROLE_DRIVER" -> UserRole.DRIVER
+            roleString == "ROLE_USER" -> UserRole.USER
+            roles.contains("DRIVER") -> UserRole.DRIVER
+            else -> UserRole.USER
         }
+
+        val initialScreen = if (role == UserRole.DRIVER) Screen.DriverDashboard else Screen.Home
         _uiState.update { it.copy(userRole = role, currentScreen = initialScreen) }
     }
 }

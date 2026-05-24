@@ -99,6 +99,7 @@ class AuthViewModel(
         sharedPreferences.edit()
             .putString("access_token", loginData.token)
             .putString("refresh_token", loginData.refreshToken)
+            .putString("user_id", loginData.profile.id)
             .apply()
 
         if (loginData.roles.size == 1) {

@@ -51,11 +51,9 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun ReportScreen(
     userViewModel: UserViewModel = koinViewModel(),
-    mainViewModel: MainViewModel,
     onBack: () -> Unit = {},
 ) {
     val uiState by userViewModel.state.collectAsState()
-    val mainState by mainViewModel.uiState.collectAsState()
     val context = LocalContext.current
 
     var capturedImageUri by remember { mutableStateOf<Uri?>(null) }
@@ -174,8 +172,7 @@ fun ReportScreen(
                             imageUri = uri,
                             description = "[$category] $description",
                             lat = 17.4065,
-                            lon = 78.4772,
-                            userId = mainState.currentUser?.id ?: "",
+                            lon = 78.4772
                         )
                     }
                 },

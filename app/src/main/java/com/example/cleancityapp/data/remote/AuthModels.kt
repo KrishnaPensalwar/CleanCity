@@ -18,6 +18,14 @@ data class LoginResponse(
 )
 
 @Serializable
+data class MeResponse(
+    val account: AccountDto,
+    val roles: List<String>,
+    val userProfile: UserDto?,
+    val driverProfile: UserDto? = null
+)
+
+@Serializable
 data class AccountDto(
     val id: String,
     val email: String,

@@ -57,8 +57,9 @@ class UserViewModel(
         }
     }
 
-    fun submitReport(imageUri: Uri, description: String, lat: Double, lon: Double, userId: String) {
+    fun submitReport(imageUri: Uri, description: String, lat: Double, lon: Double) {
         val token = sharedPreferences.getString("access_token", null) ?: return
+        val userId = sharedPreferences.getString("user_id", null) ?: return
         val timestamp = System.currentTimeMillis().toString()
 
         viewModelScope.launch {

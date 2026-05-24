@@ -17,7 +17,7 @@ interface AuthApi {
     fun refresh(@Body request: Map<String, String>): Call<LoginResponse>
 
     @GET("auth/me")
-    suspend fun getMe(@Header("Authorization") token: String): Response<UserDto>
+    suspend fun getMe(@Header("Authorization") token: String): Response<MeResponse>
 
     @GET("api/cities")
     suspend fun getCities(): Response<List<CityDto>>
