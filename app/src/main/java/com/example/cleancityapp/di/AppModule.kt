@@ -53,7 +53,7 @@ val appModule = module {
 
     single(named("AuthRetrofit")) {
         Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8080/")
+            .baseUrl("http://127.0.0.1:8080/")
             .client(get(named("AuthClient")))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -65,7 +65,7 @@ val appModule = module {
 
     single {
         Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8080/")
+            .baseUrl("http://127.0.0.1:8080/")
             .client(get())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -81,6 +81,7 @@ val appModule = module {
                     ignoreUnknownKeys = true
                     prettyPrint = true
                     isLenient = true
+                    encodeDefaults = true
                 })
             }
             install(Logging) {

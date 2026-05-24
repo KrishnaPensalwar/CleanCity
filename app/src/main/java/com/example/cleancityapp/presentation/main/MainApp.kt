@@ -141,7 +141,7 @@ fun MainApp(viewModel: MainViewModel) {
                     TopNavBar(
                         title = topBarInfo.first,
                         subtitle = topBarInfo.second,
-                        onProfileClick = if (currentRoute == Screen.Home.route) {
+                        onProfileClick = if (currentRoute == Screen.Home.route || currentRoute == Screen.DriverDashboard.route) {
                             {
                                 viewModel.processIntent(GetMe)
                                 navController.navigate(if (uiState.userRole == UserRole.DRIVER) Screen.DriverProfile.route else Screen.Profile.route)
