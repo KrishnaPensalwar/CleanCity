@@ -1,5 +1,7 @@
 package com.example.cleancityapp.presentation.driver.dashboard
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.cleancityapp.presentation.driver.DriverViewModel
 import com.example.cleancityapp.presentation.driver.dashboard.sections.DriverDashboardNextTaskSection
@@ -41,6 +44,7 @@ fun DriverDashboardScreen(
     val completedReports = state.assignedReports.filter {
         it.status.lowercase() == "completed" || it.status.lowercase() == "resolved"
     }
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -69,7 +73,21 @@ fun DriverDashboardScreen(
                 isLoadingSkeleton = state.isLoading && state.assignedReports.isEmpty(),
                 nextTask = pendingReports.firstOrNull(),
                 error = state.error,
-                onNavigate = onNavigateToRoute,
+                onNavigate = {
+                    pendingReports.firstOrNull()?.let { report ->
+                        driverViewModel.setSelectedReport(report)
+                        val gmmIntentUri = Uri.parse("google.navigation:q=${report.latitude},${report.longitude}")
+                        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                        mapIntent.setPackage("com.google.android.apps.maps")
+                        if (mapIntent.resolveActivity(context.packageManager) != null) {
+                            context.startActivity(mapIntent)
+                        } else {
+                            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/search/?api=1&query=${report.latitude},${report.longitude}"))
+                            context.startActivity(browserIntent)
+                        }
+                    }
+                    onNavigateToRoute()
+                },
             )
 
             Spacer(modifier = Modifier.height(12.dp))

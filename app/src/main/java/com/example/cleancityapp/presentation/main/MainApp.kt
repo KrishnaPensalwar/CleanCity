@@ -30,6 +30,8 @@ import com.example.cleancityapp.presentation.auth.LoginScreen
 import com.example.cleancityapp.presentation.auth.SignUpScreen
 import com.example.cleancityapp.presentation.components.BottomNavBar
 import com.example.cleancityapp.presentation.components.TopNavBar
+import com.example.cleancityapp.presentation.driver.DriverViewModel
+import org.koin.androidx.compose.koinViewModel
 import com.example.cleancityapp.presentation.driver.dashboard.DriverDashboardScreen
 import com.example.cleancityapp.presentation.driver.profile.DriverProfileScreen
 import com.example.cleancityapp.presentation.driver.route.DriverRouteScreen
@@ -50,6 +52,7 @@ import java.util.Calendar
 fun MainApp(viewModel: MainViewModel) {
     val uiState by viewModel.uiState.collectAsState()
     val navController = rememberNavController()
+    val driverViewModel: DriverViewModel = koinViewModel()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -296,16 +299,20 @@ fun MainApp(viewModel: MainViewModel) {
                 composable(Screen.DriverDashboard.route) {
                     DriverDashboardScreen(
                         onNavigateToTasks = { navController.navigate(Screen.DriverTasks.route) },
-                        onNavigateToRoute = { navController.navigate(Screen.DriverRoute.route) }
+                        onNavigateToRoute = { navController.navigate(Screen.DriverRoute.route) },
+                        driverViewModel = driverViewModel
                     )
                 }
                 composable(Screen.DriverTasks.route) {
                     DriverTasksScreen(
-                        onNavigateToRoute = { navController.navigate(Screen.DriverRoute.route) }
+                        onNavigateToRoute = { navController.navigate(Screen.DriverRoute.route) },
+                        viewModel = driverViewModel
                     )
                 }
                 composable(Screen.DriverRoute.route) {
-                    DriverRouteScreen()
+                    DriverRouteScreen(
+                        viewModel = driverViewModel
+                    )
                 }
                 composable(Screen.DriverProfile.route) {
                     DriverProfileScreen(

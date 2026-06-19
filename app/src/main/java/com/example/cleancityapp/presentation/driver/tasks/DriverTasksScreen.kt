@@ -1,6 +1,7 @@
 package com.example.cleancityapp.presentation.driver.tasks
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.widget.Toast
@@ -181,24 +182,39 @@ fun DriverTasksScreen(
                                 date = formatDriverTaskDate(report.createdAt),
                                 status = if (isPending) "Pending" else "Completed",
                                 isHighlight = isPending,
-                                onNavigate = if (isPending) {
+                                onNavigateMaps = if (isPending) {
+                                    {
+                                        val gmmIntentUri = Uri.parse("google.navigation:q=${report.latitude},${report.longitude}")
+                                        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                                        mapIntent.setPackage("com.google.android.apps.maps")
+                                        if (mapIntent.resolveActivity(context.packageManager) != null) {
+                                            context.startActivity(mapIntent)
+                                        } else {
+                                            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/search/?api=1&query=${report.latitude},${report.longitude}"))
+                                            context.startActivity(browserIntent)
+                                        }
+                                    }
+                                } else null,
+                                onViewRoute = if (isPending) {
                                     {
                                         viewModel.setSelectedReport(report)
                                         onNavigateToRoute()
                                     }
                                 } else null,
-                                onMarkDone = {
-                                    currentReportIdForPhoto = report.id
-                                    if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
-                                        PackageManager.PERMISSION_GRANTED
-                                    ) {
-                                        val uri = createTempPictureUri(context)
-                                        tempImageUri = uri
-                                        cameraLauncher.launch(uri)
-                                    } else {
-                                        permissionLauncher.launch(Manifest.permission.CAMERA)
+                                onMarkDone = if (isPending) {
+                                    {
+                                        currentReportIdForPhoto = report.id
+                                        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
+                                            PackageManager.PERMISSION_GRANTED
+                                        ) {
+                                            val uri = createTempPictureUri(context)
+                                            tempImageUri = uri
+                                            cameraLauncher.launch(uri)
+                                        } else {
+                                            permissionLauncher.launch(Manifest.permission.CAMERA)
+                                        }
                                     }
-                                },
+                                } else null,
                             )
                         }
                     }

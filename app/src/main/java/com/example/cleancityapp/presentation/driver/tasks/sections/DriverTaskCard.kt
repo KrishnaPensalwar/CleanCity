@@ -1,6 +1,7 @@
 package com.example.cleancityapp.presentation.driver.tasks.sections
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -23,7 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.foundation.border
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -36,7 +36,8 @@ fun DriverTaskCard(
     distance: String? = null,
     status: String,
     isHighlight: Boolean = false,
-    onNavigate: (() -> Unit)? = null,
+    onNavigateMaps: (() -> Unit)? = null,
+    onViewRoute: (() -> Unit)? = null,
     onMarkDone: (() -> Unit)? = null,
 ) {
     val accent = MaterialTheme.colorScheme.primary
@@ -79,27 +80,44 @@ fun DriverTaskCard(
                 Text(text = distance, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
 
-            if (onNavigate != null) {
+            if (onNavigateMaps != null || onViewRoute != null || onMarkDone != null) {
                 Spacer(modifier = Modifier.height(12.dp))
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(
-                        onClick = onNavigate,
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(containerColor = accent),
-                        shape = RoundedCornerShape(9.dp),
-                        contentPadding = PaddingValues(vertical = 8.dp),
-                    ) {
-                        Text("Navigate", fontSize = 12.sp)
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    if (onNavigateMaps != null) {
+                        Button(
+                            onClick = onNavigateMaps,
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(containerColor = accent),
+                            shape = RoundedCornerShape(8.dp),
+                            contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
+                        ) {
+                            Text("Map", fontSize = 11.sp, maxLines = 1)
+                        }
                     }
-                    OutlinedButton(
-                        onClick = { onMarkDone?.invoke() },
-                        modifier = Modifier.weight(1f),
-                        border = BorderStroke(1.dp, Color(0xFF3B6D11)),
-                        shape = RoundedCornerShape(9.dp),
-                        contentPadding = PaddingValues(vertical = 8.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF3B6D11)),
-                    ) {
-                        Text("Mark done", fontSize = 12.sp)
+                    
+                    if (onViewRoute != null) {
+                        Button(
+                            onClick = onViewRoute,
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                            shape = RoundedCornerShape(8.dp),
+                            contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
+                        ) {
+                            Text("Details", fontSize = 11.sp, maxLines = 1)
+                        }
+                    }
+
+                    if (onMarkDone != null) {
+                        OutlinedButton(
+                            onClick = onMarkDone,
+                            modifier = Modifier.weight(1f),
+                            border = BorderStroke(1.dp, Color(0xFF3B6D11)),
+                            shape = RoundedCornerShape(8.dp),
+                            contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF3B6D11)),
+                        ) {
+                            Text("Done", fontSize = 11.sp, maxLines = 1)
+                        }
                     }
                 }
             }
