@@ -25,7 +25,7 @@ data class ComplaintDetailsDto(
 )
 
 class ComplaintDetailsApi(private val client: HttpClient) {
-    private val baseUrl = "http://127.0.0.1:8080/api"
+    private val baseUrl = "https://wheat-salvaging-underrate.ngrok-free.dev/api"
 
     suspend fun getComplaintDetails(token: String, complaintId: String): ComplaintDetailsDto {
         return client.get("$baseUrl/complaints/$complaintId") {

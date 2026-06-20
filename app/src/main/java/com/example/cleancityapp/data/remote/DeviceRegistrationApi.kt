@@ -24,7 +24,7 @@ data class DeviceRegistrationResponse(
 )
 
 class DeviceRegistrationApi(private val client: HttpClient) {
-    private val baseUrl = "http://127.0.0.1:8080/api"
+    private val baseUrl = "https://wheat-salvaging-underrate.ngrok-free.dev/api"
     suspend fun registerDevice(token: String, request: DeviceRegistrationRequest): DeviceRegistrationResponse {
         return client.post("$baseUrl/devices/register") {
             header(HttpHeaders.Authorization, "Bearer $token")

@@ -58,7 +58,7 @@ val appModule = module {
 
     single(named("AuthRetrofit")) {
         Retrofit.Builder()
-            .baseUrl("http://127.0.0.1:8080/")
+            .baseUrl("https://wheat-salvaging-underrate.ngrok-free.dev/")
             .client(get(named("AuthClient")))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -70,7 +70,7 @@ val appModule = module {
 
     single {
         Retrofit.Builder()
-            .baseUrl("http://127.0.0.1:8080/")
+            .baseUrl("https://wheat-salvaging-underrate.ngrok-free.dev/")
             .client(get())
             .addConverterFactory(GsonConverterFactory.create())
             .build()

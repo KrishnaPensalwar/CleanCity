@@ -6,7 +6,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 
 class DriverApi(private val client: HttpClient) {
-    private val baseUrl = "http://127.0.0.1:8080/api"
+    private val baseUrl = "https://wheat-salvaging-underrate.ngrok-free.dev/api"
 
     suspend fun getAssignedReports(token: String): List<ReportResponse> {
         return client.get("$baseUrl/driver/reports/assigned") {
