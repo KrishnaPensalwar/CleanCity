@@ -1,5 +1,6 @@
 package com.example.cleancityapp.data.remote
 
+import com.example.cleancityapp.util.ApiConstants
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -25,7 +26,7 @@ data class ComplaintDetailsDto(
 )
 
 class ComplaintDetailsApi(private val client: HttpClient) {
-    private val baseUrl = "https://wheat-salvaging-underrate.ngrok-free.dev/api"
+    private val baseUrl = ApiConstants.BASE_URL.removeSuffix("/") + "/api"
 
     suspend fun getComplaintDetails(token: String, complaintId: String): ComplaintDetailsDto {
         return client.get("$baseUrl/complaints/$complaintId") {

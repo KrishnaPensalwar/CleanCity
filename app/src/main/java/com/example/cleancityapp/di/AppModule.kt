@@ -18,6 +18,7 @@ import com.example.cleancityapp.presentation.history.ComplaintDetailsViewModel
 import com.example.cleancityapp.presentation.home.HomeViewModel
 import com.example.cleancityapp.presentation.profile.ProfileViewModel
 import com.example.cleancityapp.presentation.rewards.RewardsViewModel
+import com.example.cleancityapp.util.ApiConstants
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -58,7 +59,7 @@ val appModule = module {
 
     single(named("AuthRetrofit")) {
         Retrofit.Builder()
-            .baseUrl("https://wheat-salvaging-underrate.ngrok-free.dev/")
+            .baseUrl(ApiConstants.BASE_URL)
             .client(get(named("AuthClient")))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -70,7 +71,7 @@ val appModule = module {
 
     single {
         Retrofit.Builder()
-            .baseUrl("https://wheat-salvaging-underrate.ngrok-free.dev/")
+            .baseUrl(ApiConstants.BASE_URL)
             .client(get())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
