@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1020" width="1200" height="1020">
+
+  <defs>
+    <marker id="ah-dark" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#455A64"/>
+    </marker>
+    <marker id="ah-blue" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#1976D2"/>
+    </marker>
+    <marker id="ah-green" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#388E3C"/>
+    </marker>
+    <marker id="ah-orange" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#E65100"/>
+    </marker>
+    <marker id="ah-purple" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#6A1B9A"/>
+    </marker>
+    <marker id="ah-red" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#C62828"/>
+    </marker>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="108%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="#00000018"/>
+    </filter>
+  </defs>
+
+  <!-- white background -->
+  <rect width="1200" height="1020" fill="#FFFFFF"/>
+  <rect x="0" y="0" width="1200" height="72" rx="0" fill="#1A237E" stroke="none" stroke-width="0" />
+  <text x="600" y="38" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="bold" fill="#FFFFFF" text-anchor="middle" >CleanCityApp — Data Flow / State Management Diagram</text>
+  <text x="600" y="60" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" fill="#90CAF9" text-anchor="middle" >MVVM reactive data flow: UI → ViewModel → Repository → API → Backend and back</text>
+  <rect x="320" y="88" width="560" height="100" rx="10" fill="#E3F2FD" stroke="#1976D2" stroke-width="2" filter="url(#shadow)"/>
+  <text x="600" y="110" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#0D47A1" text-anchor="middle" >User Interaction  (Compose UI)</text>
+  <line x1="330" y1="118" x2="870" y2="118" stroke="#1976D2" stroke-width="1"/>
+  <text x="600" y="134" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#1565C0" text-anchor="middle" >User taps button / fills form / triggers event</text>
+  <text x="600" y="151" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#1565C0" text-anchor="middle" >@Composable screens observe StateFlow via collectAsState()</text>
+  <text x="600" y="168" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#1565C0" text-anchor="middle" >LaunchedEffect for side effects (e.g. navigate on success)</text>
+  <text x="600" y="185" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#1565C0" text-anchor="middle" >UI re-composes only on state change (smart recomposition)</text>
+  <rect x="320" y="258" width="560" height="110" rx="10" fill="#E8F5E9" stroke="#4CAF50" stroke-width="2" filter="url(#shadow)"/>
+  <text x="600" y="280" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#1B5E20" text-anchor="middle" >ViewModel  (StateFlow + Coroutines)</text>
+  <line x1="330" y1="288" x2="870" y2="288" stroke="#4CAF50" stroke-width="1"/>
+  <text x="600" y="304" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >Holds _uiState: MutableStateFlow&lt;State&gt;</text>
+  <text x="600" y="321" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >Exposes uiState: StateFlow&lt;State&gt; (read-only)</text>
+  <text x="600" y="338" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >viewModelScope.launch { } for async work</text>
+  <text x="600" y="355" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >MVI pattern: Intent → reduce → emit new State</text>
+  <text x="600" y="372" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >Survives configuration changes (AAC ViewModel)</text>
+  <rect x="320" y="438" width="560" height="90" rx="10" fill="#FFF8E1" stroke="#FFB300" stroke-width="2" filter="url(#shadow)"/>
+  <text x="600" y="460" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#E65100" text-anchor="middle" >Repository  (optional abstraction)</text>
+  <line x1="330" y1="468" x2="870" y2="468" stroke="#FFB300" stroke-width="1"/>
+  <text x="600" y="484" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Thin wrapper over API client</text>
+  <text x="600" y="501" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Returns Result&lt;T&gt; (success / failure)</text>
+  <text x="600" y="518" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#EF6C00" text-anchor="middle" >ComplaintDetailsRepository · DeviceRegistrationRepository</text>
+  <text x="600" y="535" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Hides API implementation details from ViewModel</text>
+  <rect x="320" y="598" width="560" height="100" rx="10" fill="#FFF3E0" stroke="#FF9800" stroke-width="2" filter="url(#shadow)"/>
+  <text x="600" y="620" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#BF360C" text-anchor="middle" >API Client  (Retrofit / Ktor)</text>
+  <line x1="330" y1="628" x2="870" y2="628" stroke="#FF9800" stroke-width="1"/>
+  <text x="600" y="644" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#E64A19" text-anchor="middle" >Retrofit — AuthApi: auth, reports, rank (JSON + multipart)</text>
+  <text x="600" y="661" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#E64A19" text-anchor="middle" >Ktor — DriverApi, ComplaintDetailsApi, DeviceRegistrationApi</text>
+  <text x="600" y="678" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#E64A19" text-anchor="middle" >OkHttp interceptors inject Bearer token from SharedPreferences</text>
+  <text x="600" y="695" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#E64A19" text-anchor="middle" >TokenAuthenticator catches 401 → refreshes → retries request</text>
+  <rect x="320" y="768" width="560" height="90" rx="10" fill="#FCE4EC" stroke="#E91E63" stroke-width="2" filter="url(#shadow)"/>
+  <text x="600" y="790" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#880E4F" text-anchor="middle" >Network Layer  (OkHttp)</text>
+  <line x1="330" y1="798" x2="870" y2="798" stroke="#E91E63" stroke-width="1"/>
+  <text x="600" y="814" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#C2185B" text-anchor="middle" >HTTPS request with Authorization: Bearer &lt;token&gt;</text>
+  <text x="600" y="831" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#C2185B" text-anchor="middle" >Logging interceptor for debug builds</text>
+  <text x="600" y="848" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#C2185B" text-anchor="middle" >TokenAuthenticator: POST /auth/refresh on 401</text>
+  <text x="600" y="865" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#C2185B" text-anchor="middle" >Gson / kotlinx.serialization for JSON parsing</text>
+  <rect x="320" y="928" width="560" height="60" rx="10" fill="#263238" stroke="#37474F" stroke-width="2" filter="url(#shadow)"/>
+  <text x="600" y="950" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#FFFFFF" text-anchor="middle" >Backend  —  https://cleancity-backend-au86.onrender.com/</text>
+  <line x1="330" y1="958" x2="870" y2="958" stroke="#37474F" stroke-width="1"/>
+  <text x="600" y="974" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#B0BEC5" text-anchor="middle" >REST API: Auth · Reports · Driver Tasks · Devices · Complaints</text>
+  <line x1="540" y1="188" x2="540" y2="258" stroke="#455A64" stroke-width="2.5" marker-end="url(#ah-dark)" />
+  <text x="530" y="223" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#455A64" text-anchor="end" >collectAsState() ↓ events</text>
+  <line x1="540" y1="368" x2="540" y2="438" stroke="#455A64" stroke-width="2.5" marker-end="url(#ah-dark)" />
+  <text x="530" y="403" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#455A64" text-anchor="end" >suspend fun call</text>
+  <line x1="540" y1="528" x2="540" y2="598" stroke="#455A64" stroke-width="2.5" marker-end="url(#ah-dark)" />
+  <text x="530" y="563" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#455A64" text-anchor="end" >API method call</text>
+  <line x1="540" y1="698" x2="540" y2="768" stroke="#455A64" stroke-width="2.5" marker-end="url(#ah-dark)" />
+  <text x="530" y="733" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#455A64" text-anchor="end" >HTTP request</text>
+  <line x1="540" y1="858" x2="540" y2="928" stroke="#455A64" stroke-width="2.5" marker-end="url(#ah-dark)" />
+  <text x="530" y="893" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#455A64" text-anchor="end" >TCP/HTTPS</text>
+  <line x1="660" y1="928" x2="660" y2="858" stroke="#388E3C" stroke-width="2.5" marker-end="url(#ah-green)" />
+  <text x="670" y="893" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#388E3C" text-anchor="start" >emit new State →
+collectAsState re-renders</text>
+  <line x1="660" y1="768" x2="660" y2="698" stroke="#388E3C" stroke-width="2.5" marker-end="url(#ah-green)" />
+  <text x="670" y="733" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#388E3C" text-anchor="start" >Result&lt;T&gt;</text>
+  <line x1="660" y1="598" x2="660" y2="528" stroke="#388E3C" stroke-width="2.5" marker-end="url(#ah-green)" />
+  <text x="670" y="563" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#388E3C" text-anchor="start" >deserialized response</text>
+  <line x1="660" y1="438" x2="660" y2="368" stroke="#388E3C" stroke-width="2.5" marker-end="url(#ah-green)" />
+  <text x="670" y="403" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#388E3C" text-anchor="start" >HTTP response body</text>
+  <line x1="660" y1="258" x2="660" y2="188" stroke="#388E3C" stroke-width="2.5" marker-end="url(#ah-green)" />
+  <text x="670" y="223" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#388E3C" text-anchor="start" >JSON data</text>
+  <rect x="930" y="550" width="260" height="140" rx="10" fill="#EDE7F6" stroke="#AB47BC" stroke-width="2" filter="url(#shadow)"/>
+  <text x="1060" y="572" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#4A148C" text-anchor="middle" >SharedPreferences</text>
+  <line x1="940" y1="580" x2="1180" y2="580" stroke="#AB47BC" stroke-width="1"/>
+  <text x="1060" y="596" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >auth_prefs</text>
+  <text x="1060" y="613" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >access_token (JWT)</text>
+  <text x="1060" y="630" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >refresh_token (JWT)</text>
+  <text x="1060" y="647" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >user_role (USER/DRIVER)</text>
+  <text x="1060" y="664" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >theme_mode</text>
+  <text x="1060" y="681" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >last_registered_fcm_token</text>
+  <path d="M 880 665 Q 910 660 930 620" stroke="#AB47BC" stroke-width="1.5" fill="none" marker-end="url(#ah-purple)" />
+  <text x="890" y="648" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#6A1B9A" text-anchor="start" >read token</text>
+  <path d="M 930 680 Q 910 700 880 700" stroke="#AB47BC" stroke-width="1.5" fill="none" marker-end="url(#ah-purple)" stroke-dasharray="5,4"/>
+  <text x="890" y="706" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#6A1B9A" text-anchor="start" >write refresh</text>
+  <rect x="20" y="368" width="260" height="200" rx="10" fill="#E8EAF6" stroke="#5C6BC0" stroke-width="2" filter="url(#shadow)"/>
+  <text x="150" y="390" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#1A237E" text-anchor="middle" >FCM Notification Flow</text>
+  <line x1="30" y1="398" x2="270" y2="398" stroke="#5C6BC0" stroke-width="1"/>
+  <text x="150" y="414" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#3F51B5" text-anchor="middle" >Firebase sends push message</text>
+  <text x="150" y="431" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#3F51B5" text-anchor="middle" >MyFirebaseMessagingService</text>
+  <text x="150" y="448" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#3F51B5" text-anchor="middle" >  onMessageReceived()</text>
+  <text x="150" y="465" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#3F51B5" text-anchor="middle" >NotificationHelper</text>
+  <text x="150" y="482" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#3F51B5" text-anchor="middle" >  createNotificationChannel()</text>
+  <text x="150" y="499" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#3F51B5" text-anchor="middle" >  show status notification</text>
+  <text x="150" y="516" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#3F51B5" text-anchor="middle" >User taps → MainActivity</text>
+  <text x="150" y="533" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#3F51B5" text-anchor="middle" >  deep-link → complaint/{id}</text>
+  <text x="150" y="550" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#3F51B5" text-anchor="middle" >ComplaintDetailsScreen</text>
+  <path d="M 320 985 Q 280 950 280 568" stroke="#5C6BC0" stroke-width="1.5" fill="none" marker-end="url(#ah-dark)" stroke-dasharray="5,4"/>
+  <text x="282" y="900" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#3F51B5" text-anchor="start" >FCM push →</text>
+  <path d="M 280 368 Q 320 160 320 140" stroke="#5C6BC0" stroke-width="1.5" fill="none" marker-end="url(#ah-dark)" stroke-dasharray="5,4"/>
+  <text x="282" y="250" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#3F51B5" text-anchor="start" >← navigate to
+ComplaintDetails</text>
+  <rect x="30" y="975" width="1140" height="28" rx="6" fill="#F5F5F5" stroke="#E0E0E0" stroke-width="1" />
+  <text x="600" y="994" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#546E7A" text-anchor="middle" >Downward arrows (dark) = request / data fetch     Upward arrows (green) = response / state update     Dashed arrows = async / side-channel flow</text>
+</svg>

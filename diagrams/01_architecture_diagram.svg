@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 960" width="1400" height="960">
+
+  <defs>
+    <marker id="ah-dark" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#455A64"/>
+    </marker>
+    <marker id="ah-blue" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#1976D2"/>
+    </marker>
+    <marker id="ah-green" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#388E3C"/>
+    </marker>
+    <marker id="ah-orange" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#E65100"/>
+    </marker>
+    <marker id="ah-purple" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#6A1B9A"/>
+    </marker>
+    <marker id="ah-red" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#C62828"/>
+    </marker>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="108%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="#00000018"/>
+    </filter>
+  </defs>
+
+  <!-- white background -->
+  <rect width="1400" height="960" fill="#FFFFFF"/>
+  <rect x="0" y="0" width="1400" height="72" rx="0" fill="#1A237E" stroke="none" stroke-width="0" />
+  <text x="700" y="38" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="bold" fill="#FFFFFF" text-anchor="middle" >CleanCityApp — Architecture Diagram</text>
+  <text x="700" y="60" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" fill="#90CAF9" text-anchor="middle" >MVVM  •  Single Activity  •  Jetpack Compose  •  Koin DI  •  Kotlin Coroutines</text>
+  <rect x="30" y="88" width="1340" height="198" rx="12" fill="#E3F2FD" stroke="#90CAF9" stroke-width="2" filter="url(#shadow)"/>
+  <text x="700" y="108" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" fill="#0D47A1" text-anchor="middle" >PRESENTATION LAYER</text>
+  <line x1="30" y1="116" x2="1370" y2="116" stroke="#90CAF9" stroke-width="1"/>
+  <rect x="35" y="124" width="210" height="150" rx="8" fill="#BBDEFB" stroke="#42A5F5" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="140" y="142" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#0D47A1" text-anchor="middle" >Composable</text>
+  <text x="140" y="156" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#0D47A1" text-anchor="middle" >Screens</text>
+  <text x="140" y="174" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >LoginScreen</text>
+  <text x="140" y="190" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >HomeScreen</text>
+  <text x="140" y="206" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >ReportScreen</text>
+  <text x="140" y="222" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >MapScreen · RewardsScreen</text>
+  <text x="140" y="238" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >HistoryScreen · ProfileScreen</text>
+  <text x="140" y="254" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >ComplaintDetailsScreen</text>
+  <rect x="259" y="124" width="210" height="150" rx="8" fill="#BBDEFB" stroke="#42A5F5" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="364" y="142" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#0D47A1" text-anchor="middle" >ViewModels</text>
+  <text x="364" y="156" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#0D47A1" text-anchor="middle" >(StateFlow)</text>
+  <text x="364" y="174" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >MainViewModel</text>
+  <text x="364" y="190" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >AuthViewModel</text>
+  <text x="364" y="206" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >HomeViewModel · UserViewModel</text>
+  <text x="364" y="222" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >DriverViewModel</text>
+  <text x="364" y="238" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >HistoryVM · ProfileVM</text>
+  <text x="364" y="254" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >RewardsViewModel</text>
+  <rect x="483" y="124" width="210" height="150" rx="8" fill="#BBDEFB" stroke="#42A5F5" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="588" y="142" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#0D47A1" text-anchor="middle" >Navigation</text>
+  <text x="588" y="156" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#0D47A1" text-anchor="middle" >Compose</text>
+  <text x="588" y="174" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >NavHost + NavController</text>
+  <text x="588" y="190" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >Screen (route definitions)</text>
+  <text x="588" y="206" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >Back-stack management</text>
+  <text x="588" y="222" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >Deep-link handling</text>
+  <text x="588" y="238" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >Role-based routing</text>
+  <text x="588" y="254" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" ></text>
+  <rect x="707" y="124" width="210" height="150" rx="8" fill="#BBDEFB" stroke="#42A5F5" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="812" y="142" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#0D47A1" text-anchor="middle" >Shared UI</text>
+  <text x="812" y="156" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#0D47A1" text-anchor="middle" >Components</text>
+  <text x="812" y="174" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >TopNavBar · BottomNavBar</text>
+  <text x="812" y="190" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >CameraCapture · InputField</text>
+  <text x="812" y="206" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >ThemeSelector · Shimmer</text>
+  <text x="812" y="222" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >ErrorState · Skeletons</text>
+  <text x="812" y="238" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >Role-aware nav bars</text>
+  <text x="812" y="254" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" ></text>
+  <rect x="931" y="124" width="210" height="150" rx="8" fill="#BBDEFB" stroke="#42A5F5" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1036" y="142" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#0D47A1" text-anchor="middle" >State</text>
+  <text x="1036" y="156" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#0D47A1" text-anchor="middle" >Management</text>
+  <text x="1036" y="174" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >StateFlow / collectAsState</text>
+  <text x="1036" y="190" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >MVI Contracts</text>
+  <text x="1036" y="206" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >viewModelScope</text>
+  <text x="1036" y="222" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >Kotlin Coroutines + Flow</text>
+  <text x="1036" y="238" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >LaunchedEffect / SideEffect</text>
+  <text x="1036" y="254" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" ></text>
+  <rect x="1155" y="124" width="210" height="150" rx="8" fill="#BBDEFB" stroke="#42A5F5" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1260" y="142" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#0D47A1" text-anchor="middle" >UI Theme</text>
+  <text x="1260" y="156" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#0D47A1" text-anchor="middle" >&amp; Styling</text>
+  <text x="1260" y="174" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >Material Design 3</text>
+  <text x="1260" y="190" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >CleanCityAppTheme</text>
+  <text x="1260" y="206" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >Light / Dark / System</text>
+  <text x="1260" y="222" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >Custom Color Palette</text>
+  <text x="1260" y="238" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >Typography Scale</text>
+  <text x="1260" y="254" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" ></text>
+  <line x1="700" y1="286" x2="700" y2="312" stroke="#1976D2" stroke-width="2.5" marker-end="url(#ah-blue)" />
+  <rect x="30" y="318" width="1340" height="148" rx="12" fill="#E8F5E9" stroke="#A5D6A7" stroke-width="2" filter="url(#shadow)"/>
+  <text x="700" y="338" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" fill="#1B5E20" text-anchor="middle" >DATA LAYER</text>
+  <line x1="30" y1="346" x2="1370" y2="346" stroke="#A5D6A7" stroke-width="1"/>
+  <rect x="35" y="353" width="252" height="108" rx="8" fill="#C8E6C9" stroke="#66BB6A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="161" y="371" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#1B5E20" text-anchor="middle" >Repositories</text>
+  <text x="161" y="403" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#2E7D32" text-anchor="middle" >ComplaintDetailsRepository</text>
+  <text x="161" y="418" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#2E7D32" text-anchor="middle" >DeviceRegistrationRepository</text>
+  <text x="161" y="433" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#2E7D32" text-anchor="middle" >Result&lt;T&gt; wrapper pattern</text>
+  <text x="161" y="448" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#2E7D32" text-anchor="middle" >Suspend functions</text>
+  <rect x="304" y="353" width="252" height="108" rx="8" fill="#C8E6C9" stroke="#66BB6A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="430" y="371" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#1B5E20" text-anchor="middle" >Data Models</text>
+  <text x="430" y="385" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#1B5E20" text-anchor="middle" >/ DTOs</text>
+  <text x="430" y="403" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#2E7D32" text-anchor="middle" >LoginResponse · MeResponse</text>
+  <text x="430" y="418" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#2E7D32" text-anchor="middle" >ReportResponse · UserDto</text>
+  <text x="430" y="433" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#2E7D32" text-anchor="middle" >ComplaintDetailsDto</text>
+  <text x="430" y="448" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#2E7D32" text-anchor="middle" >DeviceRegistrationRequest</text>
+  <rect x="573" y="353" width="252" height="108" rx="8" fill="#C8E6C9" stroke="#66BB6A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="699" y="371" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#1B5E20" text-anchor="middle" >Presentation</text>
+  <text x="699" y="385" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#1B5E20" text-anchor="middle" >States</text>
+  <text x="699" y="403" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#2E7D32" text-anchor="middle" >AuthState · HomeState</text>
+  <text x="699" y="418" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#2E7D32" text-anchor="middle" >UserState · DriverState</text>
+  <text x="699" y="433" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#2E7D32" text-anchor="middle" >HistoryState · RewardsState</text>
+  <text x="699" y="448" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#2E7D32" text-anchor="middle" >ProfileState</text>
+  <rect x="842" y="353" width="252" height="108" rx="8" fill="#C8E6C9" stroke="#66BB6A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="968" y="371" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#1B5E20" text-anchor="middle" >Local</text>
+  <text x="968" y="385" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#1B5E20" text-anchor="middle" >Persistence</text>
+  <text x="968" y="403" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#2E7D32" text-anchor="middle" >SharedPreferences (auth_prefs)</text>
+  <text x="968" y="418" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#2E7D32" text-anchor="middle" >access_token · refresh_token</text>
+  <text x="968" y="433" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#2E7D32" text-anchor="middle" >user_role · theme_mode</text>
+  <text x="968" y="448" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#2E7D32" text-anchor="middle" >last_registered_fcm_token</text>
+  <rect x="1111" y="353" width="252" height="108" rx="8" fill="#C8E6C9" stroke="#66BB6A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1237" y="371" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#1B5E20" text-anchor="middle" >Token</text>
+  <text x="1237" y="385" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#1B5E20" text-anchor="middle" >Authenticator</text>
+  <text x="1237" y="403" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#2E7D32" text-anchor="middle" >OkHttp Authenticator</text>
+  <text x="1237" y="418" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#2E7D32" text-anchor="middle" >Auto-refresh on HTTP 401</text>
+  <text x="1237" y="433" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#2E7D32" text-anchor="middle" >POST /auth/refresh</text>
+  <text x="1237" y="448" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#2E7D32" text-anchor="middle" >Retry original request</text>
+  <line x1="700" y1="466" x2="700" y2="492" stroke="#388E3C" stroke-width="2.5" marker-end="url(#ah-green)" />
+  <rect x="30" y="498" width="1340" height="160" rx="12" fill="#FFF8E1" stroke="#FFCC80" stroke-width="2" filter="url(#shadow)"/>
+  <text x="700" y="518" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" fill="#E65100" text-anchor="middle" >REMOTE API LAYER</text>
+  <line x1="30" y1="526" x2="1370" y2="526" stroke="#FFCC80" stroke-width="1"/>
+  <rect x="35" y="533" width="252" height="118" rx="8" fill="#FFE0B2" stroke="#FFA726" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="161" y="551" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#E65100" text-anchor="middle" >Retrofit</text>
+  <text x="161" y="565" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#E65100" text-anchor="middle" >(AuthApi)</text>
+  <text x="161" y="583" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >POST /auth/login · /auth/signup</text>
+  <text x="161" y="598" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >POST /auth/refresh</text>
+  <text x="161" y="613" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >GET /auth/me · /api/cities</text>
+  <text x="161" y="628" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >POST /api/reports (multipart)</text>
+  <text x="161" y="643" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >GET /api/users/rank</text>
+  <rect x="304" y="533" width="252" height="118" rx="8" fill="#FFE0B2" stroke="#FFA726" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="430" y="551" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#E65100" text-anchor="middle" >Ktor HTTP</text>
+  <text x="430" y="565" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#E65100" text-anchor="middle" >Client</text>
+  <text x="430" y="583" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >ComplaintDetailsApi</text>
+  <text x="430" y="598" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >GET /api/complaints/{id}</text>
+  <text x="430" y="613" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >DriverApi: GET assigned tasks</text>
+  <text x="430" y="628" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >DeviceRegistrationApi</text>
+  <text x="430" y="643" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >POST/DELETE /api/devices</text>
+  <rect x="573" y="533" width="252" height="118" rx="8" fill="#FFE0B2" stroke="#FFA726" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="699" y="551" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#E65100" text-anchor="middle" >Firebase</text>
+  <text x="699" y="583" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Cloud Messaging (FCM)</text>
+  <text x="699" y="598" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >MyFirebaseMessagingService</text>
+  <text x="699" y="613" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Push → NotificationHelper</text>
+  <text x="699" y="628" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Firebase Analytics</text>
+  <text x="699" y="643" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >BOM 33.9.0</text>
+  <rect x="842" y="533" width="252" height="118" rx="8" fill="#FFE0B2" stroke="#FFA726" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="968" y="551" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#E65100" text-anchor="middle" >OkHttp</text>
+  <text x="968" y="565" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#E65100" text-anchor="middle" >Interceptors</text>
+  <text x="968" y="583" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Bearer Token Injection</text>
+  <text x="968" y="598" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Logging Interceptor</text>
+  <text x="968" y="613" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >TokenAuthenticator hook</text>
+  <text x="968" y="628" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Connection pooling</text>
+  <text x="968" y="643" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Timeout config</text>
+  <rect x="1111" y="533" width="252" height="118" rx="8" fill="#FFE0B2" stroke="#FFA726" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1237" y="551" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#E65100" text-anchor="middle" >Image</text>
+  <text x="1237" y="565" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#E65100" text-anchor="middle" >Loading (Coil)</text>
+  <text x="1237" y="583" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >AsyncImage composable</text>
+  <text x="1237" y="598" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Report photo display</text>
+  <text x="1237" y="613" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Driver completion photos</text>
+  <text x="1237" y="628" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Profile image loading</text>
+  <text x="1237" y="643" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Disk + memory cache</text>
+  <line x1="700" y1="658" x2="700" y2="684" stroke="#E65100" stroke-width="2.5" marker-end="url(#ah-orange)" />
+  <rect x="30" y="690" width="1340" height="72" rx="12" fill="#FCE4EC" stroke="#F48FB1" stroke-width="2" filter="url(#shadow)"/>
+  <text x="700" y="714" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="bold" fill="#880E4F" text-anchor="middle" >BACKEND  —  REST API</text>
+  <text x="700" y="734" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="normal" fill="#AD1457" text-anchor="middle" >https://cleancity-backend-au86.onrender.com/   •   Auth Routes  •  Report Routes  •  Driver Routes  •  Device Routes  •  Complaint Routes</text>
+  <text x="700" y="752" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#C2185B" text-anchor="middle" >Node.js / Express   •   JWT Authentication   •   Multipart File Upload   •   MongoDB / PostgreSQL</text>
+  <rect x="30" y="778" width="655" height="100" rx="12" fill="#EDE7F6" stroke="#CE93D8" stroke-width="2" filter="url(#shadow)"/>
+  <text x="358" y="800" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#311B92" text-anchor="middle" >DEPENDENCY INJECTION  —  Koin</text>
+  <text x="358" y="820" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#4A148C" text-anchor="middle" >CleanCityApplication → startKoin { appModule }</text>
+  <text x="358" y="837" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#4A148C" text-anchor="middle" >ViewModels via koinViewModel()  •  Retrofit + Ktor + APIs + Repositories</text>
+  <text x="358" y="854" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#4A148C" text-anchor="middle" >all wired in AppModule.kt</text>
+  <rect x="703" y="778" width="667" height="100" rx="12" fill="#E8EAF6" stroke="#9FA8DA" stroke-width="2" filter="url(#shadow)"/>
+  <text x="1037" y="800" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#1A237E" text-anchor="middle" >NOTIFICATION SYSTEM  —  Firebase FCM</text>
+  <text x="1037" y="820" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#283593" text-anchor="middle" >FCM Token  →  MyFirebaseMessagingService</text>
+  <text x="1037" y="837" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#283593" text-anchor="middle" >→  NotificationHelper  →  Status Notification</text>
+  <text x="1037" y="854" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#283593" text-anchor="middle" >→  MainActivity deep-link  →  ComplaintDetailsScreen</text>
+</svg>

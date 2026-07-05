@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 980" width="1500" height="980">
+
+  <defs>
+    <marker id="ah-dark" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#455A64"/>
+    </marker>
+    <marker id="ah-blue" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#1976D2"/>
+    </marker>
+    <marker id="ah-green" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#388E3C"/>
+    </marker>
+    <marker id="ah-orange" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#E65100"/>
+    </marker>
+    <marker id="ah-purple" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#6A1B9A"/>
+    </marker>
+    <marker id="ah-red" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#C62828"/>
+    </marker>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="108%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="#00000018"/>
+    </filter>
+  </defs>
+
+  <!-- white background -->
+  <rect width="1500" height="980" fill="#FFFFFF"/>
+  <rect x="0" y="0" width="1500" height="72" rx="0" fill="#1A237E" stroke="none" stroke-width="0" />
+  <text x="750" y="38" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="bold" fill="#FFFFFF" text-anchor="middle" >CleanCityApp — Navigation / User Flow Diagram</text>
+  <text x="750" y="60" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" fill="#90CAF9" text-anchor="middle" >Screen transitions, auth gating, deep-links, and role-based routing</text>
+  <rect x="630" y="88" width="240" height="50" rx="25" fill="#263238" stroke="#37474F" stroke-width="2" filter="url(#shadow)"/>
+  <text x="750" y="118" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF" text-anchor="middle" >App Launch</text>
+  <line x1="750" y1="138" x2="750" y2="172" stroke="#546E7A" stroke-width="2" marker-end="url(#ah-dark)" />
+  <polygon points="750,172 840,202 750,232 660,202" fill="#FFF9C4" stroke="#F9A825" stroke-width="2" filter="url(#shadow)"/>
+  <text x="750" y="194" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="bold" fill="#E65100" text-anchor="middle" >Saved</text>
+  <text x="750" y="210" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="bold" fill="#E65100" text-anchor="middle" >Session?</text>
+  <line x1="840" y1="202" x2="910" y2="202" stroke="#388E3C" stroke-width="2" marker-end="url(#ah-green)" />
+  <text x="875" y="195" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#388E3C" text-anchor="middle" >YES</text>
+  <polygon points="1010,172 1110,202 1010,232 910,202" fill="#FFF9C4" stroke="#F9A825" stroke-width="2" filter="url(#shadow)"/>
+  <text x="1010" y="194" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="bold" fill="#E65100" text-anchor="middle" >Saved</text>
+  <text x="1010" y="210" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="bold" fill="#E65100" text-anchor="middle" >Role?</text>
+  <line x1="750" y1="232" x2="750" y2="262" stroke="#C62828" stroke-width="2" marker-end="url(#ah-red)" />
+  <text x="750" y="240" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#C62828" text-anchor="middle" >NO</text>
+  <rect x="630" y="262" width="240" height="64" rx="10" fill="#FCE4EC" stroke="#E91E63" stroke-width="2" filter="url(#shadow)"/>
+  <text x="750" y="299" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#880E4F" text-anchor="middle" >LoginScreen</text>
+  <text x="750" y="319" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#C2185B" text-anchor="middle" >POST /auth/login</text>
+  <rect x="380" y="262" width="200" height="64" rx="10" fill="#FCE4EC" stroke="#E91E63" stroke-width="2" filter="url(#shadow)"/>
+  <text x="480" y="299" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#880E4F" text-anchor="middle" >SignUpScreen</text>
+  <text x="480" y="319" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#C2185B" text-anchor="middle" >POST /auth/signup</text>
+  <line x1="630" y1="294" x2="580" y2="294" stroke="#E91E63" stroke-width="2" marker-end="url(#ah-red)" />
+  <text x="605" y="287" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#E91E63" text-anchor="middle" >Sign Up</text>
+  <line x1="580" y1="326" x2="630" y2="326" stroke="#90A4AE" stroke-width="2" marker-end="url(#ah-dark)" stroke-dasharray="5,4"/>
+  <text x="605" y="319" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#90A4AE" text-anchor="middle" >Back</text>
+  <line x1="1010" y1="202" x2="1110" y2="202" stroke="#F57C00" stroke-width="2" marker-end="url(#ah-orange)" />
+  <text x="1060" y="195" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#F57C00" text-anchor="middle" >NO pref</text>
+  <rect x="1110" y="172" width="220" height="60" rx="10" fill="#FFF3E0" stroke="#FF9800" stroke-width="2" filter="url(#shadow)"/>
+  <text x="1220" y="198" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#E65100" text-anchor="middle" >RoleSelection</text>
+  <text x="1220" y="216" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#E65100" text-anchor="middle" >Screen</text>
+  <text x="1220" y="236" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Choose USER or DRIVER</text>
+  <line x1="750" y1="326" x2="750" y2="358" stroke="#546E7A" stroke-width="2" marker-end="url(#ah-dark)" />
+  <polygon points="750,358 840,388 750,418 660,388" fill="#E3F2FD" stroke="#1976D2" stroke-width="2" filter="url(#shadow)"/>
+  <text x="750" y="380" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="bold" fill="#0D47A1" text-anchor="middle" >User</text>
+  <text x="750" y="396" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="bold" fill="#0D47A1" text-anchor="middle" >Role?</text>
+  <line x1="660" y1="388" x2="410" y2="438" stroke="#1976D2" stroke-width="2" marker-end="url(#ah-blue)" />
+  <text x="535" y="406" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1976D2" text-anchor="middle" >USER</text>
+  <rect x="290" y="438" width="240" height="64" rx="10" fill="#E8F5E9" stroke="#4CAF50" stroke-width="2" filter="url(#shadow)"/>
+  <text x="410" y="475" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1B5E20" text-anchor="middle" >HomeScreen</text>
+  <text x="410" y="495" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#2E7D32" text-anchor="middle" >citizen dashboard</text>
+  <rect x="130" y="545" width="168" height="64" rx="10" fill="#DCEDC8" stroke="#8BC34A" stroke-width="2" filter="url(#shadow)"/>
+  <text x="214" y="573" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1B5E20" text-anchor="middle" >Report</text>
+  <text x="214" y="591" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1B5E20" text-anchor="middle" >Screen</text>
+  <text x="214" y="611" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#33691E" text-anchor="middle" >POST /api/reports</text>
+  <path d="M 410 502 Q 312 525 214 545" stroke="#66BB6A" stroke-width="1.5" fill="none" marker-end="url(#ah-green)" />
+  <rect x="310" y="545" width="168" height="64" rx="10" fill="#DCEDC8" stroke="#8BC34A" stroke-width="2" filter="url(#shadow)"/>
+  <text x="394" y="573" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1B5E20" text-anchor="middle" >Map</text>
+  <text x="394" y="591" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1B5E20" text-anchor="middle" >Screen</text>
+  <text x="394" y="611" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#33691E" text-anchor="middle" >Nearby activity</text>
+  <path d="M 410 502 Q 402 525 394 545" stroke="#66BB6A" stroke-width="1.5" fill="none" marker-end="url(#ah-green)" />
+  <rect x="490" y="545" width="168" height="64" rx="10" fill="#DCEDC8" stroke="#8BC34A" stroke-width="2" filter="url(#shadow)"/>
+  <text x="574" y="573" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1B5E20" text-anchor="middle" >Rewards</text>
+  <text x="574" y="591" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1B5E20" text-anchor="middle" >Screen</text>
+  <text x="574" y="611" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#33691E" text-anchor="middle" >GET /api/users/rank</text>
+  <path d="M 410 502 Q 492 525 574 545" stroke="#66BB6A" stroke-width="1.5" fill="none" marker-end="url(#ah-green)" />
+  <rect x="490" y="438" width="200" height="64" rx="10" fill="#DCEDC8" stroke="#8BC34A" stroke-width="2" filter="url(#shadow)"/>
+  <text x="590" y="475" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1B5E20" text-anchor="middle" >HistoryScreen</text>
+  <text x="590" y="495" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#33691E" text-anchor="middle" >GET /api/reports/me</text>
+  <path d="M 410 502 Q 540 525 590 502" stroke="#66BB6A" stroke-width="1.5" fill="none" marker-end="url(#ah-green)" />
+  <rect x="490" y="545" width="200" height="64" rx="10" fill="#F1F8E9" stroke="#AED581" stroke-width="2" filter="url(#shadow)"/>
+  <text x="590" y="573" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#33691E" text-anchor="middle" >ReportDetails</text>
+  <text x="590" y="591" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#33691E" text-anchor="middle" >Screen</text>
+  <text x="590" y="611" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#558B2F" text-anchor="middle" >inline detail view</text>
+  <line x1="590" y1="502" x2="590" y2="545" stroke="#66BB6A" stroke-width="2" marker-end="url(#ah-green)" />
+  <rect x="290" y="650" width="200" height="64" rx="10" fill="#DCEDC8" stroke="#8BC34A" stroke-width="2" filter="url(#shadow)"/>
+  <text x="390" y="687" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1B5E20" text-anchor="middle" >ProfileScreen</text>
+  <text x="390" y="707" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#33691E" text-anchor="middle" >GET /auth/me  •  logout</text>
+  <path d="M 410 438 Q 390 560 390 650" stroke="#66BB6A" stroke-width="1.5" fill="none" marker-end="url(#ah-green)" />
+  <rect x="700" y="650" width="230" height="64" rx="10" fill="#E8EAF6" stroke="#3F51B5" stroke-width="2" filter="url(#shadow)"/>
+  <text x="815" y="678" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1A237E" text-anchor="middle" >ComplaintDetails</text>
+  <text x="815" y="696" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1A237E" text-anchor="middle" >Screen</text>
+  <text x="815" y="716" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#283593" text-anchor="middle" >GET /api/complaints/{id}</text>
+  <line x1="880" y1="680" x2="930" y2="680" stroke="#5C6BC0" stroke-width="2" marker-end="url(#ah-dark)" stroke-dasharray="6,4"/>
+  <text x="905" y="673" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#5C6BC0" text-anchor="middle" >FCM Deep Link</text>
+  <rect x="930" y="658" width="180" height="44" rx="8" fill="#FFF3E0" stroke="#FF9800" stroke-width="1.5" />
+  <text x="1020" y="676" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#E65100" text-anchor="middle" >FCM Push</text>
+  <text x="1020" y="692" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Notification Tap</text>
+  <line x1="840" y1="388" x2="1100" y2="438" stroke="#42A5F5" stroke-width="2" marker-end="url(#ah-blue)" />
+  <text x="970" y="406" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#42A5F5" text-anchor="middle" >DRIVER</text>
+  <rect x="980" y="438" width="240" height="64" rx="10" fill="#E3F2FD" stroke="#1976D2" stroke-width="2" filter="url(#shadow)"/>
+  <text x="1100" y="466" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#0D47A1" text-anchor="middle" >DriverDashboard</text>
+  <text x="1100" y="484" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#0D47A1" text-anchor="middle" >Screen</text>
+  <text x="1100" y="504" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >overview + quick actions</text>
+  <rect x="860" y="545" width="178" height="64" rx="10" fill="#BBDEFB" stroke="#42A5F5" stroke-width="2" filter="url(#shadow)"/>
+  <text x="949" y="573" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#0D47A1" text-anchor="middle" >DriverTasks</text>
+  <text x="949" y="591" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#0D47A1" text-anchor="middle" >Screen</text>
+  <text x="949" y="611" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >GET assigned tasks</text>
+  <path d="M 1100 502 Q 1024 525 949 545" stroke="#1976D2" stroke-width="1.5" fill="none" marker-end="url(#ah-blue)" />
+  <rect x="1040" y="545" width="178" height="64" rx="10" fill="#BBDEFB" stroke="#42A5F5" stroke-width="2" filter="url(#shadow)"/>
+  <text x="1129" y="573" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#0D47A1" text-anchor="middle" >DriverRoute</text>
+  <text x="1129" y="591" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#0D47A1" text-anchor="middle" >Screen</text>
+  <text x="1129" y="611" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >task route + photo</text>
+  <path d="M 1100 502 Q 1114 525 1129 545" stroke="#1976D2" stroke-width="1.5" fill="none" marker-end="url(#ah-blue)" />
+  <rect x="1220" y="545" width="178" height="64" rx="10" fill="#BBDEFB" stroke="#42A5F5" stroke-width="2" filter="url(#shadow)"/>
+  <text x="1309" y="573" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#0D47A1" text-anchor="middle" >DriverProfile</text>
+  <text x="1309" y="591" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#0D47A1" text-anchor="middle" >Screen</text>
+  <text x="1309" y="611" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >profile + settings</text>
+  <path d="M 1100 502 Q 1204 525 1309 545" stroke="#1976D2" stroke-width="1.5" fill="none" marker-end="url(#ah-blue)" />
+  <rect x="860" y="648" width="178" height="58" rx="10" fill="#E3F2FD" stroke="#90CAF9" stroke-width="2" filter="url(#shadow)"/>
+  <text x="949" y="673" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1A237E" text-anchor="middle" >Camera /</text>
+  <text x="949" y="691" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1A237E" text-anchor="middle" >Photo Upload</text>
+  <text x="949" y="711" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#283593" text-anchor="middle" >multipart POST</text>
+  <line x1="949" y1="609" x2="949" y2="648" stroke="#1976D2" stroke-width="2" marker-end="url(#ah-blue)" />
+  <rect x="1040" y="648" width="178" height="58" rx="10" fill="#E3F2FD" stroke="#90CAF9" stroke-width="2" filter="url(#shadow)"/>
+  <text x="1129" y="673" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1A237E" text-anchor="middle" >Completion</text>
+  <text x="1129" y="691" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1A237E" text-anchor="middle" >Photo Upload</text>
+  <text x="1129" y="711" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#283593" text-anchor="middle" >PATCH completion-photo</text>
+  <line x1="1129" y1="609" x2="1129" y2="648" stroke="#1976D2" stroke-width="2" marker-end="url(#ah-blue)" />
+  <path d="M 1010 202 Q 1050 250 1010 280 Q 980 320 840 388" stroke="#388E3C" stroke-width="1.5" fill="none" marker-end="url(#ah-green)" />
+  <rect x="30" y="918" width="1440" height="44" rx="8" fill="#F5F5F5" stroke="#E0E0E0" stroke-width="1" />
+  <rect x="50" y="928" width="14" height="14" rx="3" fill="#263238" stroke="#90A4AE" stroke-width="1" />
+  <text x="70" y="940" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#37474F" text-anchor="start" >Entry / Decision</text>
+  <rect x="295" y="928" width="14" height="14" rx="3" fill="#FCE4EC" stroke="#90A4AE" stroke-width="1" />
+  <text x="315" y="940" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#37474F" text-anchor="start" >Auth Screens</text>
+  <rect x="540" y="928" width="14" height="14" rx="3" fill="#E8F5E9" stroke="#90A4AE" stroke-width="1" />
+  <text x="560" y="940" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#37474F" text-anchor="start" >User Screens</text>
+  <rect x="785" y="928" width="14" height="14" rx="3" fill="#E3F2FD" stroke="#90A4AE" stroke-width="1" />
+  <text x="805" y="940" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#37474F" text-anchor="start" >Driver Screens</text>
+  <rect x="1030" y="928" width="14" height="14" rx="3" fill="#FFF9C4" stroke="#90A4AE" stroke-width="1" />
+  <text x="1050" y="940" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#37474F" text-anchor="start" >Decision Diamond</text>
+  <rect x="1275" y="928" width="14" height="14" rx="3" fill="#E8EAF6" stroke="#90A4AE" stroke-width="1" />
+  <text x="1295" y="940" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#37474F" text-anchor="start" >System / Deep-link</text>
+</svg>

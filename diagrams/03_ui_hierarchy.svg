@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1060" width="1500" height="1060">
+
+  <defs>
+    <marker id="ah-dark" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#455A64"/>
+    </marker>
+    <marker id="ah-blue" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#1976D2"/>
+    </marker>
+    <marker id="ah-green" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#388E3C"/>
+    </marker>
+    <marker id="ah-orange" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#E65100"/>
+    </marker>
+    <marker id="ah-purple" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#6A1B9A"/>
+    </marker>
+    <marker id="ah-red" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#C62828"/>
+    </marker>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="108%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="#00000018"/>
+    </filter>
+  </defs>
+
+  <!-- white background -->
+  <rect width="1500" height="1060" fill="#FFFFFF"/>
+  <rect x="0" y="0" width="1500" height="72" rx="0" fill="#1A237E" stroke="none" stroke-width="0" />
+  <text x="750" y="38" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="bold" fill="#FFFFFF" text-anchor="middle" >CleanCityApp — UI Hierarchy / Screen Structure</text>
+  <text x="750" y="60" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" fill="#90CAF9" text-anchor="middle" >Complete Composable tree from MainActivity down to leaf-level UI components</text>
+  <rect x="620" y="88" width="260" height="60" rx="30" fill="#1A237E" stroke="#1A237E" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="750" y="103" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle" >MainActivity</text>
+  <text x="750" y="121" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#90CAF9" text-anchor="middle" >ComponentActivity</text>
+  <text x="750" y="135" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#90CAF9" text-anchor="middle" >Edge-to-edge</text>
+  <text x="750" y="149" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#90CAF9" text-anchor="middle" >Deep-link host</text>
+  <line x1="750" y1="148" x2="750" y2="178" stroke="#90A4AE" stroke-width="1.5" marker-end="url(#ah-dark)"/>
+  <rect x="560" y="178" width="380" height="70" rx="8" fill="#283593" stroke="#3F51B5" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="750" y="205" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle" >MainApp  (Composable)</text>
+  <text x="750" y="223" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#9FA8DA" text-anchor="middle" >Scaffold + NavHost</text>
+  <text x="750" y="237" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#9FA8DA" text-anchor="middle" >TopNavBar + BottomNavBar + FAB</text>
+  <line x1="750" y1="248" x2="750" y2="278" stroke="#90A4AE" stroke-width="1.5"/>
+  <line x1="400" y1="278" x2="1100" y2="278" stroke="#90A4AE" stroke-width="1.5"/>
+  <line x1="400" y1="278" x2="400" y2="308" stroke="#90A4AE" stroke-width="1.5"/>
+  <line x1="750" y1="278" x2="750" y2="308" stroke="#90A4AE" stroke-width="1.5"/>
+  <line x1="1100" y1="278" x2="1100" y2="308" stroke="#90A4AE" stroke-width="1.5"/>
+  <rect x="280" y="308" width="240" height="80" rx="8" fill="#E8EAF6" stroke="#5C6BC0" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="400" y="326" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#1A237E" text-anchor="middle" >Shared Components</text>
+  <text x="400" y="344" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#3F51B5" text-anchor="middle" >TopNavBar</text>
+  <text x="400" y="358" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#3F51B5" text-anchor="middle" >BottomNavBar (role-aware)</text>
+  <text x="400" y="372" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#3F51B5" text-anchor="middle" >FAB (Report shortcut)</text>
+  <text x="400" y="386" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#3F51B5" text-anchor="middle" >ThemeSelector</text>
+  <rect x="630" y="308" width="240" height="60" rx="8" fill="#37474F" stroke="#546E7A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="750" y="330" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle" >NavHost</text>
+  <text x="750" y="348" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#B0BEC5" text-anchor="middle" >Jetpack Navigation Compose</text>
+  <text x="750" y="362" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#B0BEC5" text-anchor="middle" >Screen route definitions</text>
+  <rect x="980" y="308" width="240" height="80" rx="8" fill="#E8EAF6" stroke="#5C6BC0" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1100" y="326" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#1A237E" text-anchor="middle" >CleanCityAppTheme</text>
+  <text x="1100" y="344" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#3F51B5" text-anchor="middle" >Material Design 3</text>
+  <text x="1100" y="358" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#3F51B5" text-anchor="middle" >Light / Dark / System</text>
+  <text x="1100" y="372" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#3F51B5" text-anchor="middle" >Color · Typography</text>
+  <text x="1100" y="386" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#3F51B5" text-anchor="middle" >Dynamic theming</text>
+  <line x1="750" y1="368" x2="750" y2="398" stroke="#90A4AE" stroke-width="1.5" marker-end="url(#ah-dark)"/>
+  <line x1="750" y1="368" x2="750" y2="398" stroke="#90A4AE" stroke-width="1.5"/>
+  <line x1="240" y1="398" x2="1260" y2="398" stroke="#90A4AE" stroke-width="1.5"/>
+  <line x1="320" y1="398" x2="320" y2="428" stroke="#90A4AE" stroke-width="1.5"/>
+  <line x1="750" y1="398" x2="750" y2="428" stroke="#90A4AE" stroke-width="1.5"/>
+  <line x1="1200" y1="398" x2="1200" y2="428" stroke="#90A4AE" stroke-width="1.5"/>
+  <rect x="200" y="428" width="240" height="54" rx="8" fill="#FFF8E1" stroke="#FFB300" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="320" y="454" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#E65100" text-anchor="middle" >Auth Flow</text>
+  <text x="320" y="472" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#EF6C00" text-anchor="middle" >login · signup · role_selection</text>
+  <line x1="320" y1="482" x2="320" y2="512" stroke="#90A4AE" stroke-width="1.5"/>
+  <rect x="120" y="512" width="110" height="46" rx="6" fill="#FFF3E0" stroke="#FFA726" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="175" y="541" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#BF360C" text-anchor="middle" >LoginScreen</text>
+  <line x1="175" y1="482" x2="175" y2="512" stroke="#90A4AE" stroke-width="1.5"/>
+  <line x1="175" y1="482" x2="345" y2="482" stroke="#90A4AE" stroke-width="1.5"/>
+  <rect x="240" y="512" width="110" height="46" rx="6" fill="#FFF3E0" stroke="#FFA726" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="295" y="541" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#BF360C" text-anchor="middle" >SignUpScreen</text>
+  <line x1="295" y1="482" x2="295" y2="512" stroke="#90A4AE" stroke-width="1.5"/>
+  <line x1="175" y1="482" x2="345" y2="482" stroke="#90A4AE" stroke-width="1.5"/>
+  <rect x="360" y="512" width="110" height="46" rx="6" fill="#FFF3E0" stroke="#FFA726" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="415" y="541" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#BF360C" text-anchor="middle" >RoleSelectionScreen</text>
+  <line x1="415" y1="482" x2="415" y2="512" stroke="#90A4AE" stroke-width="1.5"/>
+  <line x1="175" y1="482" x2="345" y2="482" stroke="#90A4AE" stroke-width="1.5"/>
+  <rect x="600" y="428" width="300" height="54" rx="8" fill="#E8F5E9" stroke="#4CAF50" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="750" y="454" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#1B5E20" text-anchor="middle" >User Flow  (citizen)</text>
+  <text x="750" y="472" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#2E7D32" text-anchor="middle" >home · report · map · rewards · history · profile</text>
+  <line x1="750" y1="482" x2="750" y2="512" stroke="#90A4AE" stroke-width="1.5"/>
+  <line x1="162" y1="512" x2="1338" y2="512" stroke="#90A4AE" stroke-width="1.5"/>
+  <line x1="162" y1="512" x2="162" y2="542" stroke="#90A4AE" stroke-width="1.5"/>
+  <rect x="82" y="542" width="160" height="96" rx="6" fill="#DCEDC8" stroke="#8BC34A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="162" y="575" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#1B5E20" text-anchor="middle" >HomeScreen</text>
+  <text x="162" y="593" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#33691E" text-anchor="middle" >StatBubble</text>
+  <text x="162" y="607" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#33691E" text-anchor="middle" >MapCard</text>
+  <text x="162" y="621" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#33691E" text-anchor="middle" >ActivityItem</text>
+  <line x1="330" y1="512" x2="330" y2="542" stroke="#90A4AE" stroke-width="1.5"/>
+  <rect x="250" y="542" width="160" height="82" rx="6" fill="#DCEDC8" stroke="#8BC34A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="330" y="575" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#1B5E20" text-anchor="middle" >ReportScreen</text>
+  <text x="330" y="593" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#33691E" text-anchor="middle" >CameraCapture</text>
+  <text x="330" y="607" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#33691E" text-anchor="middle" >ReportCategorySelector</text>
+  <line x1="498" y1="512" x2="498" y2="542" stroke="#90A4AE" stroke-width="1.5"/>
+  <rect x="418" y="542" width="160" height="96" rx="6" fill="#DCEDC8" stroke="#8BC34A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="498" y="575" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#1B5E20" text-anchor="middle" >MapScreen</text>
+  <text x="498" y="593" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#33691E" text-anchor="middle" >MapHeatmapCard</text>
+  <text x="498" y="607" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#33691E" text-anchor="middle" >MapActivityItem</text>
+  <text x="498" y="621" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#33691E" text-anchor="middle" >LegendItem</text>
+  <line x1="666" y1="512" x2="666" y2="542" stroke="#90A4AE" stroke-width="1.5"/>
+  <rect x="586" y="542" width="160" height="82" rx="6" fill="#DCEDC8" stroke="#8BC34A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="666" y="575" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#1B5E20" text-anchor="middle" >RewardsScreen</text>
+  <text x="666" y="593" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#33691E" text-anchor="middle" >RewardsLeaderboard</text>
+  <text x="666" y="607" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#33691E" text-anchor="middle" >LeaderboardRow</text>
+  <line x1="834" y1="512" x2="834" y2="542" stroke="#90A4AE" stroke-width="1.5"/>
+  <rect x="754" y="542" width="160" height="82" rx="6" fill="#DCEDC8" stroke="#8BC34A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="834" y="575" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#1B5E20" text-anchor="middle" >HistoryScreen</text>
+  <text x="834" y="593" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#33691E" text-anchor="middle" >HistoryFilterBar</text>
+  <text x="834" y="607" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#33691E" text-anchor="middle" >ReportHistoryCard</text>
+  <line x1="1002" y1="512" x2="1002" y2="542" stroke="#90A4AE" stroke-width="1.5"/>
+  <rect x="922" y="542" width="160" height="96" rx="6" fill="#DCEDC8" stroke="#8BC34A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1002" y="575" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#1B5E20" text-anchor="middle" >ProfileScreen</text>
+  <text x="1002" y="593" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#33691E" text-anchor="middle" >StatBubble</text>
+  <text x="1002" y="607" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#33691E" text-anchor="middle" >ThemeSelectorRow</text>
+  <text x="1002" y="621" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#33691E" text-anchor="middle" >ProfileSettingRow</text>
+  <line x1="1170" y1="512" x2="1170" y2="542" stroke="#90A4AE" stroke-width="1.5"/>
+  <rect x="1090" y="542" width="160" height="82" rx="6" fill="#DCEDC8" stroke="#8BC34A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1170" y="567" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#1B5E20" text-anchor="middle" >ComplaintDetails</text>
+  <text x="1170" y="583" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#1B5E20" text-anchor="middle" >Screen</text>
+  <text x="1170" y="601" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#33691E" text-anchor="middle" >ComplaintDetailsVM</text>
+  <text x="1170" y="615" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#33691E" text-anchor="middle" >MVI Contracts</text>
+  <line x1="1338" y1="512" x2="1338" y2="542" stroke="#90A4AE" stroke-width="1.5"/>
+  <rect x="1258" y="542" width="160" height="82" rx="6" fill="#DCEDC8" stroke="#8BC34A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1338" y="567" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#1B5E20" text-anchor="middle" >ReportDetails</text>
+  <text x="1338" y="583" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#1B5E20" text-anchor="middle" >Screen</text>
+  <text x="1338" y="601" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#33691E" text-anchor="middle" >Report info</text>
+  <text x="1338" y="615" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#33691E" text-anchor="middle" >Image viewer</text>
+  <rect x="1080" y="428" width="240" height="54" rx="8" fill="#E3F2FD" stroke="#1976D2" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1200" y="454" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#0D47A1" text-anchor="middle" >Driver Flow</text>
+  <text x="1200" y="472" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >driver_dashboard · tasks · route · profile</text>
+  <line x1="1200" y1="482" x2="1200" y2="512" stroke="#90A4AE" stroke-width="1.5"/>
+  <line x1="814" y1="512" x2="1586" y2="512" stroke="#90A4AE" stroke-width="1.5"/>
+  <line x1="814" y1="512" x2="814" y2="542" stroke="#90A4AE" stroke-width="1.5"/>
+  <rect x="722" y="542" width="185" height="124" rx="6" fill="#BBDEFB" stroke="#42A5F5" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="814" y="567" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#0D47A1" text-anchor="middle" >DriverDashboard</text>
+  <text x="814" y="583" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#0D47A1" text-anchor="middle" >Screen</text>
+  <text x="814" y="601" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >DriverDutyStatusRow</text>
+  <text x="814" y="615" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >DashboardStatsSection</text>
+  <text x="814" y="629" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >ProgressCard</text>
+  <text x="814" y="643" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >NextTaskSection</text>
+  <text x="814" y="657" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >QuickActions</text>
+  <line x1="1007" y1="512" x2="1007" y2="542" stroke="#90A4AE" stroke-width="1.5"/>
+  <rect x="915" y="542" width="185" height="96" rx="6" fill="#BBDEFB" stroke="#42A5F5" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1007" y="567" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#0D47A1" text-anchor="middle" >DriverTasks</text>
+  <text x="1007" y="583" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#0D47A1" text-anchor="middle" >Screen</text>
+  <text x="1007" y="601" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >DriverTaskFilterChip</text>
+  <text x="1007" y="615" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >DriverTaskCard</text>
+  <text x="1007" y="629" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >Camera flow</text>
+  <line x1="1200" y1="512" x2="1200" y2="542" stroke="#90A4AE" stroke-width="1.5"/>
+  <rect x="1108" y="542" width="185" height="96" rx="6" fill="#BBDEFB" stroke="#42A5F5" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1200" y="567" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#0D47A1" text-anchor="middle" >DriverRoute</text>
+  <text x="1200" y="583" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#0D47A1" text-anchor="middle" >Screen</text>
+  <text x="1200" y="601" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >Task details</text>
+  <text x="1200" y="615" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >CameraCapture</text>
+  <text x="1200" y="629" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >Completion upload</text>
+  <line x1="1393" y1="512" x2="1393" y2="542" stroke="#90A4AE" stroke-width="1.5"/>
+  <rect x="1301" y="542" width="185" height="96" rx="6" fill="#BBDEFB" stroke="#42A5F5" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1393" y="567" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#0D47A1" text-anchor="middle" >DriverProfile</text>
+  <text x="1393" y="583" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#0D47A1" text-anchor="middle" >Screen</text>
+  <text x="1393" y="601" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >Profile info</text>
+  <text x="1393" y="615" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >Settings</text>
+  <text x="1393" y="629" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >Logout</text>
+  <line x1="1586" y1="512" x2="1586" y2="542" stroke="#90A4AE" stroke-width="1.5"/>
+  <rect x="1494" y="542" width="185" height="96" rx="6" fill="#BBDEFB" stroke="#42A5F5" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1586" y="567" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#0D47A1" text-anchor="middle" >History Screen</text>
+  <text x="1586" y="583" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#0D47A1" text-anchor="middle" >(shared)</text>
+  <text x="1586" y="601" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >HistoryFilterBar</text>
+  <text x="1586" y="615" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >ReportHistoryCard</text>
+  <text x="1586" y="629" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="normal" fill="#1565C0" text-anchor="middle" >isDriver=true</text>
+  <rect x="30" y="1000" width="1440" height="42" rx="8" fill="#F5F5F5" stroke="#E0E0E0" stroke-width="1" />
+  <rect x="50" y="1008" width="14" height="14" rx="3" fill="#1A237E" stroke="#90A4AE" stroke-width="1" />
+  <text x="70" y="1020" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#37474F" text-anchor="start" >MainActivity / MainApp</text>
+  <rect x="290" y="1008" width="14" height="14" rx="3" fill="#37474F" stroke="#90A4AE" stroke-width="1" />
+  <text x="310" y="1020" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#37474F" text-anchor="start" >NavHost</text>
+  <rect x="530" y="1008" width="14" height="14" rx="3" fill="#FFF3E0" stroke="#90A4AE" stroke-width="1" />
+  <text x="550" y="1020" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#37474F" text-anchor="start" >Auth Screens</text>
+  <rect x="770" y="1008" width="14" height="14" rx="3" fill="#E8F5E9" stroke="#90A4AE" stroke-width="1" />
+  <text x="790" y="1020" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#37474F" text-anchor="start" >User Screens</text>
+  <rect x="1010" y="1008" width="14" height="14" rx="3" fill="#E3F2FD" stroke="#90A4AE" stroke-width="1" />
+  <text x="1030" y="1020" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#37474F" text-anchor="start" >Driver Screens</text>
+  <rect x="1250" y="1008" width="14" height="14" rx="3" fill="#E8EAF6" stroke="#90A4AE" stroke-width="1" />
+  <text x="1270" y="1020" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#37474F" text-anchor="start" >Shared Components</text>
+</svg>

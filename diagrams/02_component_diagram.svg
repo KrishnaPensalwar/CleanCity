@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 980" width="1500" height="980">
+
+  <defs>
+    <marker id="ah-dark" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#455A64"/>
+    </marker>
+    <marker id="ah-blue" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#1976D2"/>
+    </marker>
+    <marker id="ah-green" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#388E3C"/>
+    </marker>
+    <marker id="ah-orange" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#E65100"/>
+    </marker>
+    <marker id="ah-purple" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#6A1B9A"/>
+    </marker>
+    <marker id="ah-red" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <polygon points="0,1 10,5 0,9" fill="#C62828"/>
+    </marker>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="108%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="#00000018"/>
+    </filter>
+  </defs>
+
+  <!-- white background -->
+  <rect width="1500" height="980" fill="#FFFFFF"/>
+  <rect x="0" y="0" width="1500" height="72" rx="0" fill="#1A237E" stroke="none" stroke-width="0" />
+  <text x="750" y="38" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="bold" fill="#FFFFFF" text-anchor="middle" >CleanCityApp — Component Diagram</text>
+  <text x="750" y="60" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" fill="#90CAF9" text-anchor="middle" >Major components, their responsibilities, and dependency relationships</text>
+  <text x="750" y="96" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#37474F" text-anchor="middle" >APPLICATION ENTRY</text>
+  <rect x="120" y="108" width="300" height="110" rx="8" fill="#E3F2FD" stroke="#42A5F5" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="270" y="129" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#0D47A1" text-anchor="middle" >CleanCityApplication</text>
+  <line x1="128" y1="136" x2="412" y2="136" stroke="#42A5F5" stroke-width="1"/>
+  <text x="270" y="152" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#1565C0" text-anchor="middle" >extends Application</text>
+  <text x="270" y="168" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#1565C0" text-anchor="middle" >startKoin { appModule }</text>
+  <text x="270" y="184" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#1565C0" text-anchor="middle" >Firebase initialization</text>
+  <text x="270" y="200" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#1565C0" text-anchor="middle" >App lifecycle owner</text>
+  <rect x="540" y="108" width="300" height="110" rx="8" fill="#E3F2FD" stroke="#42A5F5" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="690" y="129" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#0D47A1" text-anchor="middle" >MainActivity</text>
+  <line x1="548" y1="136" x2="832" y2="136" stroke="#42A5F5" stroke-width="1"/>
+  <text x="690" y="152" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#1565C0" text-anchor="middle" >Single ComponentActivity</text>
+  <text x="690" y="168" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#1565C0" text-anchor="middle" >Edge-to-edge Compose host</text>
+  <text x="690" y="184" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#1565C0" text-anchor="middle" >FCM deep-link handling</text>
+  <text x="690" y="200" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#1565C0" text-anchor="middle" >Notification permission</text>
+  <rect x="960" y="108" width="300" height="110" rx="8" fill="#E3F2FD" stroke="#42A5F5" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1110" y="129" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#0D47A1" text-anchor="middle" >MainApp (Composable)</text>
+  <line x1="968" y1="136" x2="1252" y2="136" stroke="#42A5F5" stroke-width="1"/>
+  <text x="1110" y="152" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#1565C0" text-anchor="middle" >Root Scaffold</text>
+  <text x="1110" y="168" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#1565C0" text-anchor="middle" >NavHost + NavController</text>
+  <text x="1110" y="184" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#1565C0" text-anchor="middle" >TopNavBar + BottomNavBar</text>
+  <text x="1110" y="200" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#1565C0" text-anchor="middle" >FAB + MainViewModel</text>
+  <line x1="420" y1="163" x2="540" y2="163" stroke="#1976D2" stroke-width="2" marker-end="url(#ah-blue)" />
+  <line x1="840" y1="163" x2="960" y2="163" stroke="#1976D2" stroke-width="2" marker-end="url(#ah-blue)" />
+  <text x="750" y="256" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#37474F" text-anchor="middle" >PRESENTATION LAYER  —  Screens &amp; ViewModels</text>
+  <rect x="30" y="268" width="225" height="108" rx="8" fill="#E8F5E9" stroke="#66BB6A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="142" y="289" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1B5E20" text-anchor="middle" >Auth Screens</text>
+  <line x1="38" y1="296" x2="247" y2="296" stroke="#66BB6A" stroke-width="1"/>
+  <text x="142" y="312" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >LoginScreen</text>
+  <text x="142" y="328" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >SignUpScreen</text>
+  <text x="142" y="344" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >RoleSelectionScreen</text>
+  <text x="142" y="360" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >AuthViewModel</text>
+  <path d="M 1110 218 Q 142 240 142 268" stroke="#66BB6A" stroke-width="1.5" fill="none" marker-end="url(#ah-green)" />
+  <rect x="270" y="268" width="225" height="108" rx="8" fill="#E8F5E9" stroke="#66BB6A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="382" y="289" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1B5E20" text-anchor="middle" >Home / User</text>
+  <line x1="278" y1="296" x2="487" y2="296" stroke="#66BB6A" stroke-width="1"/>
+  <text x="382" y="312" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >HomeScreen + HomeViewModel</text>
+  <text x="382" y="328" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >ReportScreen + UserViewModel</text>
+  <text x="382" y="344" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >MapScreen (static UI)</text>
+  <text x="382" y="360" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >RewardsScreen + RewardsVM</text>
+  <path d="M 1110 218 Q 382 240 382 268" stroke="#66BB6A" stroke-width="1.5" fill="none" marker-end="url(#ah-green)" />
+  <rect x="510" y="268" width="225" height="108" rx="8" fill="#E8F5E9" stroke="#66BB6A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="622" y="289" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1B5E20" text-anchor="middle" >History &amp;
+Details</text>
+  <line x1="518" y1="296" x2="727" y2="296" stroke="#66BB6A" stroke-width="1"/>
+  <text x="622" y="312" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >HistoryScreen + HistoryVM</text>
+  <text x="622" y="328" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >ReportDetailsScreen</text>
+  <text x="622" y="344" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >ComplaintDetailsScreen</text>
+  <text x="622" y="360" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >ComplaintDetailsVM</text>
+  <path d="M 1110 218 Q 622 240 622 268" stroke="#66BB6A" stroke-width="1.5" fill="none" marker-end="url(#ah-green)" />
+  <rect x="750" y="268" width="225" height="108" rx="8" fill="#E8F5E9" stroke="#66BB6A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="862" y="289" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1B5E20" text-anchor="middle" >Profile</text>
+  <line x1="758" y1="296" x2="967" y2="296" stroke="#66BB6A" stroke-width="1"/>
+  <text x="862" y="312" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >ProfileScreen + ProfileVM</text>
+  <text x="862" y="328" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >DriverProfileScreen</text>
+  <text x="862" y="344" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >ThemeMode selection</text>
+  <text x="862" y="360" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >Logout flow</text>
+  <path d="M 1110 218 Q 862 240 862 268" stroke="#66BB6A" stroke-width="1.5" fill="none" marker-end="url(#ah-green)" />
+  <rect x="990" y="268" width="225" height="108" rx="8" fill="#E8F5E9" stroke="#66BB6A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1102" y="289" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1B5E20" text-anchor="middle" >Driver
+Screens</text>
+  <line x1="998" y1="296" x2="1207" y2="296" stroke="#66BB6A" stroke-width="1"/>
+  <text x="1102" y="312" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >DriverDashboardScreen</text>
+  <text x="1102" y="328" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >DriverTasksScreen</text>
+  <text x="1102" y="344" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >DriverRouteScreen</text>
+  <text x="1102" y="360" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >DriverViewModel</text>
+  <path d="M 1110 218 Q 1102 240 1102 268" stroke="#66BB6A" stroke-width="1.5" fill="none" marker-end="url(#ah-green)" />
+  <rect x="1230" y="268" width="225" height="108" rx="8" fill="#E8F5E9" stroke="#66BB6A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1342" y="289" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1B5E20" text-anchor="middle" >Shared UI
+Components</text>
+  <line x1="1238" y1="296" x2="1447" y2="296" stroke="#66BB6A" stroke-width="1"/>
+  <text x="1342" y="312" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >BottomNavBar · TopNavBar</text>
+  <text x="1342" y="328" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >CameraCapture · InputField</text>
+  <text x="1342" y="344" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >Shimmer · Skeletons</text>
+  <text x="1342" y="360" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#2E7D32" text-anchor="middle" >ErrorState</text>
+  <path d="M 1110 218 Q 1342 240 1342 268" stroke="#66BB6A" stroke-width="1.5" fill="none" marker-end="url(#ah-green)" />
+  <text x="750" y="422" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#37474F" text-anchor="middle" >DATA LAYER  —  Repositories, Models &amp; Local Storage</text>
+  <rect x="30" y="435" width="268" height="108" rx="8" fill="#FFF3E0" stroke="#FFA726" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="164" y="456" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#E65100" text-anchor="middle" >ComplaintDetails
+Repository</text>
+  <line x1="38" y1="463" x2="290" y2="463" stroke="#FFA726" stroke-width="1"/>
+  <text x="164" y="479" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Wraps ComplaintDetailsApi</text>
+  <text x="164" y="495" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Returns Result&lt;T&gt;</text>
+  <text x="164" y="511" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Suspend function pattern</text>
+  <text x="164" y="527" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Error mapping</text>
+  <rect x="313" y="435" width="268" height="108" rx="8" fill="#FFF3E0" stroke="#FFA726" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="447" y="456" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#E65100" text-anchor="middle" >DeviceRegistration
+Repository</text>
+  <line x1="321" y1="463" x2="573" y2="463" stroke="#FFA726" stroke-width="1"/>
+  <text x="447" y="479" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#EF6C00" text-anchor="middle" >FCM token registration</text>
+  <text x="447" y="495" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Duplicate-token guard</text>
+  <text x="447" y="511" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Unregister on logout</text>
+  <text x="447" y="527" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Ktor-based calls</text>
+  <rect x="596" y="435" width="268" height="108" rx="8" fill="#FFF3E0" stroke="#FFA726" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="730" y="456" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#E65100" text-anchor="middle" >Auth Models
+(DTOs)</text>
+  <line x1="604" y1="463" x2="856" y2="463" stroke="#FFA726" stroke-width="1"/>
+  <text x="730" y="479" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#EF6C00" text-anchor="middle" >LoginResponse / MeResponse</text>
+  <text x="730" y="495" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#EF6C00" text-anchor="middle" >ReportResponse / UserDto</text>
+  <text x="730" y="511" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#EF6C00" text-anchor="middle" >RankResponse / CityDto</text>
+  <text x="730" y="527" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#EF6C00" text-anchor="middle" >@Serializable / @SerialName</text>
+  <rect x="879" y="435" width="268" height="108" rx="8" fill="#FFF3E0" stroke="#FFA726" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1013" y="456" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#E65100" text-anchor="middle" >SharedPreferences
+(auth_prefs)</text>
+  <line x1="887" y1="463" x2="1139" y2="463" stroke="#FFA726" stroke-width="1"/>
+  <text x="1013" y="479" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#EF6C00" text-anchor="middle" >access_token / refresh_token</text>
+  <text x="1013" y="495" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#EF6C00" text-anchor="middle" >user_role (USER / DRIVER)</text>
+  <text x="1013" y="511" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#EF6C00" text-anchor="middle" >theme_mode</text>
+  <text x="1013" y="527" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#EF6C00" text-anchor="middle" >last_registered_fcm_token</text>
+  <rect x="1162" y="435" width="268" height="108" rx="8" fill="#FFF3E0" stroke="#FFA726" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1296" y="456" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#E65100" text-anchor="middle" >TokenAuthenticator</text>
+  <line x1="1170" y1="463" x2="1422" y2="463" stroke="#FFA726" stroke-width="1"/>
+  <text x="1296" y="479" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#EF6C00" text-anchor="middle" >OkHttp Authenticator</text>
+  <text x="1296" y="495" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Intercepts HTTP 401 errors</text>
+  <text x="1296" y="511" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Calls /auth/refresh silently</text>
+  <text x="1296" y="527" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#EF6C00" text-anchor="middle" >Retries original request</text>
+  <line x1="142" y1="376" x2="164" y2="435" stroke="#FFA726" stroke-width="1.5" marker-end="url(#ah-orange)" />
+  <line x1="382" y1="376" x2="447" y2="435" stroke="#FFA726" stroke-width="1.5" marker-end="url(#ah-orange)" />
+  <line x1="622" y1="376" x2="730" y2="435" stroke="#FFA726" stroke-width="1.5" marker-end="url(#ah-orange)" />
+  <line x1="862" y1="376" x2="730" y2="435" stroke="#FFA726" stroke-width="1.5" marker-end="url(#ah-orange)" />
+  <line x1="1102" y1="376" x2="1013" y2="435" stroke="#FFA726" stroke-width="1.5" marker-end="url(#ah-orange)" />
+  <text x="750" y="590" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#37474F" text-anchor="middle" >REMOTE API LAYER  —  Network Clients</text>
+  <rect x="30" y="602" width="268" height="108" rx="8" fill="#E8EAF6" stroke="#5C6BC0" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="164" y="623" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1A237E" text-anchor="middle" >AuthApi
+(Retrofit)</text>
+  <line x1="38" y1="630" x2="290" y2="630" stroke="#5C6BC0" stroke-width="1"/>
+  <text x="164" y="646" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#283593" text-anchor="middle" >Retrofit + OkHttp</text>
+  <text x="164" y="662" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#283593" text-anchor="middle" >Auth, Reports, Rank</text>
+  <text x="164" y="678" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#283593" text-anchor="middle" >Multipart uploads</text>
+  <text x="164" y="694" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#283593" text-anchor="middle" >Gson / kotlinx.serial</text>
+  <rect x="313" y="602" width="268" height="108" rx="8" fill="#E8EAF6" stroke="#5C6BC0" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="447" y="623" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1A237E" text-anchor="middle" >DriverApi
+(Ktor)</text>
+  <line x1="321" y1="630" x2="573" y2="630" stroke="#5C6BC0" stroke-width="1"/>
+  <text x="447" y="646" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#283593" text-anchor="middle" >GET assigned reports</text>
+  <text x="447" y="662" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#283593" text-anchor="middle" >Ktor HttpClient</text>
+  <text x="447" y="678" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#283593" text-anchor="middle" >kotlinx.serialization</text>
+  <text x="447" y="694" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#283593" text-anchor="middle" >Bearer auth header</text>
+  <rect x="596" y="602" width="268" height="108" rx="8" fill="#E8EAF6" stroke="#5C6BC0" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="730" y="623" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1A237E" text-anchor="middle" >ComplaintDetails
+Api (Ktor)</text>
+  <line x1="604" y1="630" x2="856" y2="630" stroke="#5C6BC0" stroke-width="1"/>
+  <text x="730" y="646" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#283593" text-anchor="middle" >GET /api/complaints/{id}</text>
+  <text x="730" y="662" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#283593" text-anchor="middle" >Ktor HttpClient</text>
+  <text x="730" y="678" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#283593" text-anchor="middle" >ComplaintDetailsDto</text>
+  <text x="730" y="694" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#283593" text-anchor="middle" >JSON deserialization</text>
+  <rect x="879" y="602" width="268" height="108" rx="8" fill="#E8EAF6" stroke="#5C6BC0" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1013" y="623" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1A237E" text-anchor="middle" >DeviceRegistration
+Api (Ktor)</text>
+  <line x1="887" y1="630" x2="1139" y2="630" stroke="#5C6BC0" stroke-width="1"/>
+  <text x="1013" y="646" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#283593" text-anchor="middle" >POST /api/devices/register</text>
+  <text x="1013" y="662" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#283593" text-anchor="middle" >DELETE /api/devices/{id}</text>
+  <text x="1013" y="678" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#283593" text-anchor="middle" >FCM token push</text>
+  <text x="1013" y="694" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#283593" text-anchor="middle" >Ktor HttpClient</text>
+  <rect x="1162" y="602" width="268" height="108" rx="8" fill="#E8EAF6" stroke="#5C6BC0" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1296" y="623" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1A237E" text-anchor="middle" >Firebase
+SDK</text>
+  <line x1="1170" y1="630" x2="1422" y2="630" stroke="#5C6BC0" stroke-width="1"/>
+  <text x="1296" y="646" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#283593" text-anchor="middle" >FCM messaging</text>
+  <text x="1296" y="662" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#283593" text-anchor="middle" >Token management</text>
+  <text x="1296" y="678" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#283593" text-anchor="middle" >Analytics events</text>
+  <text x="1296" y="694" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#283593" text-anchor="middle" >BOM 33.9.0</text>
+  <line x1="164" y1="543" x2="164" y2="602" stroke="#5C6BC0" stroke-width="1.5" marker-end="url(#ah-dark)" />
+  <line x1="447" y1="543" x2="447" y2="602" stroke="#5C6BC0" stroke-width="1.5" marker-end="url(#ah-dark)" />
+  <line x1="730" y1="543" x2="730" y2="602" stroke="#5C6BC0" stroke-width="1.5" marker-end="url(#ah-dark)" />
+  <line x1="1013" y1="543" x2="1013" y2="602" stroke="#5C6BC0" stroke-width="1.5" marker-end="url(#ah-dark)" />
+  <line x1="1296" y1="543" x2="1296" y2="602" stroke="#5C6BC0" stroke-width="1.5" marker-end="url(#ah-dark)" />
+  <text x="750" y="756" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#37474F" text-anchor="middle" >INFRASTRUCTURE  —  Dependency Injection &amp; Services</text>
+  <rect x="30" y="770" width="268" height="118" rx="8" fill="#EDE7F6" stroke="#AB47BC" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="164" y="791" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#4A148C" text-anchor="middle" >AppModule
+(Koin)</text>
+  <line x1="38" y1="798" x2="290" y2="798" stroke="#AB47BC" stroke-width="1"/>
+  <text x="164" y="814" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >Single Koin module</text>
+  <text x="164" y="830" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >Provides Retrofit + Ktor</text>
+  <text x="164" y="846" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >Provides all APIs</text>
+  <text x="164" y="862" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >Provides all ViewModels</text>
+  <text x="164" y="878" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >Provides Repositories</text>
+  <rect x="313" y="770" width="268" height="118" rx="8" fill="#EDE7F6" stroke="#AB47BC" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="447" y="791" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#4A148C" text-anchor="middle" >NetworkModule
+(Koin – unused)</text>
+  <line x1="321" y1="798" x2="573" y2="798" stroke="#AB47BC" stroke-width="1"/>
+  <text x="447" y="814" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >Defined but not loaded</text>
+  <text x="447" y="830" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >Duplicate of AppModule</text>
+  <text x="447" y="846" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >Could be activated</text>
+  <text x="447" y="862" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >network layer config</text>
+  <text x="447" y="878" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" ></text>
+  <rect x="596" y="770" width="268" height="118" rx="8" fill="#EDE7F6" stroke="#AB47BC" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="730" y="791" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#4A148C" text-anchor="middle" >MyFirebase
+MessagingService</text>
+  <line x1="604" y1="798" x2="856" y2="798" stroke="#AB47BC" stroke-width="1"/>
+  <text x="730" y="814" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >Extends FirebaseMsg…Service</text>
+  <text x="730" y="830" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >onNewToken → register device</text>
+  <text x="730" y="846" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >onMessageReceived</text>
+  <text x="730" y="862" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >Notification display</text>
+  <text x="730" y="878" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >Deep-link construction</text>
+  <rect x="879" y="770" width="268" height="118" rx="8" fill="#EDE7F6" stroke="#AB47BC" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1013" y="791" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#4A148C" text-anchor="middle" >NotificationHelper</text>
+  <line x1="887" y1="798" x2="1139" y2="798" stroke="#AB47BC" stroke-width="1"/>
+  <text x="1013" y="814" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >createNotificationChannel</text>
+  <text x="1013" y="830" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >Complaint status notifications</text>
+  <text x="1013" y="846" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >PendingIntent → MainActivity</text>
+  <text x="1013" y="862" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >Action buttons in notif.</text>
+  <text x="1013" y="878" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >Android 13+ compat</text>
+  <rect x="1162" y="770" width="268" height="118" rx="8" fill="#EDE7F6" stroke="#AB47BC" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1296" y="791" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#4A148C" text-anchor="middle" >DeviceInfoUtils</text>
+  <line x1="1170" y1="798" x2="1422" y2="798" stroke="#AB47BC" stroke-width="1"/>
+  <text x="1296" y="814" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >getAndroidId()</text>
+  <text x="1296" y="830" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >getDeviceName()</text>
+  <text x="1296" y="846" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >Used for FCM registration</text>
+  <text x="1296" y="862" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" >Device fingerprinting</text>
+  <text x="1296" y="878" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#6A1B9A" text-anchor="middle" ></text>
+  <rect x="30" y="908" width="1440" height="50" rx="10" fill="#FCE4EC" stroke="#F48FB1" stroke-width="2" />
+  <text x="750" y="929" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#880E4F" text-anchor="middle" >BACKEND  —  https://cleancity-backend-au86.onrender.com/</text>
+  <text x="750" y="947" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="normal" fill="#AD1457" text-anchor="middle" >REST API  •  JWT Auth  •  Report Management  •  Driver Task Assignment  •  Device Registry</text>
+</svg>
