@@ -19,7 +19,7 @@ import com.example.cleancityapp.presentation.home.HomeViewModel
 import com.example.cleancityapp.presentation.profile.ProfileViewModel
 import com.example.cleancityapp.presentation.rewards.RewardsViewModel
 import com.example.cleancityapp.util.ApiConstants
-import com.example.devtool.network.DevToolInterceptor
+import com.example.devtool.network.interceptor.DevToolNetworkInterceptor
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -48,14 +48,14 @@ val appModule = module {
     single(named("AuthClient")) {
         OkHttpClient.Builder()
             .addInterceptor(get<HttpLoggingInterceptor>())
-            .addInterceptor(DevToolInterceptor())
+            .addInterceptor(DevToolNetworkInterceptor())
             .build()
     }
 
     single {
         OkHttpClient.Builder()
             .addInterceptor(get<HttpLoggingInterceptor>())
-            .addInterceptor(DevToolInterceptor())
+            .addInterceptor(DevToolNetworkInterceptor())
             .authenticator(get<TokenAuthenticator>())
             .build()
     }
