@@ -1,0 +1,3 @@
+[submodule "devtool-sdk"]
+	path = devtool-sdk
+	url = https://github.com/KrishnaPensalwar/DevToolSDK

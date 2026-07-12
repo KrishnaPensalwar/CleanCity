@@ -96,4 +96,7 @@ dependencies {
     
     // Koin for Compose (keeping for now during transition)
     implementation("io.insert-koin:koin-androidx-compose:3.5.3")
+
+    // Logger SDK
+    implementation(project(":devtool"))
 }

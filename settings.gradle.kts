@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "CleanCityApp"
 include(":app")
- 
+include(":devtool")
