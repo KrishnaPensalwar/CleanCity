@@ -19,11 +19,15 @@ import com.example.cleancityapp.presentation.home.HomeViewModel
 import com.example.cleancityapp.presentation.profile.ProfileViewModel
 import com.example.cleancityapp.presentation.rewards.RewardsViewModel
 import com.example.cleancityapp.util.ApiConstants
+import com.example.devtool.DevToolPlugin
+import com.example.devtool.MockResponse
 import com.example.devtool.network.interceptor.DevToolNetworkInterceptor
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
+import io.ktor.client.request.request
+import io.ktor.http.encodedPath
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
@@ -85,14 +89,50 @@ val appModule = module {
     // Ktor (New)
     single {
         HttpClient(Android) {
-            install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                    prettyPrint = true
-                    isLenient = true
-                    encodeDefaults = true
-                })
+
+            install(DevToolPlugin) {
+                // true  = SDK handles requests (no network)
+                // false = requests go to the real server
+                mockingEnabled = false
+
+                mockResolver = { request ->
+                    when {
+                        request.url.encodedPath.contains("/login") ->
+                            MockResponse(body = """{"message":"ok","deviceId":"123"}""")
+                        request.url.encodedPath.contains("/driver/reports/assigned") ->
+                            MockResponse(body = "[]")
+                        else -> null  // use built-in default mock
+                    }
+                }
+                requestModifier = { request ->
+                    println("➡️ ${request.method.value} ${request.url}")
+                }
+
+                responseObserver = { response ->
+                    println("⬅️ ${response.status}")
+                }
+
+                recorder = { request, response ->
+                    println(
+                        """
+                    ${request.method.value} ${request.url}
+                    Status: ${response.status.value}
+                    """.trimIndent()
+                    )
+                }
             }
+
+            install(ContentNegotiation) {
+                json(
+                    Json {
+                        ignoreUnknownKeys = true
+                        prettyPrint = true
+                        isLenient = true
+                        encodeDefaults = true
+                    }
+                )
+            }
+
             install(Logging) {
                 level = LogLevel.BODY
             }
