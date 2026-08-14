@@ -3,6 +3,7 @@ package com.example.cleancityapp.presentation.history
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cleancityapp.data.remote.toAppErrorMessage
 import com.example.cleancityapp.data.repository.ComplaintDetailsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,7 +33,12 @@ class ComplaintDetailsViewModel(
                     _state.update { it.copy(isLoading = false, complaint = complaint) }
                 }
                 .onFailure { error ->
-                    _state.update { it.copy(isLoading = false, error = error.localizedMessage) }
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = error.toAppErrorMessage("Unable to load complaint details.")
+                        )
+                    }
                 }
         }
     }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Production network policy:
+  - Cleartext (HTTP) is disabled for all domains.
+  - System CAs are trusted (default).
+  Certificate pinning is intentionally not configured here until
+  pin values for the production host are maintained with rotation.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

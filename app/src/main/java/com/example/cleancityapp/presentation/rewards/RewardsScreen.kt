@@ -40,6 +40,15 @@ fun RewardsScreen(viewModel: RewardsViewModel = koinViewModel()) {
             .verticalScroll(rememberScrollState()),
     ) {
         Spacer(modifier = Modifier.height(24.dp))
+
+        state.error?.let { error ->
+            Text(
+                text = error,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(bottom = 16.dp),
+            )
+        }
         
         Card(
             modifier = Modifier.fillMaxWidth(),

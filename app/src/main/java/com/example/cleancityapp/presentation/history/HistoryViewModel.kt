@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.cleancityapp.data.remote.AuthApi
 import com.example.cleancityapp.data.remote.DriverApi
 import com.example.cleancityapp.data.remote.ReportResponse
+import com.example.cleancityapp.data.remote.toAppErrorMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,9 +27,9 @@ class HistoryViewModel(
     private val _state = MutableStateFlow(HistoryState())
     val state: StateFlow<HistoryState> = _state.asStateFlow()
 
-    fun fetchReports(isDriver: Boolean) {
-        if (_state.value.reports.isNotEmpty()) return
-        
+    fun fetchReports(isDriver: Boolean, force: Boolean = true) {
+        if (!force && _state.value.reports.isNotEmpty()) return
+
         val token = sharedPreferences.getString("access_token", null) ?: return
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
@@ -37,13 +38,34 @@ class HistoryViewModel(
                     driverApi.getAssignedReports(token)
                 } else {
                     val response = authApi.getMeReports("Bearer $token")
-                    if (response.isSuccessful) response.body() ?: emptyList() 
-                    else throw Exception("Failed to fetch reports: ${response.message()}")
+                    if (response.isSuccessful) response.body() ?: emptyList()
+                    else throw IllegalStateException(
+                        response.toAppErrorMessage("Unable to load report history.")
+                    )
                 }
                 _state.update { it.copy(reports = reports, isLoading = false) }
             } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false, error = e.localizedMessage) }
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.toAppErrorMessage("Unable to load report history.")
+                    )
+                }
             }
         }
+    }
+
+    fun invalidate() {
+        _state.update { it.copy(reports = emptyList()) }
+    }
+}
+
+/** Normalize backend status values for filter chips. */
+fun normalizeReportStatus(status: String): String {
+    return when (status.trim().uppercase()) {
+        "APPROVED", "RESOLVED", "COMPLETED", "ACCEPTED" -> "Approved"
+        "REJECTED", "DECLINED", "DENIED" -> "Rejected"
+        "PENDING", "SUBMITTED", "IN_REVIEW", "IN REVIEW", "OPEN" -> "Pending"
+        else -> status.replaceFirstChar { it.uppercase() }
     }
 }

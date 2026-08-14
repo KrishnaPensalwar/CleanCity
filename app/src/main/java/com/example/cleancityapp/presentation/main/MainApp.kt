@@ -28,10 +28,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.cleancityapp.presentation.auth.LoginScreen
 import com.example.cleancityapp.presentation.auth.SignUpScreen
+import com.example.cleancityapp.presentation.auth.debug.TestAccountsNav
 import com.example.cleancityapp.presentation.components.BottomNavBar
+import com.example.cleancityapp.presentation.components.SessionLoadingScreen
 import com.example.cleancityapp.presentation.components.TopNavBar
 import com.example.cleancityapp.presentation.driver.DriverViewModel
-import org.koin.androidx.compose.koinViewModel
 import com.example.cleancityapp.presentation.driver.dashboard.DriverDashboardScreen
 import com.example.cleancityapp.presentation.driver.profile.DriverProfileScreen
 import com.example.cleancityapp.presentation.driver.route.DriverRouteScreen
@@ -41,15 +42,20 @@ import com.example.cleancityapp.presentation.history.HistoryScreen
 import com.example.cleancityapp.presentation.history.ReportDetailsScreen
 import com.example.cleancityapp.presentation.home.HomeScreen
 import com.example.cleancityapp.presentation.main.MainContract.Intent.Logout
-import com.example.cleancityapp.presentation.map.MapScreen
+import com.example.cleancityapp.presentation.profile.EditProfileScreen
+import com.example.cleancityapp.presentation.profile.PrivacyPolicyScreen
 import com.example.cleancityapp.presentation.profile.ProfileScreen
 import com.example.cleancityapp.presentation.report.ReportScreen
 import com.example.cleancityapp.presentation.rewards.RewardsScreen
 import com.example.cleancityapp.ui.theme.CleanCityAppTheme
+import org.koin.androidx.compose.koinViewModel
 import java.util.Calendar
 
 @Composable
-fun MainApp(viewModel: MainViewModel) {
+fun MainApp(
+    viewModel: MainViewModel,
+    onRequestNotificationPermission: () -> Unit = {}
+) {
     val uiState by viewModel.uiState.collectAsState()
     val navController = rememberNavController()
     val driverViewModel: DriverViewModel = koinViewModel()
@@ -58,18 +64,33 @@ fun MainApp(viewModel: MainViewModel) {
 
     val bottomNavRoutes = remember(uiState.userRole) {
         if (uiState.userRole == UserRole.USER) {
-            listOf(Screen.Home.route, Screen.Report.route, Screen.Map.route, Screen.Rewards.route, Screen.History.route)
+            listOf(Screen.Home.route, Screen.Report.route, Screen.Rewards.route, Screen.History.route)
         } else {
             listOf(Screen.DriverDashboard.route, Screen.DriverTasks.route, Screen.DriverRoute.route, Screen.History.route)
         }
     }
 
+    val startDestination = remember {
+        Screen.Splash.route
+    }
+
+    LaunchedEffect(uiState.shouldRequestNotificationPermission) {
+        if (uiState.shouldRequestNotificationPermission) {
+            onRequestNotificationPermission()
+            viewModel.processIntent(MainContract.Intent.NotificationPermissionHandled)
+        }
+    }
+
     // Sync ViewModel navigation state with NavController
-    LaunchedEffect(uiState.currentScreen) {
+    LaunchedEffect(uiState.currentScreen, uiState.isSessionChecking) {
+        if (uiState.isSessionChecking) return@LaunchedEffect
         val targetRoute = uiState.currentScreen.route
-        if (currentRoute != null && currentRoute != targetRoute) {
+        if (currentRoute != targetRoute) {
             navController.navigate(targetRoute) {
-                if (targetRoute == Screen.Login.route || targetRoute == Screen.Home.route || targetRoute == Screen.DriverDashboard.route) {
+                if (targetRoute == Screen.Login.route ||
+                    targetRoute == Screen.Home.route ||
+                    targetRoute == Screen.DriverDashboard.route
+                ) {
                     popUpTo(0) { inclusive = true }
                 }
                 launchSingleTop = true
@@ -79,12 +100,15 @@ fun MainApp(viewModel: MainViewModel) {
 
     // Sync back NavController state to ViewModel to avoid reset on rotation
     LaunchedEffect(currentRoute) {
+        if (uiState.isSessionChecking) return@LaunchedEffect
         currentRoute?.let { route ->
             val screen = when {
+                route == Screen.Splash.route -> Screen.Splash
                 route == Screen.Home.route -> Screen.Home
                 route == Screen.Profile.route -> Screen.Profile
+                route == Screen.EditProfile.route -> Screen.EditProfile
+                route == Screen.PrivacyPolicy.route -> Screen.PrivacyPolicy
                 route == Screen.Report.route -> Screen.Report
-                route == Screen.Map.route -> Screen.Map
                 route == Screen.Rewards.route -> Screen.Rewards
                 route == Screen.History.route -> Screen.History
                 route == Screen.DriverDashboard.route -> Screen.DriverDashboard
@@ -94,8 +118,9 @@ fun MainApp(viewModel: MainViewModel) {
                 route == Screen.Login.route -> Screen.Login
                 route == Screen.SignUp.route -> Screen.SignUp
                 route == Screen.RoleSelection.route -> Screen.RoleSelection
+                route == Screen.TestAccounts.route -> Screen.TestAccounts
                 route == Screen.ReportDetails.route -> Screen.ReportDetails
-                route.startsWith("complaint_details") -> null // Handled via deep link state if needed
+                route.startsWith("complaint_details") -> null
                 else -> null
             }
             if (screen != null && screen != uiState.currentScreen) {
@@ -120,19 +145,25 @@ fun MainApp(viewModel: MainViewModel) {
     }
 
     CleanCityAppTheme(darkTheme = darkTheme) {
-        val isAuthScreen = currentRoute == Screen.Login.route || currentRoute == Screen.SignUp.route || currentRoute == Screen.RoleSelection.route
+        val isAuthScreen = currentRoute == Screen.Login.route ||
+            currentRoute == Screen.SignUp.route ||
+            currentRoute == Screen.RoleSelection.route ||
+            currentRoute == Screen.TestAccounts.route ||
+            currentRoute == Screen.Splash.route
+
+        val hideChrome = currentRoute == Screen.PrivacyPolicy.route
 
         BackHandler(enabled = !isAuthScreen && currentRoute != Screen.Home.route && currentRoute != Screen.DriverDashboard.route) {
             if (bottomNavRoutes.contains(currentRoute)) {
-                val startDestination = if (uiState.userRole == UserRole.DRIVER) Screen.DriverDashboard.route else Screen.Home.route
-                navController.navigate(startDestination) {
+                val dest = if (uiState.userRole == UserRole.DRIVER) Screen.DriverDashboard.route else Screen.Home.route
+                navController.navigate(dest) {
                     popUpTo(0) { inclusive = true }
                 }
             } else {
                 navController.popBackStack()
             }
         }
-        
+
         val greeting = remember {
             val calendar = Calendar.getInstance()
             when (calendar.get(Calendar.HOUR_OF_DAY)) {
@@ -149,12 +180,12 @@ fun MainApp(viewModel: MainViewModel) {
                 Pair("$greeting, $displayName!", "Hyderabad · ${uiState.currentUser?.rewardPoints ?: 0} pts")
             }
             currentRoute == Screen.Report.route -> Pair("File a report", "Capture image & details")
-            currentRoute == Screen.Map.route -> Pair("Nearby Activity", "Live waste tracking")
             currentRoute == Screen.Rewards.route -> Pair("Rewards", "Earn points for a clean city")
             currentRoute == Screen.History.route -> Pair("My Reports", "History of your contributions")
             currentRoute == Screen.ReportDetails.route -> Pair("Report Details", "Status: ${uiState.selectedReport?.status ?: ""}")
             currentRoute?.startsWith("complaint_details") == true -> Pair("Complaint Details", "Viewing complaint details")
             currentRoute == Screen.Profile.route -> Pair("Profile", "Your account details")
+            currentRoute == Screen.EditProfile.route -> Pair("Edit profile", "Update your details")
             currentRoute == Screen.DriverDashboard.route -> Pair("Driver Dashboard", "Manage your tasks")
             currentRoute == Screen.DriverTasks.route -> Pair("My Tasks", "Pending assignments")
             currentRoute == Screen.DriverRoute.route -> Pair("Optimized Route", "Follow the path")
@@ -165,20 +196,22 @@ fun MainApp(viewModel: MainViewModel) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             topBar = {
-                if (!isAuthScreen && currentRoute != null) {
+                if (!isAuthScreen && !hideChrome && currentRoute != null && topBarInfo.first.isNotBlank()) {
                     TopNavBar(
                         title = topBarInfo.first,
                         subtitle = topBarInfo.second,
                         onProfileClick = if (currentRoute == Screen.Home.route || currentRoute == Screen.DriverDashboard.route) {
                             {
-                                navController.navigate(if (uiState.userRole == UserRole.DRIVER) Screen.DriverProfile.route else Screen.Profile.route)
+                                navController.navigate(
+                                    if (uiState.userRole == UserRole.DRIVER) Screen.DriverProfile.route else Screen.Profile.route
+                                )
                             }
                         } else null,
                         onBackClick = if (currentRoute != Screen.Home.route && currentRoute != Screen.DriverDashboard.route) {
                             {
                                 if (bottomNavRoutes.contains(currentRoute)) {
-                                    val startDestination = if (uiState.userRole == UserRole.DRIVER) Screen.DriverDashboard.route else Screen.Home.route
-                                    navController.navigate(startDestination) {
+                                    val dest = if (uiState.userRole == UserRole.DRIVER) Screen.DriverDashboard.route else Screen.Home.route
+                                    navController.navigate(dest) {
                                         popUpTo(0) { inclusive = true }
                                     }
                                 } else {
@@ -190,7 +223,13 @@ fun MainApp(viewModel: MainViewModel) {
                 }
             },
             bottomBar = {
-                if (!isAuthScreen && currentRoute != Screen.ReportDetails.route && currentRoute?.startsWith("complaint_details") == false && currentRoute != null) {
+                if (!isAuthScreen &&
+                    !hideChrome &&
+                    currentRoute != null &&
+                    currentRoute != Screen.ReportDetails.route &&
+                    currentRoute != Screen.EditProfile.route &&
+                    !currentRoute.startsWith("complaint_details")
+                ) {
                     BottomNavBar(
                         currentRoute = currentRoute,
                         userRole = uiState.userRole,
@@ -223,13 +262,23 @@ fun MainApp(viewModel: MainViewModel) {
         ) { innerPadding ->
             NavHost(
                 navController = navController,
-                startDestination = Screen.Login.route,
+                startDestination = startDestination,
                 modifier = Modifier.padding(innerPadding)
             ) {
+                composable(Screen.Splash.route) {
+                    SplashScreen()
+                }
                 composable(Screen.Login.route) {
                     LoginScreen(
                         onLoginSuccess = { viewModel.processIntent(MainContract.Intent.LoginSuccess) },
-                        onNavigateToSignUp = { navController.navigate(Screen.SignUp.route) }
+                        onNavigateToSignUp = { navController.navigate(Screen.SignUp.route) },
+                        onNavigateToTestAccounts = { navController.navigate(Screen.TestAccounts.route) }
+                    )
+                }
+                composable(Screen.TestAccounts.route) {
+                    TestAccountsNav.Content(
+                        onLoginSuccess = { viewModel.processIntent(MainContract.Intent.LoginSuccess) },
+                        onBack = { navController.popBackStack() }
                     )
                 }
                 composable(Screen.SignUp.route) {
@@ -248,17 +297,17 @@ fun MainApp(viewModel: MainViewModel) {
                 composable(Screen.Home.route) {
                     HomeScreen(
                         onNavigateToReport = { navController.navigate(Screen.Report.route) },
-                        onNavigateToProfile = {
-                            navController.navigate(Screen.Profile.route)
-                        },
+                        onNavigateToProfile = { navController.navigate(Screen.Profile.route) },
                         user = uiState.currentUser
                     )
                 }
                 composable(Screen.Report.route) {
-                    ReportScreen(onBack = { navController.popBackStack() })
-                }
-                composable(Screen.Map.route) {
-                    MapScreen()
+                    ReportScreen(
+                        onBack = {
+                            viewModel.processIntent(MainContract.Intent.RefreshCurrentUser)
+                            navController.popBackStack()
+                        }
+                    )
                 }
                 composable(Screen.Rewards.route) {
                     RewardsScreen()
@@ -293,8 +342,23 @@ fun MainApp(viewModel: MainViewModel) {
                         onBack = { navController.popBackStack() },
                         onLogout = { viewModel.processIntent(Logout) },
                         onThemeSelected = { viewModel.processIntent(MainContract.Intent.SetThemeMode(it)) },
-                        currentThemeMode = uiState.themeMode
+                        currentThemeMode = uiState.themeMode,
+                        notificationsEnabled = uiState.notificationsEnabled,
+                        onNotificationsToggle = {
+                            viewModel.processIntent(MainContract.Intent.SetNotificationsEnabled(it))
+                        },
+                        onEditProfile = { navController.navigate(Screen.EditProfile.route) },
+                        onPrivacyPolicy = { navController.navigate(Screen.PrivacyPolicy.route) }
                     )
+                }
+                composable(Screen.EditProfile.route) {
+                    EditProfileScreen(
+                        onBack = { navController.popBackStack() },
+                        onSaved = { viewModel.processIntent(MainContract.Intent.RefreshCurrentUser) }
+                    )
+                }
+                composable(Screen.PrivacyPolicy.route) {
+                    PrivacyPolicyScreen(onBack = { navController.popBackStack() })
                 }
                 composable(Screen.DriverDashboard.route) {
                     DriverDashboardScreen(
@@ -310,9 +374,7 @@ fun MainApp(viewModel: MainViewModel) {
                     )
                 }
                 composable(Screen.DriverRoute.route) {
-                    DriverRouteScreen(
-                        viewModel = driverViewModel
-                    )
+                    DriverRouteScreen(viewModel = driverViewModel)
                 }
                 composable(Screen.DriverProfile.route) {
                     DriverProfileScreen(
@@ -320,7 +382,12 @@ fun MainApp(viewModel: MainViewModel) {
                         onBack = { navController.popBackStack() },
                         onLogout = { viewModel.processIntent(Logout) },
                         onThemeSelected = { viewModel.processIntent(MainContract.Intent.SetThemeMode(it)) },
-                        currentThemeMode = uiState.themeMode
+                        currentThemeMode = uiState.themeMode,
+                        notificationsEnabled = uiState.notificationsEnabled,
+                        onNotificationsToggle = {
+                            viewModel.processIntent(MainContract.Intent.SetNotificationsEnabled(it))
+                        },
+                        onPrivacyPolicy = { navController.navigate(Screen.PrivacyPolicy.route) }
                     )
                 }
             }

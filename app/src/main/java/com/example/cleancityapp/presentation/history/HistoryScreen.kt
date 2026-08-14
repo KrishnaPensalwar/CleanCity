@@ -18,6 +18,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.cleancityapp.data.remote.ReportResponse
 import com.example.cleancityapp.presentation.components.ErrorState
 import com.example.cleancityapp.presentation.components.HistoryItemSkeleton
@@ -35,14 +38,17 @@ fun HistoryScreen(
     val uiState by viewModel.state.collectAsState()
     var selectedFilter by remember { mutableStateOf("All") }
     val filters = listOf("All", "Pending", "Approved", "Rejected")
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     val filteredReports = remember(uiState.reports, selectedFilter) {
         if (selectedFilter == "All") uiState.reports
-        else uiState.reports.filter { it.status.equals(selectedFilter, ignoreCase = true) }
+        else uiState.reports.filter { normalizeReportStatus(it.status) == selectedFilter }
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.fetchReports(isDriver)
+    LaunchedEffect(isDriver, lifecycleOwner) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.fetchReports(isDriver, force = true)
+        }
     }
 
     Column(
@@ -63,7 +69,7 @@ fun HistoryScreen(
                 }
 
             uiState.error != null ->
-                ErrorState(message = uiState.error!!, onRetry = { viewModel.fetchReports(isDriver) })
+                ErrorState(message = uiState.error!!, onRetry = { viewModel.fetchReports(isDriver, force = true) })
 
             filteredReports.isEmpty() ->
                 HistoryEmptyState()
@@ -74,7 +80,7 @@ fun HistoryScreen(
                     contentPadding = PaddingValues(24.dp),
                     verticalArrangement = Arrangement.spacedBy(20.dp),
                 ) {
-                    items(filteredReports) { report ->
+                    items(filteredReports, key = { it.id }) { report ->
                         ReportHistoryCard(
                             report = report,
                             onClick = { onReportClick(report) },

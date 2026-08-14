@@ -57,4 +57,10 @@ interface AuthApi {
 
     @GET("api/users/rank")
     suspend fun getUserRank(@Header("Authorization") token: String): Response<RankResponse>
+
+    @PUT("api/users/me")
+    suspend fun updateProfile(
+        @Header("Authorization") token: String,
+        @Body request: Map<String, String>
+    ): Response<UserDto>
 }

@@ -7,6 +7,7 @@ import com.example.cleancityapp.data.remote.AuthApi
 import com.example.cleancityapp.data.remote.RankResponse
 import com.example.cleancityapp.data.remote.ReportResponse
 import com.example.cleancityapp.data.remote.UserDto
+import com.example.cleancityapp.data.remote.toAppErrorMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -54,10 +55,20 @@ class HomeViewModel(
                     val profile = meData.userProfile ?: meData.driverProfile
                     _state.update { it.copy(currentUser = profile, isLoading = false) }
                 } else {
-                    _state.update { it.copy(isLoading = false) }
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = response.toAppErrorMessage("Unable to load your profile.")
+                        )
+                    }
                 }
             } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false, error = e.localizedMessage) }
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.toAppErrorMessage("Unable to load your profile.")
+                    )
+                }
             }
         }
     }
@@ -72,8 +83,14 @@ class HomeViewModel(
                 }
                 if (response.isSuccessful) {
                     _state.update { it.copy(userRank = response.body()) }
+                } else {
+                    _state.update {
+                        it.copy(error = response.toAppErrorMessage("Unable to load your rewards rank."))
+                    }
                 }
-            } catch (e: Exception) { }
+            } catch (e: Exception) {
+                _state.update { it.copy(error = e.toAppErrorMessage("Unable to load your rewards rank.")) }
+            }
         }
     }
 
@@ -81,14 +98,34 @@ class HomeViewModel(
         if (!force && _state.value.userReports.isNotEmpty()) return
         val token = sharedPreferences.getString("access_token", null) ?: return
         viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, error = null) }
             try {
                 val response = withContext(Dispatchers.IO) {
                     authApi.getMeReports("Bearer $token")
                 }
                 if (response.isSuccessful) {
-                    _state.update { it.copy(userReports = response.body() ?: emptyList()) }
+                    _state.update {
+                        it.copy(
+                            userReports = response.body() ?: emptyList(),
+                            isLoading = false
+                        )
+                    }
+                } else {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = response.toAppErrorMessage("Unable to load your recent activity.")
+                        )
+                    }
                 }
-            } catch (e: Exception) { }
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.toAppErrorMessage("Unable to load your recent activity.")
+                    )
+                }
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.cleancityapp.data.remote.AuthApi
 import com.example.cleancityapp.data.remote.CityDto
 import com.example.cleancityapp.data.remote.LoginResponse
+import com.example.cleancityapp.data.remote.toAppErrorMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -57,10 +58,20 @@ class AuthViewModel(
                     saveAuthData(loginData)
                     _state.update { it.copy(isLoading = false, isLoginSuccess = true, loginData = loginData) }
                 } else {
-                    _state.update { it.copy(isLoading = false, error = "Login failed: ${response.message()}") }
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = response.toAppErrorMessage("Unable to sign in right now.")
+                        )
+                    }
                 }
             } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false, error = e.localizedMessage) }
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.toAppErrorMessage("Unable to sign in right now.")
+                    )
+                }
             }
         }
     }
@@ -76,17 +87,27 @@ class AuthViewModel(
                             "mobile" to mobile,
                             "email" to email,
                             "password" to pass,
-                            "city" to city
+//                            "city" to city
                         )
                     )
                 }
                 if (response.isSuccessful && response.body()?.isSuccess == true) {
                     _state.update { it.copy(isLoading = false, isSignUpSuccess = true) }
                 } else {
-                    _state.update { it.copy(isLoading = false, error = response.body()?.message ?: "Sign up failed") }
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = response.toAppErrorMessage("Unable to create your account right now.")
+                        )
+                    }
                 }
             } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false, error = e.localizedMessage) }
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.toAppErrorMessage("Unable to create your account right now.")
+                    )
+                }
             }
         }
     }

@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.cleancityapp.data.remote.AuthApi
 import com.example.cleancityapp.data.remote.DriverApi
 import com.example.cleancityapp.data.remote.ReportResponse
+import com.example.cleancityapp.data.remote.toAppErrorMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -51,7 +52,12 @@ class DriverViewModel(
                 val reports = driverApi.getAssignedReports(token)
                 _state.update { it.copy(assignedReports = reports, isLoading = false) }
             } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false, error = e.localizedMessage) }
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.toAppErrorMessage("Unable to load assigned reports.")
+                    )
+                }
             }
         }
     }
@@ -80,10 +86,20 @@ class DriverViewModel(
                         _state.update { it.copy(selectedReport = null) }
                     }
                 } else {
-                    _state.update { it.copy(isLoading = false, error = "Failed to upload photo: ${response.message()}") }
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = response.toAppErrorMessage("Unable to upload the completion photo.")
+                        )
+                    }
                 }
             } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false, error = e.localizedMessage) }
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.toAppErrorMessage("Unable to upload the completion photo.")
+                    )
+                }
             }
         }
     }

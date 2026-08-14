@@ -1,34 +1,33 @@
 package com.example.cleancityapp.di
 
 import android.content.Context
+import android.content.SharedPreferences
+import com.example.cleancityapp.BuildConfig
 import com.example.cleancityapp.data.remote.AuthApi
-import com.example.cleancityapp.data.remote.TokenAuthenticator
 import com.example.cleancityapp.data.remote.ComplaintDetailsApi
 import com.example.cleancityapp.data.remote.DeviceRegistrationApi
 import com.example.cleancityapp.data.remote.DriverApi
+import com.example.cleancityapp.data.remote.TokenAuthenticator
 import com.example.cleancityapp.data.repository.ComplaintDetailsRepository
 import com.example.cleancityapp.data.repository.DeviceRegistrationRepository
 import com.example.cleancityapp.notification.NotificationHelper
-import com.example.cleancityapp.presentation.main.MainViewModel
-import com.example.cleancityapp.presentation.driver.DriverViewModel
 import com.example.cleancityapp.presentation.auth.AuthViewModel
-import com.example.cleancityapp.presentation.history.HistoryViewModel
-import com.example.cleancityapp.presentation.user.UserViewModel
+import com.example.cleancityapp.presentation.driver.DriverViewModel
 import com.example.cleancityapp.presentation.history.ComplaintDetailsViewModel
+import com.example.cleancityapp.presentation.history.HistoryViewModel
 import com.example.cleancityapp.presentation.home.HomeViewModel
+import com.example.cleancityapp.presentation.main.MainViewModel
 import com.example.cleancityapp.presentation.profile.ProfileViewModel
 import com.example.cleancityapp.presentation.rewards.RewardsViewModel
+import com.example.cleancityapp.presentation.user.UserViewModel
+import com.example.cleancityapp.security.DevToolBridge
 import com.example.cleancityapp.util.ApiConstants
-import com.example.devtool.DevToolPlugin
-import com.example.devtool.MockResponse
-import com.example.devtool.network.interceptor.DevToolNetworkInterceptor
-import io.ktor.client.*
-import io.ktor.client.engine.android.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.plugins.logging.*
-import io.ktor.client.request.request
-import io.ktor.http.encodedPath
-import io.ktor.serialization.kotlinx.json.*
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.android.Android
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -40,26 +39,32 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 val appModule = module {
-    // Retrofit (Existing)
     single {
         HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
+            // Never log bodies in release — login/password/token leakage via logcat.
+            level = if (BuildConfig.DEBUG) {
+                HttpLoggingInterceptor.Level.HEADERS
+            } else {
+                HttpLoggingInterceptor.Level.NONE
+            }
+            redactHeader("Authorization")
+            redactHeader("Cookie")
         }
     }
 
-    single { TokenAuthenticator(androidContext()) }
+    single { TokenAuthenticator(get()) }
 
     single(named("AuthClient")) {
         OkHttpClient.Builder()
             .addInterceptor(get<HttpLoggingInterceptor>())
-            .addInterceptor(DevToolNetworkInterceptor())
+            .let { DevToolBridge.configureOkHttp(it) }
             .build()
     }
 
     single {
         OkHttpClient.Builder()
             .addInterceptor(get<HttpLoggingInterceptor>())
-            .addInterceptor(DevToolNetworkInterceptor())
+            .let { DevToolBridge.configureOkHttp(it) }
             .authenticator(get<TokenAuthenticator>())
             .build()
     }
@@ -86,73 +91,70 @@ val appModule = module {
 
     single { get<Retrofit>().create(AuthApi::class.java) }
 
-    // Ktor (New)
     single {
         HttpClient(Android) {
-
-            install(DevToolPlugin) {
-                // true  = SDK handles requests (no network)
-                // false = requests go to the real server
-                mockingEnabled = false
-
-                mockResolver = { request ->
-                    when {
-                        request.url.encodedPath.contains("/login") ->
-                            MockResponse(body = """{"message":"ok","deviceId":"123"}""")
-                        request.url.encodedPath.contains("/driver/reports/assigned") ->
-                            MockResponse(body = "[]")
-                        else -> null  // use built-in default mock
-                    }
-                }
-                requestModifier = { request ->
-                    println("➡️ ${request.method.value} ${request.url}")
-                }
-
-                responseObserver = { response ->
-                    println("⬅️ ${response.status}")
-                }
-
-                recorder = { request, response ->
-                    println(
-                        """
-                    ${request.method.value} ${request.url}
-                    Status: ${response.status.value}
-                    """.trimIndent()
-                    )
-                }
-            }
+            DevToolBridge.configureKtor(this)
 
             install(ContentNegotiation) {
                 json(
                     Json {
                         ignoreUnknownKeys = true
-                        prettyPrint = true
+                        prettyPrint = BuildConfig.DEBUG
                         isLenient = true
                         encodeDefaults = true
                     }
                 )
             }
 
-            install(Logging) {
-                level = LogLevel.BODY
+            if (BuildConfig.DEBUG) {
+                install(Logging) {
+                    // HEADERS avoids dumping passwords/tokens from JSON bodies.
+                    level = LogLevel.HEADERS
+                }
             }
         }
     }
 
-    // Services/APIs
     single { DeviceRegistrationApi(get()) }
     single { ComplaintDetailsApi(get()) }
     single { DriverApi(get()) }
     single { NotificationHelper(androidContext()) }
 
-    // Shared Preferences
-    single { androidContext().getSharedPreferences("auth_prefs", Context.MODE_PRIVATE) }
+    // Encrypted session storage — fail closed (no plaintext SharedPreferences fallback).
+    single<SharedPreferences> {
+        val context = androidContext()
+        val masterKey = androidx.security.crypto.MasterKey.Builder(context)
+            .setKeyScheme(androidx.security.crypto.MasterKey.KeyScheme.AES256_GCM)
+            .build()
+        androidx.security.crypto.EncryptedSharedPreferences.create(
+            context,
+            "auth_prefs_encrypted",
+            masterKey,
+            androidx.security.crypto.EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            androidx.security.crypto.EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        ).also { encrypted ->
+            val legacy = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+            if (legacy.all.isNotEmpty() && encrypted.all.isEmpty()) {
+                encrypted.edit().apply {
+                    legacy.all.forEach { (key, value) ->
+                        when (value) {
+                            is String -> putString(key, value)
+                            is Boolean -> putBoolean(key, value)
+                            is Int -> putInt(key, value)
+                            is Long -> putLong(key, value)
+                            is Float -> putFloat(key, value)
+                        }
+                    }
+                    apply()
+                }
+                legacy.edit().clear().apply()
+            }
+        }
+    }
 
-    // Repositories
-    single { DeviceRegistrationRepository(get(), androidContext()) }
+    single { DeviceRegistrationRepository(get(), get(), androidContext()) }
     single { ComplaintDetailsRepository(get()) }
 
-    // ViewModels
     viewModel { MainViewModel(get(), get(), get()) }
     viewModel { DriverViewModel(get(), get(), get(), androidContext()) }
     viewModel { AuthViewModel(get(), get()) }

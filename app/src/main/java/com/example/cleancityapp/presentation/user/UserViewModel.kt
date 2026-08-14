@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cleancityapp.data.remote.AuthApi
 import com.example.cleancityapp.data.remote.ReportResponse
+import com.example.cleancityapp.data.remote.toAppErrorMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,6 +22,7 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.FileOutputStream
+import java.util.concurrent.atomic.AtomicBoolean
 
 data class UserState(
     val reports: List<ReportResponse> = emptyList(),
@@ -38,8 +40,10 @@ class UserViewModel(
     private val _state = MutableStateFlow(UserState())
     val state: StateFlow<UserState> = _state.asStateFlow()
 
-    fun fetchUserReports() {
-        if (_state.value.reports.isNotEmpty()) return
+    private val isSubmitting = AtomicBoolean(false)
+
+    fun fetchUserReports(force: Boolean = false) {
+        if (!force && _state.value.reports.isNotEmpty()) return
         val token = sharedPreferences.getString("access_token", null) ?: return
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
@@ -50,65 +54,98 @@ class UserViewModel(
                 if (response.isSuccessful) {
                     _state.update { it.copy(reports = response.body() ?: emptyList(), isLoading = false) }
                 } else {
-                    _state.update { it.copy(isLoading = false, error = "Failed to fetch reports") }
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = response.toAppErrorMessage("Unable to load your reports.")
+                        )
+                    }
                 }
             } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false, error = e.localizedMessage) }
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.toAppErrorMessage("Unable to load your reports.")
+                    )
+                }
             }
         }
     }
 
-    fun submitReport(imageUri: Uri, description: String, lat: Double, lon: Double) {
-        val token = sharedPreferences.getString("access_token", null) ?: return
-        val userId = sharedPreferences.getString("user_id", null) ?: return
+    fun submitReport(
+        imageUri: Uri,
+        description: String,
+        lat: Double,
+        lon: Double,
+        address: String = ""
+    ) {
+        if (!isSubmitting.compareAndSet(false, true)) return
+        val token = sharedPreferences.getString("access_token", null)
+        val userId = sharedPreferences.getString("user_id", null)
+        if (token.isNullOrEmpty() || userId.isNullOrEmpty()) {
+            isSubmitting.set(false)
+            _state.update { it.copy(error = "Unauthorized\nAuthentication is required. Please sign in again.") }
+            return
+        }
         val timestamp = System.currentTimeMillis().toString()
+        val fullDescription = if (address.isBlank()) description else "$description\nAddress: $address"
 
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null) }
+            _state.update { it.copy(isLoading = true, error = null, isReportSuccess = false) }
             try {
                 val response = withContext(Dispatchers.IO) {
-                    val mimeType = context.contentResolver.getType(imageUri)
-                    val file = getFileFromUri(imageUri)
-                    val requestFile = file.asRequestBody(mimeType?.toMediaTypeOrNull())
+                    val mimeType = context.contentResolver.getType(imageUri) ?: "image/jpeg"
+                    val file = getFileFromUri(imageUri, mimeType)
+                    val requestFile = file.asRequestBody(mimeType.toMediaTypeOrNull())
                     val body = MultipartBody.Part.createFormData("image", file.name, requestFile)
-
-                    val userIdBody = userId.toRequestBody("text/plain".toMediaTypeOrNull())
-                    val timestampBody = timestamp.toRequestBody("text/plain".toMediaTypeOrNull())
-                    val latBody = lat.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-                    val lonBody = lon.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-                    val descBody = description.toRequestBody("text/plain".toMediaTypeOrNull())
 
                     authApi.submitReport(
                         "Bearer $token",
                         body,
-                        userIdBody,
-                        timestampBody,
-                        latBody,
-                        lonBody,
-                        descBody
+                        userId.toRequestBody("text/plain".toMediaTypeOrNull()),
+                        timestamp.toRequestBody("text/plain".toMediaTypeOrNull()),
+                        lat.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                        lon.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                        fullDescription.toRequestBody("text/plain".toMediaTypeOrNull())
                     )
                 }
 
                 if (response.isSuccessful) {
-                    _state.update { it.copy(isLoading = false, isReportSuccess = true) }
-                    // Clear reports so next fetch gets new data
-                    _state.update { it.copy(reports = emptyList()) }
-                    fetchUserReports()
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            isReportSuccess = true,
+                            reports = emptyList()
+                        )
+                    }
                 } else {
-                    _state.update { it.copy(isLoading = false, error = "Failed to submit report: ${response.message()}") }
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = response.toAppErrorMessage("Unable to submit your report.")
+                        )
+                    }
                 }
             } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false, error = e.localizedMessage) }
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.toAppErrorMessage("Unable to submit your report.")
+                    )
+                }
+            } finally {
+                isSubmitting.set(false)
             }
         }
     }
 
-    private fun getFileFromUri(uri: Uri): File {
+    private fun getFileFromUri(uri: Uri, mimeType: String): File {
         val inputStream = context.contentResolver.openInputStream(uri)
-        val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(context.contentResolver.getType(uri))
-        val file = File(context.cacheDir, "temp_report_image.$extension")
+            ?: throw IllegalStateException("Unable to open image")
+        val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: "jpg"
+        val file = File(context.cacheDir, "temp_report_${System.currentTimeMillis()}.$extension")
         FileOutputStream(file).use { outputStream ->
-            inputStream?.copyTo(outputStream)
+            inputStream.use { it.copyTo(outputStream) }
         }
         return file
     }

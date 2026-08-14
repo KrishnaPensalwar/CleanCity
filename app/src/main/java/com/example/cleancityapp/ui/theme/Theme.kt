@@ -11,41 +11,59 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = GreenPrimary,
-    secondary = GreenLight,
-    tertiary = GreenDark,
-    background = DarkBackgroundTertiary,
-    surface = DarkBackgroundPrimary,
-    surfaceVariant = DarkBackgroundSecondary,
+    primary = PrimaryBlue,
     onPrimary = LightBackgroundPrimary,
-    onSecondary = DarkTextPrimary,
+    primaryContainer = PrimaryDark,
+    onPrimaryContainer = PrimaryLight,
+    secondary = AccentTeal,
+    onSecondary = LightBackgroundPrimary,
+    secondaryContainer = DarkBackgroundSecondary,
+    onSecondaryContainer = DarkTextPrimary,
+    tertiary = PrimaryLight,
+    background = DarkBackgroundTertiary,
     onBackground = DarkTextPrimary,
+    surface = DarkBackgroundPrimary,
     onSurface = DarkTextPrimary,
+    surfaceVariant = DarkBackgroundSecondary,
     onSurfaceVariant = DarkTextSecondary,
     outline = DarkBorderSecondary,
-    outlineVariant = DarkBorderTertiary
+    outlineVariant = DarkBorderTertiary,
+    error = BadgeDeclinedText,
+    errorContainer = BadgeDeclinedBg,
+    onErrorContainer = BadgeDeclinedText,
+    tertiaryContainer = BadgeApprovedBg,
+    onTertiaryContainer = BadgeApprovedText
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = GreenPrimary,
-    secondary = GreenLight,
-    tertiary = GreenDark,
-    background = LightBackgroundTertiary,
-    surface = LightBackgroundPrimary,
-    surfaceVariant = LightBackgroundSecondary,
+    primary = PrimaryBlue,
     onPrimary = LightBackgroundPrimary,
-    onSecondary = LightTextPrimary,
+    primaryContainer = PrimaryContainer,
+    onPrimaryContainer = PrimaryDark,
+    secondary = AccentTeal,
+    onSecondary = LightBackgroundPrimary,
+    secondaryContainer = PrimaryLight,
+    onSecondaryContainer = PrimaryDark,
+    tertiary = PrimaryDark,
+    background = LightBackgroundTertiary,
     onBackground = LightTextPrimary,
+    surface = LightBackgroundPrimary,
     onSurface = LightTextPrimary,
+    surfaceVariant = LightBackgroundSecondary,
     onSurfaceVariant = LightTextSecondary,
     outline = LightBorderSecondary,
-    outlineVariant = LightBorderTertiary
+    outlineVariant = LightBorderTertiary,
+    error = BadgeDeclinedText,
+    errorContainer = BadgeDeclinedBg,
+    onErrorContainer = BadgeDeclinedText,
+    tertiaryContainer = BadgeApprovedBg,
+    onTertiaryContainer = BadgeApprovedText
 )
 
 @Composable
 fun CleanCityAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false, // Disable dynamic colors to stick to design
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

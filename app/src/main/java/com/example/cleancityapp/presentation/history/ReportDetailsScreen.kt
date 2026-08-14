@@ -1,6 +1,7 @@
 package com.example.cleancityapp.presentation.history
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,18 +15,22 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.cleancityapp.data.remote.ReportResponse
+import com.example.cleancityapp.presentation.components.FullscreenImageViewer
 import com.example.cleancityapp.presentation.history.sections.StatusBadge
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -38,6 +43,7 @@ fun ReportDetailsScreen(
 ) {
     if (report == null) return
 
+    var showFullscreen by remember { mutableStateOf(false) }
     val date =
         SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault()).format(Date(report.timestamp))
 
@@ -48,25 +54,31 @@ fun ReportDetailsScreen(
             .padding(16.dp)
             .verticalScroll(rememberScrollState()),
     ) {
-        // Image Card
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(250.dp),
+                .height(250.dp)
+                .clickable { showFullscreen = true },
             shape = RoundedCornerShape(16.dp),
             elevation = CardDefaults.cardElevation(4.dp),
         ) {
             AsyncImage(
                 model = report.imageUrl,
-                contentDescription = "Report Image",
+                contentDescription = "Report Image — tap to expand",
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
             )
         }
 
+        Text(
+            text = "Tap image to view full screen",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 8.dp, start = 4.dp)
+        )
+
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Details Card
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -82,12 +94,12 @@ fun ReportDetailsScreen(
                     Text(
                         text = "Status",
                         style = MaterialTheme.typography.labelLarge,
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                    StatusBadge(status = report.status)
+                    StatusBadge(status = normalizeReportStatus(report.status))
                 }
 
-                Divider(modifier = Modifier.padding(vertical = 12.dp), thickness = 0.5.dp)
+                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), thickness = 0.5.dp)
 
                 DetailInfoRow(label = "Submitted On", value = date)
                 DetailInfoRow(label = "Description", value = report.description)
@@ -98,27 +110,38 @@ fun ReportDetailsScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Helpful Hint
-        if (report.status.equals("PENDING", ignoreCase = true)) {
+        if (normalizeReportStatus(report.status) == "Pending") {
             Text(
                 text = "Our team is reviewing your report. You will be notified once it is approved.",
                 style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 8.dp),
             )
         }
+    }
+
+    if (showFullscreen && report.imageUrl.isNotBlank()) {
+        FullscreenImageViewer(
+            imageUrl = report.imageUrl,
+            onDismiss = { showFullscreen = false }
+        )
     }
 }
 
 @Composable
 fun DetailInfoRow(label: String, value: String) {
     Column(modifier = Modifier.padding(bottom = 12.dp)) {
-        Text(text = label, style = MaterialTheme.typography.labelLarge, color = Color.Gray)
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = value,
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }

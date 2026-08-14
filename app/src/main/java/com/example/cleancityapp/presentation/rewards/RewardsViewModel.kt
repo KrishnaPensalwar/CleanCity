@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.cleancityapp.data.remote.AuthApi
 import com.example.cleancityapp.data.remote.RankResponse
 import com.example.cleancityapp.data.remote.UserDto
+import com.example.cleancityapp.data.remote.toAppErrorMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -59,10 +60,21 @@ class RewardsViewModel(
                         ) 
                     }
                 } else {
-                    _state.update { it.copy(isLoading = false, error = "Failed to load rewards data") }
+                    val errorMessage = when {
+                        !rankResponse.isSuccessful -> {
+                            rankResponse.toAppErrorMessage("Unable to load rewards data.")
+                        }
+                        else -> profileResponse.toAppErrorMessage("Unable to load rewards data.")
+                    }
+                    _state.update { it.copy(isLoading = false, error = errorMessage) }
                 }
             } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false, error = e.localizedMessage) }
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.toAppErrorMessage("Unable to load rewards data.")
+                    )
+                }
             }
         }
     }

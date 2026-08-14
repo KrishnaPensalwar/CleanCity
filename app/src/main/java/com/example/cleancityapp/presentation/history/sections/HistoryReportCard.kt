@@ -75,16 +75,17 @@ fun ReportHistoryCard(report: ReportResponse, onClick: () -> Unit) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            StatusBadge(status = report.status)
+            StatusBadge(status = com.example.cleancityapp.presentation.history.normalizeReportStatus(report.status))
         }
     }
 }
 
 @Composable
 fun StatusBadge(status: String) {
-    val (bgColor, textColor) = when (status.uppercase()) {
-        "APPROVED" -> MaterialTheme.colorScheme.tertiaryContainer to MaterialTheme.colorScheme.onTertiaryContainer
-        "REJECTED" -> MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
+    val normalized = com.example.cleancityapp.presentation.history.normalizeReportStatus(status)
+    val (bgColor, textColor) = when (normalized) {
+        "Approved" -> MaterialTheme.colorScheme.tertiaryContainer to MaterialTheme.colorScheme.onTertiaryContainer
+        "Rejected" -> MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
         else -> MaterialTheme.colorScheme.secondaryContainer to MaterialTheme.colorScheme.onSecondaryContainer
     }
 
@@ -93,7 +94,7 @@ fun StatusBadge(status: String) {
         shape = RoundedCornerShape(8.dp),
     ) {
         Text(
-            text = status.uppercase(),
+            text = normalized.uppercase(),
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             fontSize = 10.sp,
             fontWeight = FontWeight.Black,

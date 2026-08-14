@@ -3,8 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
-    id("com.google.dagger.hilt.android")
-    kotlin("kapt")
     kotlin("plugin.serialization") version "2.0.21"
 }
 
@@ -24,11 +22,18 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        debug {
+            isMinifyEnabled = false
+            isDebuggable = true
         }
     }
     compileOptions {
@@ -40,6 +45,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -72,10 +78,6 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging-ktx")
     implementation("com.google.firebase:firebase-analytics-ktx")
 
-    // Hilt
-    implementation("com.google.dagger:hilt-android:2.51.1")
-    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     // Ktor Client
     val ktor_version = "3.0.1"
@@ -97,6 +99,11 @@ dependencies {
     // Koin for Compose (keeping for now during transition)
     implementation("io.insert-koin:koin-androidx-compose:3.5.3")
 
-    // Logger SDK
-    implementation(project(":devtool"))
+    // Encrypted SharedPreferences (stable)
+    implementation("androidx.security:security-crypto:1.1.0")
+
+    implementation("androidx.compose.material:material-icons-extended")
+    // Debug-only DevTool SDK (not packaged into release).
+    debugImplementation("io.github.krishnapensalwar:devkit:1.0.2")
+
 }

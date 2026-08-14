@@ -31,6 +31,6 @@ class ComplaintDetailsApi(private val client: HttpClient) {
     suspend fun getComplaintDetails(token: String, complaintId: String): ComplaintDetailsDto {
         return client.get("$baseUrl/complaints/$complaintId") {
             header(HttpHeaders.Authorization, "Bearer $token")
-        }.body()
+        }.bodyOrApiError("Unable to load complaint details.")
     }
 }

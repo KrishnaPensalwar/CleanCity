@@ -1,6 +1,7 @@
 package com.example.cleancityapp.data.repository
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import com.example.cleancityapp.data.remote.DeviceRegistrationApi
 import com.example.cleancityapp.data.remote.DeviceRegistrationRequest
@@ -10,14 +11,12 @@ import kotlinx.coroutines.withContext
 
 class DeviceRegistrationRepository(
     private val api: DeviceRegistrationApi,
+    private val sharedPreferences: SharedPreferences,
     private val context: Context
 ) {
-    private val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-
     suspend fun registerDevice(token: String, fcmToken: String) = withContext(Dispatchers.IO) {
         val lastToken = sharedPreferences.getString("last_registered_fcm_token", null)
         if (lastToken == fcmToken) {
-            Log.d("DeviceReg", "Token already registered, skipping.")
             return@withContext
         }
 
@@ -27,13 +26,9 @@ class DeviceRegistrationRepository(
             deviceName = DeviceInfoUtils.getDeviceName(),
             platform = "ANDROID"
         )
-        
+
         try {
-            val response = api.registerDevice(token, request)
-            Log.d("DeviceReg", "Success: ${response.message}")
-            if (response.deviceName != null) {
-                Log.d("DeviceReg", "Registered device: ${response.deviceName}")
-            }
+            api.registerDevice(token, request)
             sharedPreferences.edit().putString("last_registered_fcm_token", fcmToken).apply()
         } catch (e: Exception) {
             Log.e("DeviceReg", "Failed to register device", e)

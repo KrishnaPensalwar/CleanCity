@@ -1,6 +1,6 @@
 package com.example.cleancityapp.notification
 
-import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import com.example.cleancityapp.data.repository.DeviceRegistrationRepository
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -14,22 +14,23 @@ import org.koin.android.ext.android.inject
 class MyFirebaseMessagingService : FirebaseMessagingService() {
     private val repository: DeviceRegistrationRepository by inject()
     private val notificationHelper: NotificationHelper by inject()
+    private val sharedPreferences: SharedPreferences by inject()
     private val job = SupervisorJob()
     private val scope = CoroutineScope(Dispatchers.IO + job)
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        Log.d("FCM", "New token: $token")
-        
-        val sharedPreferences = getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+
+        val notificationsEnabled = sharedPreferences.getBoolean("notifications_enabled", true)
+        if (!notificationsEnabled) return
+
         val accessToken = sharedPreferences.getString("access_token", null)
-        
         if (accessToken != null) {
             scope.launch {
                 try {
                     repository.registerDevice(accessToken, token)
                 } catch (e: Exception) {
-                    Log.e("FCM", "Failed to register token", e)
+                    Log.e("FCM", "Failed to register device token", e)
                 }
             }
         }
@@ -37,12 +38,15 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
-        Log.d("FCM", "Message received: ${message.data}")
-        
+
+        val notificationsEnabled = sharedPreferences.getBoolean("notifications_enabled", true)
+        if (!notificationsEnabled) return
+
         val data = message.data
         val title = data["title"] ?: message.notification?.title ?: "Clean City Update"
         val body = data["body"] ?: message.notification?.body ?: "There's an update on your report."
-        val complaintId = data["complaintId"]
+        val complaintId = com.example.cleancityapp.security.ComplaintIdValidator
+            .sanitize(data["complaintId"])
         val status = data["status"]
 
         if (complaintId != null && (status == "APPROVED" || status == "REJECTED")) {

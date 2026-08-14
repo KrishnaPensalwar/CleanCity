@@ -1,17 +1,18 @@
 package com.example.cleancityapp
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import android.Manifest
+import androidx.core.content.ContextCompat
 import com.example.cleancityapp.presentation.main.MainApp
-import com.example.cleancityapp.presentation.main.MainViewModel
 import com.example.cleancityapp.presentation.main.MainContract
-import com.example.cleancityapp.ui.theme.CleanCityAppTheme
+import com.example.cleancityapp.presentation.main.MainViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
@@ -19,29 +20,31 @@ class MainActivity : ComponentActivity() {
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            // Permission granted
-        } else {
-            // Permission denied
-        }
+    ) { _ ->
+        // Preference already marked prompted in ViewModel
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         handleNotificationIntent(intent)
-        
-        requestNotificationPermission()
 
         setContent {
-            MainApp(viewModel)
+            MainApp(
+                viewModel = viewModel,
+                onRequestNotificationPermission = { requestNotificationPermissionIfNeeded() }
+            )
         }
     }
 
-    private fun requestNotificationPermission() {
+    private fun requestNotificationPermissionIfNeeded() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            val granted = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+            if (!granted) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
         }
     }
 
@@ -51,9 +54,9 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun handleNotificationIntent(intent: Intent) {
-        val complaintId = intent.getStringExtra("complaintId")
-        if (complaintId != null) {
-            viewModel.processIntent(MainContract.Intent.HandleDeepLink(complaintId))
-        }
+        val complaintId = com.example.cleancityapp.security.ComplaintIdValidator
+            .sanitize(intent.getStringExtra("complaintId"))
+            ?: return
+        viewModel.processIntent(MainContract.Intent.HandleDeepLink(complaintId))
     }
 }

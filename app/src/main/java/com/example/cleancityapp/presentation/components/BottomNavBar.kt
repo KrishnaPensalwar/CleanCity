@@ -6,13 +6,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,7 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -34,19 +37,21 @@ fun BottomNavBar(
     userRole: UserRole,
     onNavigate: (Screen) -> Unit
 ) {
+    val navBarPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 24.dp, start = 24.dp, end = 24.dp),
+            .padding(start = 20.dp, end = 20.dp, bottom = 12.dp + navBarPadding),
         contentAlignment = Alignment.BottomCenter
     ) {
         Surface(
             modifier = Modifier
-                .height(72.dp)
+                .height(64.dp)
                 .fillMaxWidth()
-                .shadow(elevation = 16.dp, shape = RoundedCornerShape(36.dp)),
-            color = Color(0xFF1A1A1A), // Dark background as per image
-            shape = RoundedCornerShape(36.dp)
+                .shadow(elevation = 12.dp, shape = RoundedCornerShape(32.dp)),
+            color = MaterialTheme.colorScheme.onBackground,
+            shape = RoundedCornerShape(32.dp)
         ) {
             Row(
                 modifier = Modifier
@@ -59,7 +64,6 @@ fun BottomNavBar(
                     listOf(
                         Triple("🏠", "Home", Screen.Home),
                         Triple("📷", "Report", Screen.Report),
-                        Triple("🗺️", "Map", Screen.Map),
                         Triple("🏆", "Rewards", Screen.Rewards),
                         Triple("📜", "History", Screen.History)
                     )
@@ -76,9 +80,12 @@ fun BottomNavBar(
                     val isSelected = currentRoute == screen.route
                     Box(
                         modifier = Modifier
-                            .size(if (isSelected) 56.dp else 48.dp)
+                            .size(if (isSelected) 52.dp else 46.dp)
                             .clip(CircleShape)
-                            .background(if (isSelected) Color.White else Color.Transparent)
+                            .background(
+                                if (isSelected) MaterialTheme.colorScheme.surface
+                                else androidx.compose.ui.graphics.Color.Transparent
+                            )
                             .clickable { onNavigate(screen) },
                         contentAlignment = Alignment.Center
                     ) {
@@ -88,17 +95,17 @@ fun BottomNavBar(
                         ) {
                             Text(
                                 text = icon,
-                                fontSize = if (isSelected) 24.sp else 20.sp,
+                                fontSize = if (isSelected) 22.sp else 18.sp,
                                 modifier = Modifier.graphicsLayer(
-                                    scaleX = if (isSelected) 1.1f else 1f,
-                                    scaleY = if (isSelected) 1.1f else 1f
+                                    scaleX = if (isSelected) 1.05f else 1f,
+                                    scaleY = if (isSelected) 1.05f else 1f
                                 )
                             )
                             if (!isSelected) {
                                 Text(
                                     text = label,
                                     fontSize = 9.sp,
-                                    color = Color.White.copy(alpha = 0.6f),
+                                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
                                     fontWeight = FontWeight.Bold
                                 )
                             }

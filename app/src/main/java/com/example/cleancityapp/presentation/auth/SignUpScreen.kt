@@ -1,6 +1,13 @@
 package com.example.cleancityapp.presentation.auth
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,7 +26,9 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -31,12 +40,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.cleancityapp.data.remote.CityDto
 import com.example.cleancityapp.presentation.components.InputField
 import org.koin.androidx.compose.koinViewModel
 
@@ -58,7 +67,6 @@ fun SignUpScreen(
     var citySearch by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
 
-    // ✅ API trigger
     LaunchedEffect(expanded) {
         if (expanded && state.cities.isEmpty()) {
             viewModel.fetchCities()
@@ -76,149 +84,211 @@ fun SignUpScreen(
         else state.cities.filter { it.name.contains(citySearch, true) }
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
-            .padding(24.dp)
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                        MaterialTheme.colorScheme.background
+                    )
+                )
+            )
     ) {
-
-        Text("Clean City", fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1565C0))
-        Text("Create your account", fontSize = 14.sp, color = Color.Gray)
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        state.error?.let {
-            Text(it, color = Color.Red, fontSize = 12.sp)
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        InputField(
-            value = fullName,
-            onValueChange = { fullName = it },
-            label = "Full Name",
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !state.isLoading
-        )
-
-        Spacer(Modifier.height(16.dp))
-
-        InputField(
-            value = mobile,
-            onValueChange = { mobile = it },
-            label = "Mobile Number",
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !state.isLoading
-        )
-
-        Spacer(Modifier.height(16.dp))
-
-        // ✅ Dropdown with InputField
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = it }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.height(24.dp))
 
-            InputField(
-                value = citySearch,
-                onValueChange = {
-                    citySearch = it
-                    expanded = true
-                },
-                label = "Select City",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .menuAnchor(MenuAnchorType.PrimaryEditable, enabled = true),
-                enabled = !state.isLoading,
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded)
-                }
+            Text(
+                "Clean City",
+                fontSize = 36.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.primary,
+                letterSpacing = (-1).sp
+            )
+            Text(
+                "Create your account",
+                fontSize = 15.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontWeight = FontWeight.Medium
             )
 
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
+            Spacer(modifier = Modifier.height(28.dp))
+
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(24.dp)),
+                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
+                shape = RoundedCornerShape(24.dp),
+                tonalElevation = 8.dp,
+                shadowElevation = 4.dp
             ) {
-                filteredCities.forEach { cityDto ->
-                    DropdownMenuItem(
-                        text = { Text(cityDto.name) },
-                        onClick = {
-                            city = cityDto.name
-                            citySearch = cityDto.name
-                            expanded = false
-                        },
-                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    AnimatedVisibility(
+                        visible = state.error != null,
+                        enter = fadeIn() + expandVertically(),
+                        exit = fadeOut() + shrinkVertically()
+                    ) {
+                        state.error?.let {
+                            Text(
+                                text = it,
+                                color = MaterialTheme.colorScheme.error,
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(bottom = 16.dp)
+                            )
+                        }
+                    }
+
+                    InputField(
+                        value = fullName,
+                        onValueChange = { fullName = it },
+                        label = "Full Name",
+                        enabled = !state.isLoading
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    InputField(
+                        value = mobile,
+                        onValueChange = { mobile = it },
+                        label = "Mobile Number",
+                        enabled = !state.isLoading
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    ExposedDropdownMenuBox(
+                        expanded = expanded,
+                        onExpandedChange = { expanded = it }
+                    ) {
+                        InputField(
+                            value = citySearch,
+                            onValueChange = {
+                                citySearch = it
+                                expanded = true
+                            },
+                            label = "Select City",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .menuAnchor(MenuAnchorType.PrimaryEditable, enabled = true),
+                            enabled = !state.isLoading,
+                            trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(expanded)
+                            }
+                        )
+
+                        ExposedDropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            filteredCities.forEach { cityDto ->
+                                DropdownMenuItem(
+                                    text = { Text(cityDto.name) },
+                                    onClick = {
+                                        city = cityDto.name
+                                        citySearch = cityDto.name
+                                        expanded = false
+                                    },
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    InputField(
+                        value = email,
+                        onValueChange = { email = it },
+                        label = "Email",
+                        enabled = !state.isLoading
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    InputField(
+                        value = password,
+                        onValueChange = { password = it },
+                        label = "Password",
+                        visualTransformation = PasswordVisualTransformation(),
+                        enabled = !state.isLoading
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    InputField(
+                        value = confirmPassword,
+                        onValueChange = { confirmPassword = it },
+                        label = "Confirm Password",
+                        visualTransformation = PasswordVisualTransformation(),
+                        enabled = !state.isLoading
+                    )
+
+                    Spacer(modifier = Modifier.height(28.dp))
+
+                    val isValid = fullName.isNotBlank() &&
+                        mobile.isNotBlank() &&
+                        email.isNotBlank() &&
+                        password.isNotBlank() &&
+//                        city.isNotBlank() &&
+                        password == confirmPassword
+
+                    Button(
+                        onClick = { viewModel.signUp(fullName, mobile, email, password, city) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        enabled = !state.isLoading && isValid,
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        ),
+                        elevation = ButtonDefaults.buttonElevation(
+                            defaultElevation = 4.dp,
+                            pressedElevation = 8.dp
+                        )
+                    ) {
+                        if (state.isLoading) {
+                            CircularProgressIndicator(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier.size(24.dp),
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text("Sign Up", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    "Already have an account? ",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 14.sp
+                )
+                TextButton(onClick = onNavigateToLogin, enabled = !state.isLoading) {
+                    Text(
+                        "Login",
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 14.sp
                     )
                 }
             }
-        }
 
-        Spacer(Modifier.height(16.dp))
-
-        InputField(
-            value = email,
-            onValueChange = { email = it },
-            label = "Email",
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !state.isLoading
-        )
-
-        Spacer(Modifier.height(16.dp))
-
-        InputField(
-            value = password,
-            onValueChange = { password = it },
-            label = "Password",
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation(),
-            enabled = !state.isLoading
-        )
-
-        Spacer(Modifier.height(16.dp))
-
-        InputField(
-            value = confirmPassword,
-            onValueChange = { confirmPassword = it },
-            label = "Confirm Password",
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation(),
-            enabled = !state.isLoading
-        )
-
-        Spacer(Modifier.height(32.dp))
-
-        val isValid = fullName.isNotBlank() &&
-                mobile.isNotBlank() &&
-                email.isNotBlank() &&
-                password.isNotBlank() &&
-                city.isNotBlank() &&
-                password == confirmPassword
-
-        Button(
-            onClick = { viewModel.signUp(fullName, mobile, email, password, city) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            enabled = !state.isLoading && isValid,
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1565C0))
-        ) {
-            if (state.isLoading) {
-                CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
-            } else {
-                Text("Sign Up", fontWeight = FontWeight.Bold)
-            }
-        }
-
-        Spacer(Modifier.height(16.dp))
-
-        Row {
-            Text("Already have an account? ", color = Color.Gray)
-            TextButton(onClick = onNavigateToLogin) {
-                Text("Login", color = Color(0xFF1565C0))
-            }
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
