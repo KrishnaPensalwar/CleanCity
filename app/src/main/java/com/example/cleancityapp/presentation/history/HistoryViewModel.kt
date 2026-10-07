@@ -54,10 +54,6 @@ class HistoryViewModel(
             }
         }
     }
-
-    fun invalidate() {
-        _state.update { it.copy(reports = emptyList()) }
-    }
 }
 
 /** Normalize backend status values for filter chips. */
@@ -68,4 +64,13 @@ fun normalizeReportStatus(status: String): String {
         "PENDING", "SUBMITTED", "IN_REVIEW", "IN REVIEW", "OPEN" -> "Pending"
         else -> status.replaceFirstChar { it.uppercase() }
     }
+}
+
+fun historyFilterChips(rawStatuses: List<String>): List<String> {
+    val unique = rawStatuses
+        .map { normalizeReportStatus(it) }
+        .filter { it.isNotBlank() }
+        .distinct()
+        .sorted()
+    return if (unique.size > 2) listOf("All") + unique else unique
 }

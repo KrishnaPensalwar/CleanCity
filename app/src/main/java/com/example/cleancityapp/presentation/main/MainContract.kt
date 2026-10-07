@@ -21,15 +21,12 @@ class MainContract {
         data class HandleDeepLink(val complaintId: String) : Intent()
         object ClearDeepLink : Intent()
         data class SetThemeMode(val mode: ThemeMode) : Intent()
-        data class NavigateTo(val screen: Screen) : Intent()
         data class SetRole(val role: UserRole) : Intent()
         data class SyncScreenState(val screen: Screen) : Intent()
         data class ViewReportDetails(val report: ReportResponse) : Intent()
         data class SetNotificationsEnabled(val enabled: Boolean) : Intent()
         object NotificationPermissionHandled : Intent()
         object RefreshCurrentUser : Intent()
-        
-        object GetMe : Intent()
         object LoginSuccess : Intent()
         object Logout : Intent()
     }

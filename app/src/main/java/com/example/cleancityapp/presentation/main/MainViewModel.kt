@@ -183,8 +183,6 @@ class MainViewModel(
                 _uiState.update { it.copy(shouldRequestNotificationPermission = false) }
             }
             is MainContract.Intent.RefreshCurrentUser -> refreshCurrentUser()
-            is MainContract.Intent.GetMe -> refreshCurrentUser()
-            else -> {}
         }
     }
 

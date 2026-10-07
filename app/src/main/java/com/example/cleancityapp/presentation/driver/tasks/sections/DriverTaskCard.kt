@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Badge
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -22,10 +21,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.cleancityapp.presentation.components.TaskStatusBadge
+import com.example.cleancityapp.ui.theme.Radius
+import com.example.cleancityapp.ui.theme.Spacing
+import com.example.cleancityapp.ui.theme.StatusInfoContent
+import com.example.cleancityapp.ui.theme.StatusSuccessContent
 
 @Composable
 fun DriverTaskCard(
@@ -45,14 +48,14 @@ fun DriverTaskCard(
         modifier = Modifier
             .fillMaxWidth()
             .then(
-                if (isHighlight) Modifier.border(1.5.dp, accent, RoundedCornerShape(11.dp))
+                if (isHighlight) Modifier.border(1.5.dp, accent, RoundedCornerShape(Radius.card))
                 else Modifier,
             ),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(Radius.card),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
+        Column(modifier = Modifier.padding(Spacing.md)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -62,14 +65,9 @@ fun DriverTaskCard(
                     text = id,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (isHighlight) Color(0xFF185FA5) else MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = if (isHighlight) StatusInfoContent else MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                Badge(
-                    containerColor = if (status == "Completed") Color(0xFFEAF3DE) else Color(0xFFFAEEDA),
-                    contentColor = if (status == "Completed") Color(0xFF3B6D11) else Color(0xFF854F0B),
-                ) {
-                    Text(status)
-                }
+                TaskStatusBadge(status = status)
             }
             Spacer(modifier = Modifier.height(6.dp))
             Text(text = location, fontSize = 13.sp, fontWeight = FontWeight.Bold)
@@ -111,10 +109,10 @@ fun DriverTaskCard(
                         OutlinedButton(
                             onClick = onMarkDone,
                             modifier = Modifier.weight(1f),
-                            border = BorderStroke(1.dp, Color(0xFF3B6D11)),
-                            shape = RoundedCornerShape(8.dp),
+                            border = BorderStroke(1.dp, StatusSuccessContent),
+                            shape = RoundedCornerShape(Radius.badge),
                             contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF3B6D11)),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = StatusSuccessContent),
                         ) {
                             Text("Done", fontSize = 11.sp, maxLines = 1)
                         }

@@ -14,10 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.cleancityapp.ui.theme.StatusPendingTint
+import com.example.cleancityapp.ui.theme.StatusResolvedTint
 
 @Composable
 fun ActivityItem(title: String, time: String, status: String) {
@@ -57,8 +58,8 @@ fun ActivityItem(title: String, time: String, status: String) {
             )
         }
         val statusTint = when (status.lowercase()) {
-            "pending" -> Color(0xFFFF9800)
-            else -> Color(0xFF4CAF50)
+            "pending" -> StatusPendingTint
+            else -> StatusResolvedTint
         }
         Text(
             text = status,

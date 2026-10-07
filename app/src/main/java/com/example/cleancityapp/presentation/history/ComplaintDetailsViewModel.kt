@@ -20,7 +20,6 @@ class ComplaintDetailsViewModel(
     fun processIntent(intent: ComplaintDetailsContract.Intent) {
         when (intent) {
             is ComplaintDetailsContract.Intent.LoadComplaint -> loadComplaint(intent.complaintId)
-            is ComplaintDetailsContract.Intent.ClearError -> _state.update { it.copy(error = null) }
         }
     }
 
