@@ -14,10 +14,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.cleancityapp.ui.theme.Radius
+import com.example.cleancityapp.ui.theme.Spacing
+import com.example.cleancityapp.ui.theme.StatusErrorContainer
+import com.example.cleancityapp.ui.theme.StatusErrorContent
+import com.example.cleancityapp.ui.theme.StatusInfoContainer
+import com.example.cleancityapp.ui.theme.StatusInfoContent
+import com.example.cleancityapp.ui.theme.StatusSuccessContainer
+import com.example.cleancityapp.ui.theme.StatusSuccessContent
+import com.example.cleancityapp.ui.theme.StatusWarningContainer
+import com.example.cleancityapp.ui.theme.StatusWarningContent
 
 @Composable
 fun DriverDashboardQuickActions(
@@ -28,38 +37,38 @@ fun DriverDashboardQuickActions(
     Card(
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(Radius.card),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
+        Column(modifier = Modifier.padding(Spacing.md)) {
             Text(text = "Quick actions", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Spacer(modifier = Modifier.height(Spacing.sm))
+            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
                 QuickActionItem(
                     modifier = Modifier.weight(1f),
                     icon = "📋",
                     label = "View tasks",
-                    bgColor = Color(0xFFE6F1FB),
-                    textColor = Color(0xFF185FA5),
+                    bgColor = StatusInfoContainer,
+                    textColor = StatusInfoContent,
                     onClick = onViewTasks,
                 )
                 QuickActionItem(
                     modifier = Modifier.weight(1f),
                     icon = "📸",
                     label = "Upload photo",
-                    bgColor = Color(0xFFEAF3DE),
-                    textColor = Color(0xFF3B6D11),
+                    bgColor = StatusSuccessContainer,
+                    textColor = StatusSuccessContent,
                 )
             }
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                QuickActionItem(modifier = Modifier.weight(1f), icon = "🗺️", label = "Open map", bgColor = Color(0xFFFAEEDA), textColor = Color(0xFF854F0B))
+            Spacer(modifier = Modifier.height(Spacing.sm))
+            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+                QuickActionItem(modifier = Modifier.weight(1f), icon = "🗺️", label = "Open map", bgColor = StatusWarningContainer, textColor = StatusWarningContent)
                 QuickActionItem(
                     modifier = Modifier.weight(1f),
                     icon = "🚨",
                     label = "Refresh",
-                    bgColor = Color(0xFFFCEBEB),
-                    textColor = Color(0xFFA32D2D),
+                    bgColor = StatusErrorContainer,
+                    textColor = StatusErrorContent,
                     onClick = onRefresh,
                 )
             }

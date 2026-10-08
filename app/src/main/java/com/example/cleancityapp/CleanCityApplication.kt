@@ -19,7 +19,6 @@ class CleanCityApplication : Application() {
             modules(appModule)
         }
 
-        // No-op in release; initializes debug-only SDK in debug builds.
         DevToolBridge.init(this)
     }
 }

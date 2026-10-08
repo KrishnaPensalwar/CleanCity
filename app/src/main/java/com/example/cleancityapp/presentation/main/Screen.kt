@@ -16,18 +16,12 @@ sealed class Screen(val route: String) {
     object Profile : Screen("profile")
     object EditProfile : Screen("edit_profile")
     object PrivacyPolicy : Screen("privacy_policy")
-    data class ComplaintDetails(val id: String) : Screen("complaint_details/{id}") {
-        fun createRoute(id: String) = "complaint_details/$id"
-    }
 
     // Driver Screens
     object DriverDashboard : Screen("driver_dashboard")
     object DriverTasks : Screen("driver_tasks")
     object DriverRoute : Screen("driver_route")
     object DriverProfile : Screen("driver_profile")
-
-    // Kept for deep-link / legacy route safety; Map feature is disabled in nav.
-    object Map : Screen("map")
 }
 
 enum class UserRole {

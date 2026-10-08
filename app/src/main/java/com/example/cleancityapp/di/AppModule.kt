@@ -11,6 +11,7 @@ import com.example.cleancityapp.data.remote.TokenAuthenticator
 import com.example.cleancityapp.data.repository.ComplaintDetailsRepository
 import com.example.cleancityapp.data.repository.DeviceRegistrationRepository
 import com.example.cleancityapp.notification.NotificationHelper
+import com.example.cleancityapp.security.DevToolBridge
 import com.example.cleancityapp.presentation.auth.AuthViewModel
 import com.example.cleancityapp.presentation.driver.DriverViewModel
 import com.example.cleancityapp.presentation.history.ComplaintDetailsViewModel
@@ -20,10 +21,9 @@ import com.example.cleancityapp.presentation.main.MainViewModel
 import com.example.cleancityapp.presentation.profile.ProfileViewModel
 import com.example.cleancityapp.presentation.rewards.RewardsViewModel
 import com.example.cleancityapp.presentation.user.UserViewModel
-import com.example.cleancityapp.security.DevToolBridge
 import com.example.cleancityapp.util.ApiConstants
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.android.Android
+import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
@@ -55,18 +55,18 @@ val appModule = module {
     single { TokenAuthenticator(get()) }
 
     single(named("AuthClient")) {
-        OkHttpClient.Builder()
-            .addInterceptor(get<HttpLoggingInterceptor>())
-            .let { DevToolBridge.configureOkHttp(it) }
-            .build()
+        DevToolBridge.configureOkHttp(
+            OkHttpClient.Builder()
+                .addInterceptor(get<HttpLoggingInterceptor>())
+        ).build()
     }
 
     single {
-        OkHttpClient.Builder()
-            .addInterceptor(get<HttpLoggingInterceptor>())
-            .let { DevToolBridge.configureOkHttp(it) }
-            .authenticator(get<TokenAuthenticator>())
-            .build()
+        DevToolBridge.configureOkHttp(
+            OkHttpClient.Builder()
+                .addInterceptor(get<HttpLoggingInterceptor>())
+                .authenticator(get<TokenAuthenticator>())
+        ).build()
     }
 
     single(named("AuthRetrofit")) {
@@ -92,8 +92,11 @@ val appModule = module {
     single { get<Retrofit>().create(AuthApi::class.java) }
 
     single {
-        HttpClient(Android) {
-            DevToolBridge.configureKtor(this)
+        val okHttpClient: OkHttpClient = get()
+        HttpClient(OkHttp) {
+            engine {
+                preconfigured = okHttpClient
+            }
 
             install(ContentNegotiation) {
                 json(
@@ -162,6 +165,6 @@ val appModule = module {
     viewModel { UserViewModel(get(), get(), androidContext()) }
     viewModel { ComplaintDetailsViewModel(get(), get()) }
     viewModel { HomeViewModel(get(), get()) }
-    viewModel { ProfileViewModel(get(), get(), get()) }
+    viewModel { ProfileViewModel(get(), get()) }
     viewModel { RewardsViewModel(get(), get()) }
 }

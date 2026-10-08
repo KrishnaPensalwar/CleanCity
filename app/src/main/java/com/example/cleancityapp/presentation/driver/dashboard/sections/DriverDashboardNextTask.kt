@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Badge
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -25,6 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cleancityapp.data.remote.ReportResponse
 import com.example.cleancityapp.presentation.components.SkeletonBox
+import com.example.cleancityapp.presentation.components.TaskStatusBadge
+import com.example.cleancityapp.ui.theme.Radius
+import com.example.cleancityapp.ui.theme.StatusInfoContent
 
 @Composable
 fun DriverDashboardNextTaskSection(
@@ -53,7 +55,7 @@ private fun NextTaskFilledCard(report: ReportResponse, onNavigate: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(Radius.card),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
@@ -65,11 +67,9 @@ private fun NextTaskFilledCard(report: ReportResponse, onNavigate: () -> Unit) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(text = "Task #${report.id.takeLast(4).uppercase()}", fontSize = 13.sp, fontWeight = FontWeight.Bold)
                     Text(text = "Lat: ${report.latitude}, Lon: ${report.longitude}", fontSize = 11.sp, color = Color.Gray)
-                    Text(text = report.description, fontSize = 11.sp, color = Color(0xFF185FA5), maxLines = 1)
+                    Text(text = report.description, fontSize = 11.sp, color = StatusInfoContent, maxLines = 1)
                 }
-                Badge(containerColor = Color(0xFFFAEEDA), contentColor = Color(0xFF854F0B)) {
-                    Text("Pending")
-                }
+                TaskStatusBadge(status = "Pending")
             }
             Spacer(modifier = Modifier.height(12.dp))
             Button(
@@ -89,7 +89,7 @@ private fun EmptyTaskCard() {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(Radius.card),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
     ) {
         Box(modifier = Modifier.padding(24.dp), contentAlignment = Alignment.Center) {

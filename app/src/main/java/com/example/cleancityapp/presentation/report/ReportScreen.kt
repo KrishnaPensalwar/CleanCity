@@ -86,12 +86,19 @@ fun ReportScreen(
     var longitude by remember { mutableDoubleStateOf(0.0) }
     var isLocating by remember { mutableStateOf(false) }
     var locationPinned by remember { mutableStateOf(false) }
+    var hasLocationPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        )
+    }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { grants ->
         val granted = grants[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
             grants[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        hasLocationPermission = granted
         if (granted) {
             scope.launch {
                 isLocating = true
@@ -103,6 +110,10 @@ fun ReportScreen(
                 isLocating = false
             }
         } else {
+            latitude = 0.0
+            longitude = 0.0
+            address = ""
+            locationPinned = false
             Toast.makeText(context, "Location permission required to pin report", Toast.LENGTH_SHORT).show()
         }
     }
@@ -110,13 +121,14 @@ fun ReportScreen(
     fun requestAndPinLocation() {
         val fine = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
         val coarse = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        hasLocationPermission = fine || coarse
         if (fine || coarse) {
             scope.launch {
                 isLocating = true
                 val result = resolveCurrentLocation(context)
                 latitude = result.first
                 longitude = result.second
-                address = result.third.ifBlank { address }
+                address = result.third
                 locationPinned = latitude != 0.0 || longitude != 0.0
                 isLocating = false
             }
@@ -131,7 +143,9 @@ fun ReportScreen(
     }
 
     LaunchedEffect(Unit) {
-        requestAndPinLocation()
+        if (hasLocationPermission) {
+            requestAndPinLocation()
+        }
     }
 
     LaunchedEffect(uiState.isReportSuccess) {
@@ -232,9 +246,12 @@ fun ReportScreen(
             Text("Address", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
-                value = address,
-                onValueChange = { address = it },
-                placeholder = { Text("Street, landmark, area") },
+                value = if (hasLocationPermission) address else "",
+                onValueChange = { if (hasLocationPermission) address = it },
+                placeholder = {
+                    Text(if (hasLocationPermission) "Street, landmark, area" else "Allow location to fill address")
+                },
+                enabled = hasLocationPermission,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -258,9 +275,10 @@ fun ReportScreen(
                     Text("Pinned location", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Text(
                         text = when {
+                            !hasLocationPermission -> "Permission required"
                             isLocating -> "Detecting…"
                             locationPinned -> "%.5f, %.5f".format(latitude, longitude)
-                            else -> "Location not pinned"
+                            else -> "Not detected"
                         },
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface

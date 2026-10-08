@@ -54,8 +54,13 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun handleNotificationIntent(intent: Intent) {
-        val complaintId = com.example.cleancityapp.security.ComplaintIdValidator
-            .sanitize(intent.getStringExtra("complaintId"))
+        val extras = buildMap {
+            intent.extras?.keySet()?.forEach { key ->
+                put(key, intent.getStringExtra(key))
+            }
+        }
+        val complaintId = com.example.cleancityapp.notification.IncomingNotification
+            .complaintIdFrom(extras)
             ?: return
         viewModel.processIntent(MainContract.Intent.HandleDeepLink(complaintId))
     }

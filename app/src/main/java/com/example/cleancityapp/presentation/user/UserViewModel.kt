@@ -7,7 +7,6 @@ import android.webkit.MimeTypeMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cleancityapp.data.remote.AuthApi
-import com.example.cleancityapp.data.remote.ReportResponse
 import com.example.cleancityapp.data.remote.toAppErrorMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +24,6 @@ import java.io.FileOutputStream
 import java.util.concurrent.atomic.AtomicBoolean
 
 data class UserState(
-    val reports: List<ReportResponse> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
     val isReportSuccess: Boolean = false
@@ -41,36 +39,6 @@ class UserViewModel(
     val state: StateFlow<UserState> = _state.asStateFlow()
 
     private val isSubmitting = AtomicBoolean(false)
-
-    fun fetchUserReports(force: Boolean = false) {
-        if (!force && _state.value.reports.isNotEmpty()) return
-        val token = sharedPreferences.getString("access_token", null) ?: return
-        viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null) }
-            try {
-                val response = withContext(Dispatchers.IO) {
-                    authApi.getMeReports("Bearer $token")
-                }
-                if (response.isSuccessful) {
-                    _state.update { it.copy(reports = response.body() ?: emptyList(), isLoading = false) }
-                } else {
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            error = response.toAppErrorMessage("Unable to load your reports.")
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        error = e.toAppErrorMessage("Unable to load your reports.")
-                    )
-                }
-            }
-        }
-    }
 
     fun submitReport(
         imageUri: Uri,
@@ -114,8 +82,7 @@ class UserViewModel(
                     _state.update {
                         it.copy(
                             isLoading = false,
-                            isReportSuccess = true,
-                            reports = emptyList()
+                            isReportSuccess = true
                         )
                     }
                 } else {

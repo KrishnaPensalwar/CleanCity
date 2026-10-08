@@ -1,6 +1,8 @@
 package com.example.cleancityapp.presentation.main
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -51,6 +53,7 @@ import com.example.cleancityapp.ui.theme.CleanCityAppTheme
 import org.koin.androidx.compose.koinViewModel
 import java.util.Calendar
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainApp(
     viewModel: MainViewModel,
@@ -228,6 +231,8 @@ fun MainApp(
                     currentRoute != null &&
                     currentRoute != Screen.ReportDetails.route &&
                     currentRoute != Screen.EditProfile.route &&
+                    currentRoute != Screen.Profile.route &&
+                    currentRoute != Screen.DriverProfile.route &&
                     !currentRoute.startsWith("complaint_details")
                 ) {
                     BottomNavBar(
@@ -260,10 +265,11 @@ fun MainApp(
                 }
             }
         ) { innerPadding ->
+            SharedTransitionLayout(modifier = Modifier.padding(innerPadding)) {
             NavHost(
                 navController = navController,
                 startDestination = startDestination,
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier.fillMaxSize()
             ) {
                 composable(Screen.Splash.route) {
                     SplashScreen()
@@ -315,6 +321,8 @@ fun MainApp(
                 composable(Screen.History.route) {
                     HistoryScreen(
                         isDriver = uiState.userRole == UserRole.DRIVER,
+                        sharedTransitionScope = this@SharedTransitionLayout,
+                        animatedVisibilityScope = this,
                         onReportClick = { report ->
                             viewModel.processIntent(MainContract.Intent.ViewReportDetails(report))
                         }
@@ -333,12 +341,13 @@ fun MainApp(
                 composable(Screen.ReportDetails.route) {
                     ReportDetailsScreen(
                         report = uiState.selectedReport,
+                        sharedTransitionScope = this@SharedTransitionLayout,
+                        animatedVisibilityScope = this,
                         onBack = { navController.popBackStack() }
                     )
                 }
                 composable(Screen.Profile.route) {
                     ProfileScreen(
-                        user = uiState.currentUser,
                         onBack = { navController.popBackStack() },
                         onLogout = { viewModel.processIntent(Logout) },
                         onThemeSelected = { viewModel.processIntent(MainContract.Intent.SetThemeMode(it)) },
@@ -354,7 +363,8 @@ fun MainApp(
                 composable(Screen.EditProfile.route) {
                     EditProfileScreen(
                         onBack = { navController.popBackStack() },
-                        onSaved = { viewModel.processIntent(MainContract.Intent.RefreshCurrentUser) }
+                        onSaved = { viewModel.processIntent(MainContract.Intent.RefreshCurrentUser) },
+                        onLogout = { viewModel.processIntent(Logout) }
                     )
                 }
                 composable(Screen.PrivacyPolicy.route) {
@@ -378,7 +388,6 @@ fun MainApp(
                 }
                 composable(Screen.DriverProfile.route) {
                     DriverProfileScreen(
-                        user = uiState.currentUser,
                         onBack = { navController.popBackStack() },
                         onLogout = { viewModel.processIntent(Logout) },
                         onThemeSelected = { viewModel.processIntent(MainContract.Intent.SetThemeMode(it)) },
@@ -390,6 +399,7 @@ fun MainApp(
                         onPrivacyPolicy = { navController.navigate(Screen.PrivacyPolicy.route) }
                     )
                 }
+            }
             }
         }
     }

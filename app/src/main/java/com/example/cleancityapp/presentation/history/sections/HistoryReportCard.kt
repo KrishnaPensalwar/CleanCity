@@ -1,5 +1,11 @@
 package com.example.cleancityapp.presentation.history.sections
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.BoundsTransform
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -28,8 +34,21 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@OptIn(ExperimentalSharedTransitionApi::class)
+internal val ReportImageBounds = BoundsTransform { _, _ ->
+    tween(durationMillis = 600, easing = FastOutSlowInEasing)
+}
+
+internal fun reportImageKey(id: String) = "report-image-$id"
+
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun ReportHistoryCard(report: ReportResponse, onClick: () -> Unit) {
+fun ReportHistoryCard(
+    report: ReportResponse,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    onClick: () -> Unit,
+) {
     val date = remember(report.timestamp) {
         val sdf = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
         sdf.format(Date(report.timestamp))
@@ -44,15 +63,22 @@ fun ReportHistoryCard(report: ReportResponse, onClick: () -> Unit) {
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        AsyncImage(
-            model = report.imageUrl,
-            contentDescription = null,
-            modifier = Modifier
-                .size(80.dp)
-                .clip(RoundedCornerShape(20.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-            contentScale = ContentScale.Crop,
-        )
+        with(sharedTransitionScope) {
+            AsyncImage(
+                model = report.imageUrl,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(80.dp)
+                    .sharedElement(
+                        sharedContentState = rememberSharedContentState(key = reportImageKey(report.id)),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = ReportImageBounds,
+                    )
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentScale = ContentScale.Crop,
+            )
+        }
 
         Column(
             modifier = Modifier

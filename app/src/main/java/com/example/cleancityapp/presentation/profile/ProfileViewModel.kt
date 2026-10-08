@@ -1,14 +1,14 @@
 package com.example.cleancityapp.presentation.profile
 
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cleancityapp.data.remote.AuthApi
+import com.example.cleancityapp.data.remote.MeResponse
 import com.example.cleancityapp.data.remote.UserDto
 import com.example.cleancityapp.data.remote.toAppErrorMessage
-import com.example.cleancityapp.data.repository.DeviceRegistrationRepository
 import com.example.cleancityapp.presentation.main.ThemeMode
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,8 +27,8 @@ data class ProfileState(
 
 class ProfileViewModel(
     private val authApi: AuthApi,
-    private val deviceRepository: DeviceRegistrationRepository,
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
     private val _state = MutableStateFlow(ProfileState())
     val state: StateFlow<ProfileState> = _state.asStateFlow()
@@ -39,20 +39,40 @@ class ProfileViewModel(
 
     fun loadUser(force: Boolean = false) {
         if (!force && _state.value.user != null) return
-        val token = sharedPreferences.getString("access_token", null) ?: return
+        val token = sharedPreferences.getString("access_token", null)
+        if (token.isNullOrBlank()) {
+            _state.update {
+                it.copy(
+                    user = null,
+                    isLoading = false,
+                    error = "Unable to load your profile."
+                )
+            }
+            return
+        }
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             try {
-                val response = withContext(Dispatchers.IO) {
+                val response = withContext(ioDispatcher) {
                     authApi.getMe("Bearer $token")
                 }
-                if (response.isSuccessful && response.body() != null) {
-                    val meData = response.body()!!
-                    val profile = meData.userProfile ?: meData.driverProfile
-                    _state.update { it.copy(user = profile, isLoading = false) }
+                if (response.isSuccessful) {
+                    val profile = response.body()?.profileOrNull()
+                    if (profile != null) {
+                        _state.update { it.copy(user = profile, isLoading = false, error = null) }
+                    } else {
+                        _state.update {
+                            it.copy(
+                                user = null,
+                                isLoading = false,
+                                error = "Unable to load your profile."
+                            )
+                        }
+                    }
                 } else {
                     _state.update {
                         it.copy(
+                            user = null,
                             isLoading = false,
                             error = response.toAppErrorMessage("Unable to load your profile.")
                         )
@@ -61,6 +81,7 @@ class ProfileViewModel(
             } catch (e: Exception) {
                 _state.update {
                     it.copy(
+                        user = null,
                         isLoading = false,
                         error = e.toAppErrorMessage("Unable to load your profile.")
                     )
@@ -70,11 +91,21 @@ class ProfileViewModel(
     }
 
     fun updateProfile(name: String, phone: String, address: String) {
-        val token = sharedPreferences.getString("access_token", null) ?: return
+        val token = sharedPreferences.getString("access_token", null)
+        if (token.isNullOrBlank()) {
+            _state.update {
+                it.copy(
+                    isSaving = false,
+                    isUpdateSuccess = false,
+                    error = "Unable to update your profile."
+                )
+            }
+            return
+        }
         viewModelScope.launch {
             _state.update { it.copy(isSaving = true, error = null, isUpdateSuccess = false) }
             try {
-                val response = withContext(Dispatchers.IO) {
+                val response = withContext(ioDispatcher) {
                     authApi.updateProfile(
                         "Bearer $token",
                         mapOf(
@@ -86,44 +117,22 @@ class ProfileViewModel(
                 }
                 if (response.isSuccessful && response.body() != null) {
                     _state.update {
-                        it.copy(user = response.body(), isSaving = false, isUpdateSuccess = true)
+                        it.copy(user = response.body(), isSaving = false, isUpdateSuccess = true, error = null)
                     }
                 } else {
-                    // Fallback: refresh from /me and keep local edits if API unsupported
-                    val me = withContext(Dispatchers.IO) { authApi.getMe("Bearer $token") }
-                    val profile = me.body()?.userProfile ?: me.body()?.driverProfile
-                    if (profile != null) {
-                        val updated = profile.copy(
-                            name = name.trim().ifBlank { profile.name },
-                            phone = phone.trim().ifBlank { profile.phone },
-                            address = address.trim().ifBlank { profile.address }
+                    _state.update {
+                        it.copy(
+                            isSaving = false,
+                            isUpdateSuccess = false,
+                            error = response.toAppErrorMessage("Unable to update your profile.")
                         )
-                        _state.update {
-                            it.copy(
-                                user = updated,
-                                isSaving = false,
-                                isUpdateSuccess = response.isSuccessful || response.code() == 404,
-                                error = if (!response.isSuccessful && response.code() != 404) {
-                                    response.toAppErrorMessage("Unable to update your profile.")
-                                } else {
-                                    null
-                                }
-                            )
-                        }
-                    } else {
-                        _state.update {
-                            it.copy(
-                                isSaving = false,
-                                error = response.toAppErrorMessage("Unable to update your profile.")
-                            )
-                        }
                     }
                 }
             } catch (e: Exception) {
-                Log.e("ProfileVM", "updateProfile failed", e)
                 _state.update {
                     it.copy(
                         isSaving = false,
+                        isUpdateSuccess = false,
                         error = e.toAppErrorMessage("Unable to update your profile.")
                     )
                 }
@@ -139,7 +148,5 @@ class ProfileViewModel(
         _state.update { it.copy(isUpdateSuccess = false) }
     }
 
-    fun clearError() {
-        _state.update { it.copy(error = null) }
-    }
+    private fun MeResponse.profileOrNull(): UserDto? = userProfile ?: driverProfile
 }

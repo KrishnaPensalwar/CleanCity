@@ -11,6 +11,5 @@ class ComplaintDetailsContract {
 
     sealed class Intent {
         data class LoadComplaint(val complaintId: String) : Intent()
-        object ClearError : Intent()
     }
 }

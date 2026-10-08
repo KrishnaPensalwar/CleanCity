@@ -12,7 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -20,8 +19,10 @@ import androidx.compose.ui.unit.sp
 import com.example.cleancityapp.presentation.components.CameraCapture
 import com.example.cleancityapp.presentation.driver.DriverViewModel
 import com.example.cleancityapp.presentation.driver.tasks.sections.formatDriverTaskDate
-import com.example.cleancityapp.ui.theme.BadgeDeclinedBg
-import com.example.cleancityapp.ui.theme.BadgeDeclinedText
+import com.example.cleancityapp.ui.theme.StatusSuccessContainer
+import com.example.cleancityapp.ui.theme.StatusSuccessContent
+import com.example.cleancityapp.ui.theme.StatusWarningContainer
+import com.example.cleancityapp.ui.theme.StatusWarningContent
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -93,8 +94,8 @@ fun DriverRouteScreen(
                         ) {
                             Text("Status", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Badge(
-                                containerColor = if (report.status == "Completed") Color(0xFFEAF3DE) else Color(0xFFFAEEDA),
-                                contentColor = if (report.status == "Completed") Color(0xFF3B6D11) else Color(0xFF854F0B)
+                                containerColor = if (report.status == "Completed") StatusSuccessContainer else StatusWarningContainer,
+                                contentColor = if (report.status == "Completed") StatusSuccessContent else StatusWarningContent
                             ) {
                                 Text(report.status.uppercase())
                             }
@@ -134,7 +135,7 @@ fun DriverRouteScreen(
                         }
                     }
                 } else {
-                    Text(text = "Task Completed", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color(0xFF3B6D11))
+                    Text(text = "Task Completed", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = StatusSuccessContent)
                 }
                 
                 Spacer(modifier = Modifier.height(24.dp))

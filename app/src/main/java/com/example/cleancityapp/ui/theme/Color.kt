@@ -38,7 +38,26 @@ val BadgeApprovedText = Color(0xFF2B8A3E)
 val BadgeDeclinedBg = Color(0xFFFFE3E3)
 val BadgeDeclinedText = Color(0xFFC92A2A)
 
-// Aliases used by Theme.kt
-val GreenPrimary = PrimaryBlue
-val GreenLight = PrimaryLight
-val GreenDark = PrimaryDark
+// Semantic status containers — driver task/dashboard badges, quick actions, duty row
+val StatusSuccessContainer = Color(0xFFEAF3DE)
+val StatusSuccessContent = Color(0xFF3B6D11)
+val StatusWarningContainer = Color(0xFFFAEEDA)
+val StatusWarningContent = Color(0xFF854F0B)
+val StatusInfoContainer = Color(0xFFE6F1FB)
+val StatusInfoContent = Color(0xFF185FA5)
+val StatusErrorContainer = Color(0xFFFCEBEB)
+val StatusErrorContent = Color(0xFFA32D2D)
+
+// Duty status accents
+val DutyActiveDot = Color(0xFF1A6B3A)
+val DutyActiveText = Color(0xFF27500A)
+
+// Activity status tints (home feed)
+val StatusPendingTint = Color(0xFFFF9800)
+val StatusResolvedTint = Color(0xFF4CAF50)
+
+// Neutral / misc
+val ChipUnselectedContainer = Color(0xFFEEEEEE)
+val ShimmerHighlight = Color(0xFFEBEBEB)
+val ShimmerBase = Color(0xFFD1D1D1)
+val DangerRed = Color(0xFFD32F2F)

@@ -1,5 +1,8 @@
 package com.example.cleancityapp.presentation.history
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,13 +35,18 @@ import coil.compose.AsyncImage
 import com.example.cleancityapp.data.remote.ReportResponse
 import com.example.cleancityapp.presentation.components.FullscreenImageViewer
 import com.example.cleancityapp.presentation.history.sections.StatusBadge
+import com.example.cleancityapp.presentation.history.sections.ReportImageBounds
+import com.example.cleancityapp.presentation.history.sections.reportImageKey
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun ReportDetailsScreen(
     report: ReportResponse?,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     onBack: () -> Unit,
 ) {
     if (report == null) return
@@ -62,12 +70,20 @@ fun ReportDetailsScreen(
             shape = RoundedCornerShape(16.dp),
             elevation = CardDefaults.cardElevation(4.dp),
         ) {
-            AsyncImage(
-                model = report.imageUrl,
-                contentDescription = "Report Image — tap to expand",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
-            )
+            with(sharedTransitionScope) {
+                AsyncImage(
+                    model = report.imageUrl,
+                    contentDescription = "Report Image — tap to expand",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .sharedElement(
+                            sharedContentState = rememberSharedContentState(key = reportImageKey(report.id)),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            boundsTransform = ReportImageBounds,
+                        ),
+                    contentScale = ContentScale.Crop,
+                )
+            }
         }
 
         Text(

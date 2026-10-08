@@ -59,6 +59,8 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     testImplementation(libs.junit)
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
+    testImplementation("io.mockk:mockk:1.13.13")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -66,10 +68,6 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    implementation(platform("androidx.compose:compose-bom:2024.02.01"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.material3:material3")
-    
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.8.8")
 
@@ -79,14 +77,13 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics-ktx")
 
 
-    // Ktor Client
+    // Ktor Client (OkHttp engine + kotlinx-json content negotiation)
     val ktor_version = "3.0.1"
-    implementation("io.ktor:ktor-client-android:$ktor_version")
+    implementation("io.ktor:ktor-client-core:$ktor_version")
+    implementation("io.ktor:ktor-client-okhttp:$ktor_version")
     implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
     implementation("io.ktor:ktor-client-logging:$ktor_version")
-    implementation("io.ktor:ktor-client-serialization:$ktor_version")
-    implementation("io.ktor:ktor-client-core:$ktor_version")
 
     // Coil for Image Loading
     implementation("io.coil-kt:coil-compose:2.6.0")
@@ -104,6 +101,7 @@ dependencies {
 
     implementation("androidx.compose.material:material-icons-extended")
     // Debug-only DevTool SDK (not packaged into release).
-    debugImplementation("io.github.krishnapensalwar:devkit:1.0.2")
+    debugImplementation("io.github.krishnapensalwar:devkit:1.0.4-SNAPSHOT")
+
 
 }

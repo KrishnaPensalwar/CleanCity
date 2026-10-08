@@ -17,7 +17,8 @@ import androidx.compose.ui.unit.sp
 fun ErrorState(
     message: String,
     onRetry: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onLogout: (() -> Unit)? = null,
 ) {
     Column(
         modifier = modifier
@@ -54,6 +55,12 @@ fun ErrorState(
             )
         ) {
             Text(text = "Try Again")
+        }
+        if (onLogout != null) {
+            Spacer(modifier = Modifier.height(12.dp))
+            OutlinedButton(onClick = onLogout) {
+                Text(text = "Log out")
+            }
         }
     }
 }

@@ -45,13 +45,18 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val data = message.data
         val title = data["title"] ?: message.notification?.title ?: "Clean City Update"
         val body = data["body"] ?: message.notification?.body ?: "There's an update on your report."
-        val complaintId = com.example.cleancityapp.security.ComplaintIdValidator
-            .sanitize(data["complaintId"])
-        val status = data["status"]
-
-        if (complaintId != null && (status == "APPROVED" || status == "REJECTED")) {
-            notificationHelper.showNotification(title, body, complaintId)
-        }
+        IncomingNotificationHandler(
+            notificationsEnabled = { notificationsEnabled },
+            onShow = { shownTitle, shownBody, complaintId ->
+                notificationHelper.showNotification(shownTitle, shownBody, complaintId)
+            },
+        ).onReceived(
+            IncomingNotification(
+                title = title,
+                body = body,
+                extras = data,
+            ),
+        )
     }
 
     override fun onDestroy() {

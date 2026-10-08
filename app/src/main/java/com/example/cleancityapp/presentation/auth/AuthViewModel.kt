@@ -20,8 +20,7 @@ data class AuthState(
     val error: String? = null,
     val cities: List<CityDto> = emptyList(),
     val isLoginSuccess: Boolean = false,
-    val isSignUpSuccess: Boolean = false,
-    val loginData: LoginResponse? = null
+    val isSignUpSuccess: Boolean = false
 )
 
 class AuthViewModel(
@@ -48,7 +47,7 @@ class AuthViewModel(
 
     fun login(email: String, pass: String) {
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null) }
+            _state.update { it.copy(isLoading = true, error = null, isLoginSuccess = false) }
             try {
                 val response = withContext(Dispatchers.IO) {
                     authApi.login(mapOf("email" to email, "password" to pass))
@@ -56,7 +55,7 @@ class AuthViewModel(
                 if (response.isSuccessful && response.body() != null) {
                     val loginData = response.body()!!
                     saveAuthData(loginData)
-                    _state.update { it.copy(isLoading = false, isLoginSuccess = true, loginData = loginData) }
+                    _state.update { it.copy(isLoading = false, isLoginSuccess = true) }
                 } else {
                     _state.update {
                         it.copy(
@@ -86,8 +85,7 @@ class AuthViewModel(
                             "name" to name,
                             "mobile" to mobile,
                             "email" to email,
-                            "password" to pass,
-//                            "city" to city
+                            "password" to pass
                         )
                     )
                 }
@@ -126,9 +124,5 @@ class AuthViewModel(
             }
             apply()
         }
-    }
-
-    fun clearError() {
-        _state.update { it.copy(error = null) }
     }
 }

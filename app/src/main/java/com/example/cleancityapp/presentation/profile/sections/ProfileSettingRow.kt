@@ -32,6 +32,7 @@ fun ProfileSettingRow(
     titleColor: Color = MaterialTheme.colorScheme.onSurface,
     isLast: Boolean = false,
     onClick: (() -> Unit)? = null,
+    trailing: (@Composable () -> Unit)? = null,
 ) {
     Column(
         modifier = Modifier
@@ -67,20 +68,24 @@ fun ProfileSettingRow(
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                if (value != null) {
+                if (trailing != null) {
+                    trailing()
+                } else {
+                    if (value != null) {
+                        Text(
+                            text = value,
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(end = 8.dp),
+                        )
+                    }
                     Text(
-                        text = value,
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(end = 8.dp),
+                        text = "›",
+                        fontSize = 22.sp,
+                        color = MaterialTheme.colorScheme.outline,
+                        fontWeight = FontWeight.Light,
                     )
                 }
-                Text(
-                    text = "›",
-                    fontSize = 22.sp,
-                    color = MaterialTheme.colorScheme.outline,
-                    fontWeight = FontWeight.Light,
-                )
             }
         }
 

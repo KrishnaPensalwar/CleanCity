@@ -11,6 +11,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.cleancityapp.ui.theme.ChipUnselectedContainer
+import com.example.cleancityapp.ui.theme.PrimaryBlue
 
 @Composable
 fun DriverTaskFilterChip(
@@ -20,7 +22,7 @@ fun DriverTaskFilterChip(
     onClick: () -> Unit = {},
 ) {
     Surface(
-        color = if (isSelected) Color(0xFF1565C0) else Color(0xFFEEEEEE),
+        color = if (isSelected) PrimaryBlue else ChipUnselectedContainer,
         contentColor = if (isSelected) Color.White else Color.Gray,
         shape = RoundedCornerShape(14.dp),
         modifier = modifier

@@ -16,10 +16,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.cleancityapp.ui.theme.DutyActiveDot
+import com.example.cleancityapp.ui.theme.DutyActiveText
+import com.example.cleancityapp.ui.theme.Radius
+import com.example.cleancityapp.ui.theme.StatusSuccessContainer
 
 @Composable
 fun DriverDutyStatusRow(
@@ -30,8 +33,8 @@ fun DriverDutyStatusRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFFEAF3DE))
+            .clip(RoundedCornerShape(Radius.card))
+            .background(StatusSuccessContainer)
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -39,7 +42,7 @@ fun DriverDutyStatusRow(
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = "Status: ${if (isActive) "Active & available" else "Off duty"}",
-            color = Color(0xFF27500A),
+            color = DutyActiveText,
             fontSize = 12.sp,
             fontWeight = FontWeight.Medium,
             modifier = Modifier.weight(1f),
@@ -57,6 +60,6 @@ private fun BoxAccent() {
         modifier = Modifier
             .size(10.dp)
             .clip(CircleShape)
-            .background(Color(0xFF1A6B3A)),
+            .background(DutyActiveDot),
     )
 }

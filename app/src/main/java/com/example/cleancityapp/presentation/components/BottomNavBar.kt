@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -38,6 +39,14 @@ fun BottomNavBar(
     onNavigate: (Screen) -> Unit
 ) {
     val navBarPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val barColor = if (isDark) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.onBackground
+    val selectedBg = if (isDark) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
+    val labelColor = if (isDark) {
+        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
+    } else {
+        MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
+    }
 
     Box(
         modifier = Modifier
@@ -50,7 +59,7 @@ fun BottomNavBar(
                 .height(64.dp)
                 .fillMaxWidth()
                 .shadow(elevation = 12.dp, shape = RoundedCornerShape(32.dp)),
-            color = MaterialTheme.colorScheme.onBackground,
+            color = barColor,
             shape = RoundedCornerShape(32.dp)
         ) {
             Row(
@@ -83,7 +92,7 @@ fun BottomNavBar(
                             .size(if (isSelected) 52.dp else 46.dp)
                             .clip(CircleShape)
                             .background(
-                                if (isSelected) MaterialTheme.colorScheme.surface
+                                if (isSelected) selectedBg
                                 else androidx.compose.ui.graphics.Color.Transparent
                             )
                             .clickable { onNavigate(screen) },
@@ -105,7 +114,7 @@ fun BottomNavBar(
                                 Text(
                                     text = label,
                                     fontSize = 9.sp,
-                                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
+                                    color = labelColor,
                                     fontWeight = FontWeight.Bold
                                 )
                             }
